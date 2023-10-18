@@ -29,7 +29,7 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
 
-    private final WebClient webClient;
+    private final WebClient.Builder webClientBuilder;
     public void placeOrder(OrderRequest orderRequest) {
         Order order = Order.builder().build();
         order.setOrderNumber(UUID.randomUUID().toString());
@@ -51,9 +51,9 @@ public class OrderService {
 
       log.warn("retrieve sku codes: {}", skuCodes);
 
-      InventoryResponse[] inventoryResponses = webClient
+      InventoryResponse[] inventoryResponses = webClientBuilder.build()
         .get()
-        .uri("http://localhost:8084/ventimetri/api/inventory",
+        .uri("http://inventory-service/ventimetri/api/inventory",
           uriBuilder -> uriBuilder.queryParam("skuCodes", skuCodes).build())
         .retrieve()
         .bodyToMono(InventoryResponse[].class)
