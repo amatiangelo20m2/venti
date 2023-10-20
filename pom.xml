@@ -25,6 +25,7 @@
     <spring-cloud.version>2022.0.1</spring-cloud.version>
     <testcontainers.version>1.17.6</testcontainers.version>
     <mongo.version>1.19.1</mongo.version>
+    <zipkin.version>3.1.9</zipkin.version>
   </properties>
 
   <modules>
@@ -39,6 +40,7 @@
 
 
   <dependencyManagement>
+
     <dependencies>
       <dependency>
         <groupId>org.testcontainers</groupId>
@@ -54,6 +56,7 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+
       <dependency>
         <groupId>org.testcontainers</groupId>
         <artifactId>mongodb</artifactId>
@@ -66,19 +69,24 @@
         <version>1.19.1</version>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-starter-sleuth</artifactId>
+        <version>${zipkin.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-sleuth-zipkin</artifactId>
+        <version>${zipkin.version}</version>
+      </dependency>
     </dependencies>
+
   </dependencyManagement>
 
   <repositories>
-    <repository>
-      <id>netflix-candidates</id>
-      <name>Netflix Candidates</name>
-      <url>https://artifactory-oss.prod.netflix.net/artifactory/maven-oss-candidates</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
+
   </repositories>
+
   <build>
     <plugins>
       <plugin>
@@ -93,27 +101,6 @@
           </excludes>
         </configuration>
       </plugin>
-<!--      <plugin>-->
-<!--        <groupId>com.google.cloud.tools</groupId>-->
-<!--        <artifactId>jib-maven-plugin</artifactId>-->
-<!--        <version>3.2.1</version>-->
-<!--        <configuration>-->
-<!--          <from>-->
-<!--            <image>eclipse-temurin:17.0.4.1_1-jre</image>-->
-<!--          </from>-->
-<!--          <to>-->
-<!--            <image>microservices-tutorial/${project.artifactId}</image>-->
-<!--          </to>-->
-<!--        </configuration>-->
-<!--        <executions>-->
-<!--          <execution>-->
-<!--            <phase>package</phase>-->
-<!--            <goals>-->
-<!--              <goal>dockerBuild</goal>-->
-<!--            </goals>-->
-<!--          </execution>-->
-<!--        </executions>-->
-<!--      </plugin>-->
     </plugins>
   </build>
 </project>
