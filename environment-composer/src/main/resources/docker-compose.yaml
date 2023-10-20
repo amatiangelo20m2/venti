@@ -51,7 +51,6 @@ services:
       - ME_CONFIG_MONGODB_SERVER=mongodb
     networks:
       - mongodb_network
-
 volumes:
   data: {}
   pg_data:
