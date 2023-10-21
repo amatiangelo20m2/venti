@@ -51,7 +51,6 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
-
       <plugin>
         <groupId>com.spotify</groupId>
         <artifactId>dockerfile-maven-plugin</artifactId>
@@ -67,7 +66,7 @@
         </executions>
         <configuration>
           <repository>amatiangelo1990/20m2</repository>
-          <tag>${project.version}</tag>
+          <tag>${project.build.finalName}-${project.version}</tag>
           <useMavenSettingsForAuth>true</useMavenSettingsForAuth>
         </configuration>
         <dependencies>
