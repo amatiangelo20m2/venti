@@ -22,14 +22,6 @@ jobs:
         server-username: MAVEN_USERNAME
         server-password: MAVEN_PASSWORD
 
-    - name: Building and Pushing User-service
-      run: |
-        cd api-gateway
-        mvn package dockerfile:push
-      env:
-        MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-
     - name: Build and Push department-service
       run: |
         cd discovery-server
