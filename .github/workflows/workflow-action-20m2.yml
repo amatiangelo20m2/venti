@@ -23,7 +23,32 @@ jobs:
         server-password: MAVEN_PASSWORD
 
     - name: Build and Push discovery-service
+      run: mvn package dockerfile:push --file api-gateway/pom.xml
+      env:
+        MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Build and Push discovery-service
+      run: mvn package dockerfile:push --file customer-service/pom.xml
+      env:
+        MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Build and Push discovery-service
       run: mvn package dockerfile:push --file discovery-server/pom.xml
+      env:
+        MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Build and Push discovery-service
+      run: mvn package dockerfile:push --file inventory-service/pom.xml
+      env:
+        MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Build and Push discovery-service
+      run: mvn package dockerfile:push --file order-service/pom.xml
+      env:
+        MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Build and Push discovery-service
+      run: mvn package dockerfile:push --file product-service/pom.xml
       env:
         MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}

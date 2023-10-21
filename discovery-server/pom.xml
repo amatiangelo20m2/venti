@@ -42,6 +42,7 @@
       <artifactId>micrometer-tracing-bridge-brave</artifactId>
     </dependency>
   </dependencies>
+
   <build>
     <finalName>discovery-server</finalName>
     <plugins>
