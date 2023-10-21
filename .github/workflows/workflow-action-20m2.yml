@@ -22,6 +22,12 @@ jobs:
         server-username: MAVEN_USERNAME
         server-password: MAVEN_PASSWORD
 
+    - name: Build and Push 20m2 microservice product-service
+      run: mvn package dockerfile:push --file product-service/pom.xml
+      env:
+        MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
     - name: Build and Push 20m2 microservice customer-service
       run: mvn package dockerfile:push --file customer-service/pom.xml
       env:
@@ -42,12 +48,6 @@ jobs:
 
     - name: Build and Push 20m2 microservice order-service
       run: mvn package dockerfile:push --file order-service/pom.xml
-      env:
-        MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-
-    - name: Build and Push 20m2 microservice product-service
-      run: mvn package dockerfile:push --file product-service/pom.xml
       env:
         MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
