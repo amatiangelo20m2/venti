@@ -23,13 +23,18 @@ jobs:
         server-password: MAVEN_PASSWORD
 
     - name: Building and Pushing User-service
-      run: mvn package dockerfile:push --file ./api-gateway/pom.xml
+      run: |
+        cd api-gateway
+        mvn package dockerfile:push
       env:
-          MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Build and Push department-service
-      run: mvn package dockerfile:push --file discovery-service/pom.xml
+      run: |
+        cd discovery-server
+        mvn package dockerfile:push
       env:
-          MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
