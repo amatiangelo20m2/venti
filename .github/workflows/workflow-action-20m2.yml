@@ -30,37 +30,13 @@ jobs:
         server-password: MAVEN_PASSWORD
 
     - name: Building and Pushing User-service
-      run: mvn package dockerfile:push --file user-service/pom.xml
+      run: mvn package dockerfile:push --file api-gateway/pom.xml
       env:
           MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Build and Push department-service
-      run: mvn package dockerfile:push --file department-service/pom.xml
-      env:
-          MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-
-    - name: Build and Push cloud-config-server
-      run: mvn package dockerfile:push --file cloud-config-server/pom.xml
-      env:
-          MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-
-    - name: Build and Push cloud-gateway
-      run: mvn package dockerfile:push --file cloud-gateway/pom.xml
-      env:
-          MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-
-    - name: Build and Push hystrix-dashboard
-      run: mvn package dockerfile:push --file hystrix-dashboard/pom.xml
-      env:
-          MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-
-    - name: Build and Push service-registry
-      run: mvn package dockerfile:push --file service-registry/pom.xml
+      run: mvn package dockerfile:push --file discovery-service/pom.xml
       env:
           MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
