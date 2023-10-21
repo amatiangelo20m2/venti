@@ -25,6 +25,6 @@ jobs:
     - name: Build and Push discovery-service
       run: mvn package dockerfile:push --file discovery-server/pom.xml
       env:
-        MAVEN_USERNAME: amatiangelo1990
-        MAVEN_PASSWORD: pCYn8hUkg*y7zkc@
+        MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
