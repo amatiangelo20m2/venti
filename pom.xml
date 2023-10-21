@@ -18,24 +18,45 @@
   <packaging>pom</packaging>
 
   <properties>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>17</java.version>
+    <spring-cloud.version>2022.0.1</spring-cloud.version>
+    <testcontainers.version>1.17.6</testcontainers.version>
+    <mongo.version>1.19.1</mongo.version>
   </properties>
 
   <modules>
-    <module>environment-composer</module>
+    <module>discovery-server</module>
     <module>inventory-service</module>
     <module>customer-service</module>
     <module>product-service</module>
     <module>order-service</module>
+    <module>api-geteway</module>
   </modules>
-
 
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>org.testcontainers</groupId>
+        <artifactId>testcontainers-bom</artifactId>
+        <version>${testcontainers.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dependencies</artifactId>
+        <version>${spring-cloud.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.testcontainers</groupId>
         <artifactId>mongodb</artifactId>
-        <version>1.19.1</version>
+        <version>${mongo.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -46,4 +67,43 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+            </exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.google.cloud.tools</groupId>
+        <artifactId>jib-maven-plugin</artifactId>
+        <version>3.2.1</version>
+        <configuration>
+          <from>
+            <image>eclipse-temurin:17.0.4.1_1-jre</image>
+          </from>
+          <to>
+            <image>20m2/${project.artifactId}</image>
+          </to>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>dockerBuild</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

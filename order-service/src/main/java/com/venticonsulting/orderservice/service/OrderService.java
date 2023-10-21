@@ -28,20 +28,22 @@ import java.util.UUID;
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private final WebClient.Builder webClientBuilder;
 
-    private final WebClient webClient;
-    public void placeOrder(OrderRequest orderRequest) {
-        Order order = new Order();
+    public String placeOrder(OrderRequest orderRequest) {
+        Order order = Order.builder().build();
         order.setOrderNumber(UUID.randomUUID().toString());
 
         List<OrderLineItems> orderLineItems = orderRequest.getOrderLineItemsDtoList()
                 .stream()
                 .map(this::mapToDto)
                 .toList();
-        List<String> skuCodes = order.getOrderLineItemsList().stream()
+
+      order.setOrderLineItemsList(orderLineItems);
+
+      List<String> skuCodes = order.getOrderLineItemsList().stream()
           .map(OrderLineItems::getSkuCode).toList();
 
-        order.setOrderLineItemsList(orderLineItems);
 
 
         // call inventory, place order if products are in stock
@@ -49,9 +51,9 @@ public class OrderService {
 
       log.warn("retrieve sku codes: {}", skuCodes);
 
-      InventoryResponse[] inventoryResponses = webClient
+      InventoryResponse[] inventoryResponses = webClientBuilder.build()
         .get()
-        .uri("http://localhost:8084/ventimetri/api/inventor1y",
+        .uri("http://inventory-service/ventimetri/api/inventory",
           uriBuilder -> uriBuilder.queryParam("skuCodes", skuCodes).build())
         .retrieve()
         .bodyToMono(InventoryResponse[].class)
@@ -60,9 +62,11 @@ public class OrderService {
       boolean isInStock = Arrays.stream(inventoryResponses).allMatch(InventoryResponse::isInStock);
 
       if(isInStock){
-        log.info("coglione");
-      }else{
         orderRepository.save(order);
+        return "Order placed successfully";
+      }else{
+        log.error("not in stock");
+        throw new RuntimeException("Product not in stock");
       }
     }
 

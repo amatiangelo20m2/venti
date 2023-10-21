@@ -3,7 +3,6 @@ package com.venticonsulting.inventoryservice.service;
 import com.venticonsulting.inventoryservice.dto.InventoryResponse;
 import com.venticonsulting.inventoryservice.repository.InventoryRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
