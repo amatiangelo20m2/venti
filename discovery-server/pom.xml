@@ -48,24 +48,36 @@
     <finalName>discovery-server</finalName>
     <plugins>
       <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+
+      <plugin>
         <groupId>com.spotify</groupId>
         <artifactId>dockerfile-maven-plugin</artifactId>
-        <version>1.4.9</version>
+        <version>1.4.13</version>
         <executions>
           <execution>
-            <id>build-image</id>
+            <id>default</id>
             <goals>
               <goal>build</goal>
+              <goal>push</goal>
             </goals>
           </execution>
         </executions>
         <configuration>
-          <repository>${docker.image.prefix}/${project.artifactId}</repository>
+          <repository>20m2/discovery-service</repository>
           <tag>${project.version}</tag>
-          <buildArgs>
-            <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
-          </buildArgs>
+          <useMavenSettingsForAuth>true</useMavenSettingsForAuth>
         </configuration>
+        <dependencies>
+          <!-- To make this work on JDK 9+ -->
+          <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>javax.activation-api</artifactId>
+            <version>1.2.0</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>
