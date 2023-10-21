@@ -6,13 +6,6 @@ name: SpringBoot CI/CD Pipeline
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:
-
-env:
-  PROJECT_ID: ${{ secrets.GKE_PROJECT }}
-  GKE_CLUSTER: cluster-demo-1    # TODO: update to cluster name
-  GKE_ZONE: us-central1-c   # TODO: update to cluster zone
-
 
 jobs:
   build:
@@ -30,7 +23,7 @@ jobs:
         server-password: MAVEN_PASSWORD
 
     - name: Building and Pushing User-service
-      run: mvn package dockerfile:push --file api-gateway/pom.xml
+      run: mvn package dockerfile:push --file ./api-gateway/pom.xml
       env:
           MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
