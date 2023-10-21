@@ -4,19 +4,17 @@
   <parent>
     <groupId>com.venticonsulting</groupId>
     <artifactId>venti</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
   </parent>
 
   <artifactId>discovery-server</artifactId>
+  <version>1.0.1</version>
 
   <properties>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>17</java.version>
-
-    <docker.image.prefix>20m2</docker.image.prefix>
-
   </properties>
 
   <dependencies>
@@ -66,7 +64,7 @@
         </executions>
         <configuration>
           <repository>amatiangelo1990/20m2</repository>
-          <tag>${project.build.finalName}</tag>
+          <tag>${project.build.finalName}-${version}</tag>
           <useMavenSettingsForAuth>true</useMavenSettingsForAuth>
         </configuration>
         <dependencies>
