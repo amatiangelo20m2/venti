@@ -6,8 +6,8 @@
     <artifactId>venti</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
+
   <artifactId>discovery-server</artifactId>
-  <name>Archetype - discovery-server</name>
 
   <properties>
     <maven.compiler.source>17</maven.compiler.source>
