@@ -6,8 +6,8 @@
     <artifactId>venti</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
+
   <artifactId>discovery-server</artifactId>
-  <name>Archetype - discovery-server</name>
 
   <properties>
     <maven.compiler.source>17</maven.compiler.source>
@@ -20,6 +20,25 @@
     <dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+
+
+    <dependency>
+      <groupId>io.zipkin.reporter2</groupId>
+      <artifactId>zipkin-reporter-brave</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-prometheus</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-tracing-bridge-brave</artifactId>
     </dependency>
   </dependencies>
 
