@@ -97,7 +97,7 @@
         </executions>
         <configuration>
           <repository>amatiangelo1990/20m2</repository>
-          <tag>${project.build.finalName}-${version}</tag>
+          <tag>${project.build.finalName}-${project.version}</tag>
           <useMavenSettingsForAuth>true</useMavenSettingsForAuth>
         </configuration>
         <dependencies>
