@@ -5,7 +5,7 @@ name: SpringBoot CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [ dev ]
   workflow_dispatch:
 
 env:
@@ -27,7 +27,7 @@ jobs:
         distribution: 'adopt'
         server-id: docker.io
         server-username: MAVEN_USERNAME
-        server-password: MAVEN_PASSWORD        
+        server-password: MAVEN_PASSWORD
 
     - name: Building and Pushing User-service
       run: mvn package dockerfile:push --file user-service/pom.xml
