@@ -63,7 +63,7 @@
         </executions>
         <configuration>
           <repository>amatiangelo1990/20m2</repository>
-          <tag>${project.build.finalName}-${project.version}</tag>
+          <tag>20m2/${project.build.finalName}</tag>
           <useMavenSettingsForAuth>true</useMavenSettingsForAuth>
         </configuration>
         <dependencies>
