@@ -2,14 +2,16 @@ version: "3.8"
 services:
   ## Keycloak Config with Mysql database
   keycloak-postgres:
-    container_name: keycloak-postgres
+    container_name: db_20m2_keycloak_postgres
     image: postgres:alpine
     volumes:
       - ./postgres_keycloak_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: keycloak
-      POSTGRES_USER: keycloak
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: keycloak-postgres
+      POSTGRES_USER: amati.angelo@20m2.it
+      POSTGRES_PASSWORD: 5Gv94E4uefK8qm92
+    ports:
+      - "5433:5432"
   keycloak:
     container_name: keycloak
     image: quay.io/keycloak/keycloak:18.0.0
@@ -17,11 +19,11 @@ services:
     environment:
       DB_VENDOR: POSTGRES
       DB_ADDR: keycloak-postgres
-      DB_DATABASE: keycloak
-      DB_USER: keycloak
-      DB_PASSWORD: password
-      KEYCLOAK_ADMIN: 20m2keycloak
-      KEYCLOAK_ADMIN_PASSWORD: 20m2keycloak
+      DB_DATABASE: keycloak-postgres
+      DB_USER: amati.angelo@20m2.it
+      DB_PASSWORD: 5Gv94E4uefK8qm92
+      KEYCLOAK_ADMIN: amati.angelo@20m2.it
+      KEYCLOAK_ADMIN_PASSWORD: 5Gv94E4uefK8qm92
     ports:
       - "8181:8080"
     volumes:
@@ -56,54 +58,54 @@ services:
     container_name: zipkin
     ports:
       - "9411:9411"
-  postgres:
+  db20m2-postgres:
     image: postgres:alpine
-    container_name: postgresql_orders
+    container_name: db_20m2_app_postgres
     environment:
-      POSTGRES_DB: ventimetri_postgresql
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: db20m2-postgres
+      POSTGRES_USER: amati.angelo@20m2.it
+      POSTGRES_PASSWORD: 7twdG4Va5EN4JDXW
     ports:
       - "5432:5432"
     networks:
       - db_network
     volumes:
       - pg_data:/var/lib/postgresql/data
-  pgadmin:
-    container_name: pgadmin4_container
+  db20m2-postgres-pgadmin:
+    container_name: db20m2-postgres-pgadmin
     image: dpage/pgadmin4
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: root
+      PGADMIN_DEFAULT_EMAIL: amati.angelo@20m2.it
+      PGADMIN_DEFAULT_PASSWORD: EM6MbK55bpHUtgVN
     depends_on:
-      - postgres
+      - db20m2-postgres
     ports:
       - "5050:80"
     networks:
       - db_network
   mongodb:
     image: mongo
-    container_name: mongodb_product
+    container_name: ventimetri_mongo_db
     ports:
       - "27017:27017"
     volumes:
       - data:/data
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=rootuser
-      - MONGO_INITDB_ROOT_PASSWORD=rootpass
-      - MONGO_INITDB_DATABASE=product
+      - MONGO_INITDB_ROOT_USERNAME=mongodbuser20m2
+      - MONGO_INITDB_ROOT_PASSWORD=mongodbpassword20m2
+      - MONGO_INITDB_DATABASE=ventimetri_mongo_db
     networks:
       - mongodb_network
   mongo-express:
     image: mongo-express
-    container_name: mongodb_product_express
+    container_name: mongodb_express
     restart: always
     ports:
       - "8081:8081"
     environment:
-      - ME_CONFIG_MONGODB_ADMINUSERNAME=rootuser
-      - ME_CONFIG_MONGODB_ADMINPASSWORD=rootpass
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=mongodbuser20m2
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=mongodbpassword20m2
       - ME_CONFIG_MONGODB_SERVER=mongodb
     networks:
       - mongodb_network
@@ -118,7 +120,7 @@ services:
       - zipkin
   api-gw:
     image: amatiangelo1990/20m2:api-gw
-    container_name: api-gateway
+    container_name: api-gw
     ports:
       - "8080:8080"
     expose:
@@ -130,6 +132,25 @@ services:
       - zipkin
       - discovery-server
       - keycloak
+  customer-service:
+    image: amatiangelo1990/20m2:customer-service
+    container_name: customer-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY= TRACE
+    depends_on:
+      - zipkin
+      - discovery-server
+  inventory-service:
+    image: amatiangelo1990/20m2:inventory-service
+    container_name: inventory-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY= TRACE
+    depends_on:
+      - zipkin
+      - discovery-server
+
 volumes:
   data: {}
   pg_data:
