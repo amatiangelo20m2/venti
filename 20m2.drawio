@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2023-10-23T16:20:39.469Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36" etag="cwNrb3C9nFFjdbn8dn1d" version="22.0.6" type="github">
+<mxfile host="app.diagrams.net" modified="2023-10-23T16:26:35.713Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36" etag="P87gL41Kb7_mc9rlGdIi" version="22.0.6" type="github">
   <diagram name="Page-1" id="3L_BJHFlt_Xqs4L_v1Af">
-    <mxGraphModel dx="2589" dy="1958" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2185" dy="1832" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -129,8 +129,8 @@
         <mxCell id="LZMtIkJjisC_x56uzXUe-60" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="LZMtIkJjisC_x56uzXUe-8" target="LZMtIkJjisC_x56uzXUe-21">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="LZMtIkJjisC_x56uzXUe-61" value="keycloak-postgres (5433)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#cce5ff;strokeColor=#36393d;" vertex="1" parent="1">
-          <mxGeometry x="500" y="-135" width="100" height="90" as="geometry" />
+        <mxCell id="LZMtIkJjisC_x56uzXUe-61" value="ventimetri_postgres_db&lt;br&gt;(5432&lt;span style=&quot;background-color: initial;&quot;&gt;)&lt;/span&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#cce5ff;strokeColor=#36393d;" vertex="1" parent="1">
+          <mxGeometry x="500" y="-135" width="120" height="90" as="geometry" />
         </mxCell>
         <mxCell id="LZMtIkJjisC_x56uzXUe-63" value="" style="swimlane;startSize=0;" vertex="1" parent="1">
           <mxGeometry x="-170" y="-270" width="1900" height="830" as="geometry" />
