@@ -120,9 +120,9 @@ services:
     image: amatiangelo1990/20m2:api-gw
     container_name: api-gateway
     ports:
-      - "8181:8080"
+      - "8080:8080"
     expose:
-      - "8181"
+      - "8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY= TRACE
