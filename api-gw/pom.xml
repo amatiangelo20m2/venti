@@ -63,8 +63,8 @@
         </executions>
         <configuration>
           <repository>amatiangelo1990/20m2</repository>
-          <finalName>${project.artifactId}</finalName>
-          <tag>${project.version}</tag>
+          <tag>${project.artifactId}</tag>
+          <finalName>${project.version}</finalName>
           <useMavenSettingsForAuth>true</useMavenSettingsForAuth>
         </configuration>
         <dependencies>
