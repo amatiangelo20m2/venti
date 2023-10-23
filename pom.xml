@@ -34,8 +34,6 @@
     <module>customer-service</module>
     <module>product-service</module>
     <module>order-service</module>
-    <module>api-geteway</module>
-    <module>api-gw</module>
   </modules>
 
   <dependencyManagement>
