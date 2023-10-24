@@ -139,7 +139,7 @@ services:
     container_name: user-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5431/postgres
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5431/postgres
     depends_on:
       - zipkin
       - discovery-server
