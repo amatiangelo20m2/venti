@@ -58,7 +58,7 @@ services:
     container_name: zipkin
     ports:
       - "9411:9411"
-  postgres-order:
+  postgres:
     container_name: postgres_20m2
     image: postgres:alpine
     environment:
@@ -67,7 +67,7 @@ services:
       POSTGRES_PASSWORD: postgres
       PGDATA: /data/postgres
     volumes:
-      - ./postgres-order:/data/postgres
+      - ./postgres-20m2:/data/postgres
     expose:
       - "5431"
     ports:
@@ -83,11 +83,9 @@ services:
       PGADMIN_DEFAULT_EMAIL: amati.angelo90@gmail.com
       PGADMIN_DEFAULT_PASSWORD: EM6MbK55bpHUtgVN
     depends_on:
-      - postgresql
+      - postgres
     ports:
       - "5050:80"
-    networks:
-      - postgresql
 #  mongodb:
 #    image: mongo
 #    container_name: ventimetri_mongo_db
@@ -141,12 +139,12 @@ services:
     container_name: user-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql:5432/postgres
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5431/postgres
     depends_on:
       - zipkin
       - discovery-server
       - keycloak
-      - postgresql
+      - postgres
 #  customer-service:
 #    image: amatiangelo1990/20m2:customer-service
 #    container_name: customer-service
