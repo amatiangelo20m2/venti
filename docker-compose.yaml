@@ -58,22 +58,23 @@ services:
     container_name: zipkin
     ports:
       - "9411:9411"
-  postgresql:
+  postgres-order:
+    container_name: postgres_20m2
     image: postgres:alpine
-    container_name: postgresql
     environment:
-      POSTGRES_DB: postgresql
-      POSTGRES_USER: postgresql
-      POSTGRES_PASSWORD: postgresql
-    expose:
-      - "5432"
-    command: -p 5431
-    ports:
-      - "5432:5432"
-    networks:
-      - postgresql
+      POSTGRES_DB: postgres_20m2
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /data/postgres
     volumes:
-      - pg_data:/var/lib/postgresql/data
+      - ./postgres-order:/data/postgres
+    expose:
+      - "5431"
+    ports:
+      - "5431:5431"
+    command: -p 5431
+    restart: always
+
   postgres-pgadmin:
     container_name: postgres-pgadmin
     image: dpage/pgadmin4
@@ -145,7 +146,7 @@ services:
       - zipkin
       - discovery-server
       - keycloak
-      - postgres
+      - postgresql
 #  customer-service:
 #    image: amatiangelo1990/20m2:customer-service
 #    container_name: customer-service
@@ -171,4 +172,3 @@ volumes:
 
 networks:
   mongodb_network:
-  postgresql:
