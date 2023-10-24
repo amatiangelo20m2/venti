@@ -92,8 +92,8 @@ services:
     volumes:
       - data:/data
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=mongodbuser20m2
-      - MONGO_INITDB_ROOT_PASSWORD=mongodbpassword20m2
+      - MONGO_INITDB_ROOT_USERNAME=mongo
+      - MONGO_INITDB_ROOT_PASSWORD=3QuHPncVSq
       - MONGO_INITDB_DATABASE=ventimetri_mongo_db
     networks:
       - mongodb_network
@@ -132,24 +132,24 @@ services:
       - zipkin
       - discovery-server
       - keycloak
-  customer-service:
-    image: amatiangelo1990/20m2:customer-service
-    container_name: customer-service
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY= TRACE
-    depends_on:
-      - zipkin
-      - discovery-server
-  inventory-service:
-    image: amatiangelo1990/20m2:inventory-service
-    container_name: inventory-service
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY= TRACE
-    depends_on:
-      - zipkin
-      - discovery-server
+#  customer-service:
+#    image: amatiangelo1990/20m2:customer-service
+#    container_name: customer-service
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=docker
+#      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY= TRACE
+#    depends_on:
+#      - zipkin
+#      - discovery-server
+#  inventory-service:
+#    image: amatiangelo1990/20m2:inventory-service
+#    container_name: inventory-service
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=docker
+#      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY= TRACE
+#    depends_on:
+#      - zipkin
+#      - discovery-server
 
 volumes:
   data: {}
