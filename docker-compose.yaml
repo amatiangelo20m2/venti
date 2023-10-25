@@ -74,7 +74,6 @@ services:
       - "5431:5431"
     command: -p 5431
     restart: always
-
   postgres-pgadmin:
     container_name: postgres-pgadmin
     image: dpage/pgadmin4
