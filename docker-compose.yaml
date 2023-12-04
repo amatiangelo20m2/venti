@@ -110,39 +110,39 @@ services:
 #      - ME_CONFIG_MONGODB_SERVER=mongodb
 #    networks:
 #      - mongodb_network
-  discovery-server:
-    image: amatiangelo1990/20m2:discovery-server
-    container_name: discovery-server
-    ports:
-      - "8761:8761"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-    depends_on:
-      - zipkin
-  api-gw:
-    image: amatiangelo1990/20m2:api-gw
-    container_name: api-gw
-    ports:
-      - "8080:8080"
-    expose:
-      - "8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY= TRACE
-    depends_on:
-      - zipkin
-      - discovery-server
-      - keycloak
-  user-service:
-    image: amatiangelo1990/20m2:user-service
-    container_name: user-service
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-#      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5431/postgres
-    depends_on:
-      - zipkin
-      - discovery-server
-      - postgres
+#  discovery-server:
+#    image: amatiangelo1990/20m2:discovery-server
+#    container_name: discovery-server
+#    ports:
+#      - "8761:8761"
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=docker
+#    depends_on:
+#      - zipkin
+#  api-gw:
+#    image: amatiangelo1990/20m2:api-gw
+#    container_name: api-gw
+#    ports:
+#      - "8080:8080"
+#    expose:
+#      - "8080"
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=docker
+#      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY= TRACE
+#    depends_on:
+#      - zipkin
+#      - discovery-server
+#      - keycloak
+#  user-service:
+#    image: amatiangelo1990/20m2:user-service
+#    container_name: user-service
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=docker
+##      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5431/postgres
+#    depends_on:
+#      - zipkin
+#      - discovery-server
+#      - postgres
 #  customer-service:
 #    image: amatiangelo1990/20m2:customer-service
 #    container_name: customer-service

@@ -12,7 +12,8 @@ public class SecurityConfig {
 
   @Bean
   public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity serverHttpSecurity){
-    // all request made to retrieve static resources (like the one for the eureka html and css static resources) are allowed without authentication
+    // all request made to retrieve static resources
+    // (like the one for the eureka html and css static resources) are allowed without authentication
     serverHttpSecurity
       .csrf()
       .disable()
