@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Entity(name = "UserEntity")
 @Table(name = "USER_ENTITY",
         uniqueConstraints=
-        @UniqueConstraint(columnNames={"user_id", "email"}))
+        @UniqueConstraint(columnNames={"id", "email"}))
 @NoArgsConstructor
 @Data
 @AllArgsConstructor
@@ -18,23 +18,21 @@ public class UserEntity {
 
         @Id
         @SequenceGenerator(
-                name = "user_id",
-                sequenceName = "user_id",
+                name = "id",
+                sequenceName = "id",
                 allocationSize = 1
         )
         @GeneratedValue(
                 strategy = GenerationType.SEQUENCE,
-                generator = "user_id"
+                generator = "id"
         )
         @Column(
-                name = "user_id",
+                name = "id",
                 updatable = false
         )
-        private long userId;
-
+        private long id;
         private String name;
         private String lastname;
-
         @Column(
                 name = "phone",
                 unique = true
@@ -46,5 +44,7 @@ public class UserEntity {
                 nullable = false
         )
         private String email;
+        private String avatar;
+        private ProfileStatus profileStatus;
 
 }

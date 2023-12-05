@@ -5,7 +5,6 @@ import com.venticonsulting.userservice.entity.dto.UserCreateEntity;
 import com.venticonsulting.userservice.entity.dto.UserResponseEntity;
 import com.venticonsulting.userservice.service.UserService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,18 +18,18 @@ public class UserController {
 
     @PostMapping(path = "/save")
     @ResponseStatus(HttpStatus.CREATED)
-    public long save(@RequestBody UserCreateEntity userCreateEntity) { return userService.addUser(userCreateEntity); }
+    public UserResponseEntity save(@RequestBody UserCreateEntity userCreateEntity) { return userService.addUser(userCreateEntity); }
 
     @GetMapping(path = "/retrieve")
     @ResponseStatus(HttpStatus.OK)
-    public UserResponseEntity retrieveUserById(@RequestParam long id){
-        return userService.retrieveUserById(id);
+    public UserResponseEntity retrieveUserByEmail(@RequestParam String email){
+        return userService.retrieveUserByEmail(email);
     }
 
     @DeleteMapping(path = "/delete")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteUserById(@RequestParam long id){
-        userService.deleteUserById(id);
+    public void deleteUserById(@RequestParam String email){
+        userService.deleteUserByEmail(email);
     }
 
     @PutMapping(path = "/update")
@@ -38,4 +37,6 @@ public class UserController {
     public void updateUser(@RequestBody UpdateUserEntity userEntity){
         userService.updateUser(userEntity);
     }
+
+
 }

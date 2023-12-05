@@ -14,4 +14,5 @@ public class UserCreateEntity {
     private String lastname;
     private String phone;
     private String email;
+    private String avatar;
 }

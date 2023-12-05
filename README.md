@@ -35,11 +35,8 @@ clientId: 20m2keycloak
 accessType: Confidential
 
 Service Accounts Enabled: ON
-
 Standard Flow Enabled: OFF
-
 Direct Access Grants Enabled: OFF
-
 
 Copiare il codice segreto dal tab Credentials (sul client che hai creato) #CODICE_SEGRETO
 

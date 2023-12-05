@@ -1,4 +1,4 @@
-package com.venticonsulting.apigateway.config;
+package com.ventimetriconsulting.apigateway.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -13,8 +13,8 @@
         <outputRelativeToContentRoot value="true" />
         <module name="inventory-service" />
         <module name="discovery-server" />
-        <module name="api-gw" />
         <module name="customer-service" />
+        <module name="api-gateway" />
         <module name="product-service" />
         <module name="order-service" />
         <module name="user-service" />
@@ -22,11 +22,13 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="api-geteway" target="17" />
+      <module name="api-gw" target="17" />
       <module name="environment-composer" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="api-gateway" options="-parameters" />
       <module name="api-geteway" options="" />
       <module name="api-gw" options="-parameters" />
       <module name="customer-service" options="-parameters" />

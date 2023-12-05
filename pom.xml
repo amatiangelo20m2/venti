@@ -35,6 +35,7 @@
     <module>product-service</module>
     <module>order-service</module>
     <module>user-service</module>
+    <module>api-gateway</module>
   </modules>
 
   <dependencyManagement>
