@@ -28,11 +28,11 @@ jobs:
         MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Build and Push 20m2 microservice api-gateway
-      run: mvn package dockerfile:push --file api-gateway/pom.xml
-      env:
-        MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+#    - name: Build and Push 20m2 microservice api-gateway
+#      run: mvn package dockerfile:push --file api-gateway/pom.xml
+#      env:
+#        MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+#        MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Build and Push 20m2 microservice user-service
       run: mvn package dockerfile:push --file user-service/pom.xml
