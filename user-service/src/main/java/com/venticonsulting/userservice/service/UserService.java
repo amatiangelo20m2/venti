@@ -5,6 +5,7 @@ import com.venticonsulting.userservice.entity.UserEntity;
 import com.venticonsulting.userservice.entity.dto.UpdateUserEntity;
 import com.venticonsulting.userservice.entity.dto.UserCreateEntity;
 import com.venticonsulting.userservice.entity.dto.UserResponseEntity;
+import com.venticonsulting.userservice.exception.UserAlreadyExistException;
 import com.venticonsulting.userservice.exception.UserNotFoundException;
 import com.venticonsulting.userservice.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -24,6 +25,11 @@ public class UserService {
     @Transactional
     public UserResponseEntity addUser(UserCreateEntity userCreateEntity) {
         log.info("Save user: " + userCreateEntity.toString());
+
+        if(userRepository.findByEmail(userCreateEntity.getEmail()).isPresent()){
+            log.error("Exception saving user. Mail " + userCreateEntity.getEmail() + " is already been used.");
+            throw new UserAlreadyExistException("Mail " + userCreateEntity.getEmail() + " is already been used");
+        }
         UserEntity userEntityBuild = UserEntity
                 .builder()
                 .name(userCreateEntity.getName())

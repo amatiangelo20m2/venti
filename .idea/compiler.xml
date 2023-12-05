@@ -13,6 +13,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="inventory-service" />
         <module name="discovery-server" />
+        <module name="api-gw-jwt" />
         <module name="customer-service" />
         <module name="api-gateway" />
         <module name="product-service" />
@@ -28,9 +29,10 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="api-gateway" options="" />
+      <module name="api-gateway" options="-parameters" />
       <module name="api-geteway" options="" />
       <module name="api-gw" options="-parameters" />
+      <module name="api-gw-jwt" options="-parameters" />
       <module name="customer-service" options="-parameters" />
       <module name="discovery-server" options="-parameters" />
       <module name="environment-composer" options="-parameters" />

@@ -28,14 +28,14 @@
   </properties>
 
   <modules>
-    <module>api-gw</module>
+    <module>api-gateway</module>
+    <module>api-gw-jwt</module>
     <module>discovery-server</module>
     <module>inventory-service</module>
     <module>customer-service</module>
     <module>product-service</module>
     <module>order-service</module>
     <module>user-service</module>
-    <module>api-gateway</module>
   </modules>
 
   <dependencyManagement>

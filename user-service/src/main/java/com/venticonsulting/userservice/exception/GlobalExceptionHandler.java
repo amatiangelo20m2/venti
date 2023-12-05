@@ -15,4 +15,11 @@ public class GlobalExceptionHandler {
     public String handleUserNotFoundException(UserNotFoundException exception) {
         return exception.getMessage();
     }
+
+    @ExceptionHandler(UserAlreadyExistException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public String handleUserNotFoundException(UserAlreadyExistException exception) {
+        return exception.getMessage();
+    }
 }

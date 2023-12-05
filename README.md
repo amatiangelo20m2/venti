@@ -52,3 +52,12 @@ Client Secret: #CODICE_SEGRETO (copiato dalla dash di keycloak)
 
 
 ############### Per provarlo su postman FINE
+
+Esposizione servizi
+
+GET http://localhost:8088/ventimetriuser/api/user/retrieve?email=string
+
+Swagger HTML
+
+http://localhost:8088/ventimetriuser/swagger-ui/index.html
+http://localhost:8088/ventimetriuser/api/user/retrieve?email=string
