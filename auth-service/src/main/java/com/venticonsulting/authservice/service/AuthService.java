@@ -3,18 +3,18 @@ package com.venticonsulting.authservice.service;
 import com.venticonsulting.authservice.entity.ProfileStatus;
 import com.venticonsulting.authservice.entity.UserEntity;
 import com.venticonsulting.authservice.entity.dto.*;
-import com.venticonsulting.authservice.exception.BadCredentials;
+import com.venticonsulting.authservice.exception.BadCredentialsException;
 import com.venticonsulting.authservice.exception.UserAlreadyExistException;
 import com.venticonsulting.authservice.exception.UserNotFoundException;
 import com.venticonsulting.authservice.repository.AuthRepository;
 import com.venticonsulting.authservice.service.jwt.JwtTokenUtils;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -22,7 +22,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class AuthService {
 
-    private AuthRepository userRepository;
+    private final AuthRepository userRepository;
 
     @Transactional
     public AuthResponseEntity signUp(Credentials credentials) {
@@ -56,7 +56,7 @@ public class AuthService {
                         .avatar(userEntity.getAvatar())
                         .status(userEntity.getProfileStatus())
                         .build())
-                .accessToken(generateNewJWTToken(userEntity.getEmail()))
+                .accessToken(generateNewJWTToken(credentials.getEmail()))
                 .build();
     }
 
@@ -143,12 +143,12 @@ public class AuthService {
                                 .avatar(existingUserOpt.get().getAvatar())
                                 .status(existingUserOpt.get().getProfileStatus())
                                 .build())
-                        .accessToken(generateNewJWTToken(existingUserOpt.get().getEmail()))
+                        .accessToken(generateNewJWTToken(credentials.getEmail()))
                         .build();
 
             }else{
                 log.error("Password errata per mail [" + credentials.getEmail() + "]");
-                throw new BadCredentials("Password errata per mail [" + credentials.getEmail() + "]");
+                throw new BadCredentialsException("Password errata per mail [" + credentials.getEmail() + "]");
             }
         }else{
             log.error("Utente non trovato con la seguente mail [" + credentials.getEmail() + "]");
@@ -157,5 +157,41 @@ public class AuthService {
     }
     private String generateNewJWTToken(String user) {
         return JwtTokenUtils.generateToken(user, 3600000);
+    }
+
+    public AuthResponseEntity signInWithAccessToken(String accessToken) {
+        log.info("Token: " + accessToken);
+
+        Jws<Claims> claimsJws = JwtTokenUtils.parseToken(accessToken);
+        Claims claims = claimsJws.getBody();
+
+
+        for (String key : claims.keySet()) {
+            Object value = claims.get(key);
+            log.info("Claim key: " + value);
+        }
+        String username = claims.get("username", String.class);
+        String role = claims.get("role", String.class);
+
+        Optional<UserEntity> existingUserOpt = userRepository.findByEmail(username);
+
+        if(existingUserOpt.isPresent()){
+            return AuthResponseEntity.builder()
+                    .user(UserResponseEntity
+                            .builder()
+                            .email(existingUserOpt.get().getEmail())
+                            .lastname(existingUserOpt.get().getLastname())
+                            .name(existingUserOpt.get().getName())
+                            .phone(existingUserOpt.get().getPhone())
+                            .avatar(existingUserOpt.get().getAvatar())
+                            .status(existingUserOpt.get().getProfileStatus())
+                            .build())
+                    .accessToken(generateNewJWTToken(existingUserOpt.get().getEmail()))
+                    .build();
+        }else{
+            log.error("Utente non trovato con la seguente mail [" + username + "] dopo autenticatione con jwt");
+            throw new UserNotFoundException("Utente non trovato con la seguente mail [" + username + "] dopo autenticatione con jwt");
+        }
+
     }
 }

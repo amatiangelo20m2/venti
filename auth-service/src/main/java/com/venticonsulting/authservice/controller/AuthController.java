@@ -30,6 +30,12 @@ public class AuthController {
         return userService.signIn(credentials);
     }
 
+    @PostMapping(path = "/sign-in-with-token")
+    @ResponseStatus(HttpStatus.OK)
+    public AuthResponseEntity signInWithToken(@RequestBody String accessToken){
+        return userService.signInWithAccessToken(accessToken);
+    }
+
     @DeleteMapping(path = "/delete")
     @ResponseStatus(HttpStatus.OK)
     public void deleteUserByEmail(@RequestParam String email){

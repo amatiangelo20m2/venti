@@ -7,6 +7,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 @Entity(name = "UserEntity")
 @Table(name = "USER_ENTITY", uniqueConstraints=@UniqueConstraint(columnNames={"id", "email"}))
 @NoArgsConstructor
@@ -43,19 +47,15 @@ public class UserEntity {
                 nullable = false
         )
         private String email;
+        private String userid;
         private String avatar;
         private ProfileStatus profileStatus;
         @Column(length = 60)
         private String password;
 
-        public void setPassword(String password) {
-                this.password = BCrypt.hashpw(password, BCrypt.gensalt());
-        }
-
         public static String encryptPassword(String password) {
                 return BCrypt.hashpw(password, BCrypt.gensalt());
         }
-        // Method to check if the entered password matches the stored hashed password
         public boolean checkPassword(String enteredPassword) {
                 return BCrypt.checkpw(enteredPassword, this.password);
         }

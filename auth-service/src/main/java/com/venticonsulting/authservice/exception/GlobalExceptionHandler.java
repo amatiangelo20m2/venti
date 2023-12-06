@@ -23,10 +23,17 @@ public class GlobalExceptionHandler {
         return exception.getMessage();
     }
 
-    @ExceptionHandler(BadCredentials.class)
+    @ExceptionHandler(BadCredentialsException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ResponseBody
-    public String handleBadCredentialsException(BadCredentials exception) {
+    public String handleBadCredentialsException(BadCredentialsException exception) {
+        return exception.getMessage();
+    }
+
+    @ExceptionHandler(ParseTokenException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseBody
+    public String handleBadCredentialsException(ParseTokenException exception) {
         return exception.getMessage();
     }
 }
