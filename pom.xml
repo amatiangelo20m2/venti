@@ -29,9 +29,9 @@
 
   <modules>
     <module>api-gateway</module>
-    <module>api-gw-jwt</module>
+    <module>api-gw</module>
     <module>discovery-server</module>
-    <module>inventory-service</module>
+      <module>inventory-service</module>
     <module>customer-service</module>
     <module>product-service</module>
     <module>order-service</module>

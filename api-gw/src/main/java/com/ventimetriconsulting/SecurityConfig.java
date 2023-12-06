@@ -1,4 +1,4 @@
-//package com.ventimetriconsulting;
+package com.ventimetriconsulting;//package com.ventimetriconsulting;
 //
 //import org.springframework.context.annotation.Bean;
 //import org.springframework.context.annotation.Configuration;
