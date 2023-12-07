@@ -11,7 +11,6 @@ import lombok.ToString;
 @ToString
 public class CustomerCreateEntity {
     private String name;
-    private String lastname;
     private String phone;
     private String email;
     private boolean dataTreatment;

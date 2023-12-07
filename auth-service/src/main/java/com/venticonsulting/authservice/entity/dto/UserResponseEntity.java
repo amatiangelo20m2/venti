@@ -10,7 +10,6 @@ import lombok.Data;
 @Builder
 public class UserResponseEntity {
     private String name;
-    private String lastname;
     private String phone;
     private String email;
     private String avatar;

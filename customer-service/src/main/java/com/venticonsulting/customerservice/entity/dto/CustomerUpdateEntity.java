@@ -10,7 +10,6 @@ import lombok.Data;
 public class CustomerUpdateEntity {
     private long userId;
     private String name;
-    private String lastname;
     private String phone;
     private String email;
     private boolean dataTreatment;

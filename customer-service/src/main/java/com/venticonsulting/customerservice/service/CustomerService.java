@@ -27,7 +27,6 @@ public class CustomerService {
         CustomerEntity customerEntity = CustomerEntity
                 .builder()
                 .name(userCreateEntity.getName())
-                .lastname(userCreateEntity.getLastname())
                 .phone(userCreateEntity.getPhone())
                 .email(userCreateEntity.getEmail())
                 .dataTreatment(userCreateEntity.isDataTreatment())
@@ -61,10 +60,6 @@ public class CustomerService {
             existingUser.setName(customerUpdateEntity.getName());
         }
 
-        if (customerUpdateEntity.getLastname() != null) {
-            existingUser.setLastname(customerUpdateEntity.getLastname());
-        }
-
         if (customerUpdateEntity.getPhone() != null) {
             existingUser.setPhone(customerUpdateEntity.getPhone());
         }
@@ -83,7 +78,6 @@ public class CustomerService {
             return CustomerResponseEntity
                     .builder()
                     .email(userOpt.get().getEmail())
-                    .lastname(userOpt.get().getLastname())
                     .name(userOpt.get().getName())
                     .phone(userOpt.get().getPhone())
                     .dataTreatment(userOpt.get().isDataTreatment())

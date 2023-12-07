@@ -30,7 +30,6 @@ public class UserEntity {
         )
         private long id;
         private String name;
-        private String lastname;
         @Column(
                 name = "phone",
                 unique = true

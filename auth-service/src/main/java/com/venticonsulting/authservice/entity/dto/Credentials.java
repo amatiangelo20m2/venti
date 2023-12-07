@@ -8,6 +8,9 @@ import lombok.Data;
 @Data
 @Builder
 public class Credentials {
+
+    private String name;
     private String email;
     private String password;
+    private String company;
 }

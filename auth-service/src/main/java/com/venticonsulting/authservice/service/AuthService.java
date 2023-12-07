@@ -39,9 +39,8 @@ public class AuthService {
         }
         UserEntity userEntityBuild = UserEntity
                 .builder()
-                .name("")
-                .lastname("")
-                .phone("")
+                .name(credentials.getName())
+                .phone(null)
                 .password(passwordEncoder.encode(credentials.getPassword()))
                 .email(credentials.getEmail())
                 .profileStatus(ProfileStatus.ONLINE)
@@ -55,7 +54,6 @@ public class AuthService {
                 .user(UserResponseEntity
                         .builder()
                         .email(userEntity.getEmail())
-                        .lastname(userEntity.getLastname())
                         .name(userEntity.getName())
                         .phone(userEntity.getPhone())
                         .avatar(userEntity.getAvatar())
@@ -87,10 +85,6 @@ public class AuthService {
             existingUser.setName(updateUserEntity.getName());
         }
 
-        if (updateUserEntity.getLastname() != null) {
-            existingUser.setLastname(updateUserEntity.getLastname());
-        }
-
         if (updateUserEntity.getPhone() != null) {
             existingUser.setPhone(updateUserEntity.getPhone());
         }
@@ -109,7 +103,6 @@ public class AuthService {
             return UserResponseEntity
                     .builder()
                     .email(userOpt.get().getEmail())
-                    .lastname(userOpt.get().getLastname())
                     .name(userOpt.get().getName())
                     .phone(userOpt.get().getPhone())
                     .status(userOpt.get().getProfileStatus())
@@ -142,7 +135,6 @@ public class AuthService {
                         .user(UserResponseEntity
                                 .builder()
                                 .email(existingUserOpt.get().getEmail())
-                                .lastname(existingUserOpt.get().getLastname())
                                 .name(existingUserOpt.get().getName())
                                 .phone(existingUserOpt.get().getPhone())
                                 .avatar(existingUserOpt.get().getAvatar())
@@ -172,7 +164,6 @@ public class AuthService {
                     .user(UserResponseEntity
                             .builder()
                             .email(existingUserOpt.get().getEmail())
-                            .lastname(existingUserOpt.get().getLastname())
                             .name(existingUserOpt.get().getName())
                             .phone(existingUserOpt.get().getPhone())
                             .avatar(existingUserOpt.get().getAvatar())
