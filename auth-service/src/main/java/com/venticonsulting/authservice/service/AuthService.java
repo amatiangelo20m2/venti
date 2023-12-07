@@ -1,5 +1,6 @@
 package com.venticonsulting.authservice.service;
 
+import com.venticonsulting.authservice.entity.JwtEntity;
 import com.venticonsulting.authservice.entity.ProfileStatus;
 import com.venticonsulting.authservice.entity.UserEntity;
 import com.venticonsulting.authservice.entity.dto.*;
@@ -7,12 +8,12 @@ import com.venticonsulting.authservice.exception.BadCredentialsException;
 import com.venticonsulting.authservice.exception.UserAlreadyExistException;
 import com.venticonsulting.authservice.exception.UserNotFoundException;
 import com.venticonsulting.authservice.repository.AuthRepository;
-import com.venticonsulting.authservice.service.jwt.JwtTokenUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -23,6 +24,10 @@ import java.util.Optional;
 public class AuthService {
 
     private final AuthRepository userRepository;
+
+    private PasswordEncoder passwordEncoder;
+
+    private JwtService jwtService;
 
     @Transactional
     public AuthResponseEntity signUp(Credentials credentials) {
@@ -37,7 +42,7 @@ public class AuthService {
                 .name("")
                 .lastname("")
                 .phone("")
-                .password(UserEntity.encryptPassword(credentials.getPassword()))
+                .password(passwordEncoder.encode(credentials.getPassword()))
                 .email(credentials.getEmail())
                 .profileStatus(ProfileStatus.ONLINE)
                 .avatar("")
@@ -56,7 +61,7 @@ public class AuthService {
                         .avatar(userEntity.getAvatar())
                         .status(userEntity.getProfileStatus())
                         .build())
-                .accessToken(generateNewJWTToken(credentials.getEmail()))
+                .accessToken(jwtService.generateToken(credentials.getEmail()))
                 .build();
     }
 
@@ -132,7 +137,7 @@ public class AuthService {
 
         Optional<UserEntity> existingUserOpt = userRepository.findByEmail(credentials.getEmail());
         if (existingUserOpt.isPresent()) {
-            if (existingUserOpt.get().checkPassword(credentials.getPassword())) {
+            if (passwordEncoder.matches(credentials.getPassword(), existingUserOpt.get().getPassword())) {
                 return AuthResponseEntity.builder()
                         .user(UserResponseEntity
                                 .builder()
@@ -143,7 +148,7 @@ public class AuthService {
                                 .avatar(existingUserOpt.get().getAvatar())
                                 .status(existingUserOpt.get().getProfileStatus())
                                 .build())
-                        .accessToken(generateNewJWTToken(credentials.getEmail()))
+                        .accessToken(jwtService.generateToken(credentials.getEmail()))
                         .build();
 
             }else{
@@ -155,25 +160,12 @@ public class AuthService {
             throw new UserNotFoundException("Utente non trovato con la seguente mail [" + credentials.getEmail() + "]");
         }
     }
-    private String generateNewJWTToken(String user) {
-        return JwtTokenUtils.generateToken(user, 3600000);
-    }
-
-    public AuthResponseEntity signInWithAccessToken(String accessToken) {
-        log.info("Token: " + accessToken);
-
-        Jws<Claims> claimsJws = JwtTokenUtils.parseToken(accessToken);
-        Claims claims = claimsJws.getBody();
 
 
-        for (String key : claims.keySet()) {
-            Object value = claims.get(key);
-            log.info("Claim key: " + value);
-        }
-        String username = claims.get("username", String.class);
-        String role = claims.get("role", String.class);
+    public AuthResponseEntity signInWithAccessToken(JwtEntity accessToken) {
+        log.info("Token: " + accessToken.getAccessToken());
 
-        Optional<UserEntity> existingUserOpt = userRepository.findByEmail(username);
+        Optional<UserEntity> existingUserOpt = userRepository.findByEmail(jwtService.extractUsername(accessToken.getAccessToken()));
 
         if(existingUserOpt.isPresent()){
             return AuthResponseEntity.builder()
@@ -186,11 +178,11 @@ public class AuthService {
                             .avatar(existingUserOpt.get().getAvatar())
                             .status(existingUserOpt.get().getProfileStatus())
                             .build())
-                    .accessToken(generateNewJWTToken(existingUserOpt.get().getEmail()))
+                    .accessToken(jwtService.generateToken(existingUserOpt.get().getEmail()))
                     .build();
         }else{
-            log.error("Utente non trovato con la seguente mail [" + username + "] dopo autenticatione con jwt");
-            throw new UserNotFoundException("Utente non trovato con la seguente mail [" + username + "] dopo autenticatione con jwt");
+            log.error("Utente non trovato con la seguente mail [" + jwtService.extractUsername(accessToken.getAccessToken()) + "] dopo autenticatione con jwt");
+            throw new UserNotFoundException("Utente non trovato con la seguente mail [" + jwtService.extractUsername(accessToken.getAccessToken()) + "] dopo autenticatione con jwt");
         }
 
     }

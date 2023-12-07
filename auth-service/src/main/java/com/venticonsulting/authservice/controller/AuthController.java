@@ -1,5 +1,6 @@
 package com.venticonsulting.authservice.controller;
 
+import com.venticonsulting.authservice.entity.JwtEntity;
 import com.venticonsulting.authservice.entity.dto.*;
 import com.venticonsulting.authservice.service.AuthService;
 import lombok.AllArgsConstructor;
@@ -32,8 +33,8 @@ public class AuthController {
 
     @PostMapping(path = "/sign-in-with-token")
     @ResponseStatus(HttpStatus.OK)
-    public AuthResponseEntity signInWithToken(@RequestBody String accessToken){
-        return userService.signInWithAccessToken(accessToken);
+    public AuthResponseEntity signInWithToken(@RequestBody JwtEntity jwtEntity){
+        return userService.signInWithAccessToken(jwtEntity);
     }
 
     @DeleteMapping(path = "/delete")

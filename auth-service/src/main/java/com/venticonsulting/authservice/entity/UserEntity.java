@@ -5,11 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.mindrot.jbcrypt.BCrypt;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 @Entity(name = "UserEntity")
 @Table(name = "USER_ENTITY", uniqueConstraints=@UniqueConstraint(columnNames={"id", "email"}))
@@ -53,10 +48,4 @@ public class UserEntity {
         @Column(length = 60)
         private String password;
 
-        public static String encryptPassword(String password) {
-                return BCrypt.hashpw(password, BCrypt.gensalt());
-        }
-        public boolean checkPassword(String enteredPassword) {
-                return BCrypt.checkpw(enteredPassword, this.password);
-        }
 }

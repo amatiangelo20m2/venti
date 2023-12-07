@@ -65,3 +65,9 @@ http://localhost:<port>/ventimetriauth/v3/api-docs
 Swagger editor per generare codice client
 
 https://editor.swagger.io/
+
+
+JWT - Security api
+
+Ho generato la chiave di crittografia a 256 bit qui
+https://seanwasere.com/generate-random-hex/
