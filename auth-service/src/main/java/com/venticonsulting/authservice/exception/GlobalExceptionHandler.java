@@ -1,5 +1,12 @@
 package com.venticonsulting.authservice.exception;
 
+import com.venticonsulting.authservice.exception.customexceptions.BadCredentialsException;
+import com.venticonsulting.authservice.exception.customexceptions.ParseTokenException;
+import com.venticonsulting.authservice.exception.customexceptions.UserAlreadyExistException;
+import com.venticonsulting.authservice.exception.customexceptions.UserNotFoundException;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

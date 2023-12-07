@@ -1,4 +1,4 @@
-package com.venticonsulting.authservice.exception;
+package com.venticonsulting.authservice.exception.customexceptions;
 
 public class UserAlreadyExistException extends RuntimeException {
     public UserAlreadyExistException(String message) {
