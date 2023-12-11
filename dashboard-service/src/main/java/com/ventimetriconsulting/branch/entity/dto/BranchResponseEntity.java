@@ -1,4 +1,4 @@
-package com.ventimetriconsulting.entity.dto;
+package com.ventimetriconsulting.branch.entity.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.ToString;
 @Data
 @Builder
 @ToString
-public class BranchCreationEntity {
+public class BranchResponseEntity {
 
     private String name;
     private String address;
@@ -17,5 +17,6 @@ public class BranchCreationEntity {
     private String phone;
     private String vat;
     private BranchType type;
-    private String userid;
+    private String branchCode;
+
 }

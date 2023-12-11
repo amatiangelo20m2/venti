@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Entity(name = "UserEntity")
-@Table(name = "USER_ENTITY", uniqueConstraints=@UniqueConstraint(columnNames={"id", "email"}))
+@Table(name = "USER_ENTITY", uniqueConstraints=@UniqueConstraint(columnNames={"id", "email", "user_code"}))
 @NoArgsConstructor
 @Data
 @AllArgsConstructor
@@ -43,6 +43,11 @@ public class UserEntity {
                 nullable = false
         )
         private String email;
+        @Column(
+                name = "user_code",
+                unique = true,
+                length = 10
+        )
         private String userCode;
         private String avatar;
         private ProfileStatus profileStatus;

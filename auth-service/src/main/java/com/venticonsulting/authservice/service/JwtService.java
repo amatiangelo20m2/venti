@@ -44,14 +44,11 @@ public class JwtService {
         return extractExpiration(token).before(new Date());
     }
 
-//    public Boolean validateToken(String token, UserDetails userDetails) {
-//        final String username = extractUsername(token);
-//        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-//    }
 
-
-    public String generateToken(String userName){
+    public String generateToken(String userName, String userCode){
         Map<String,Object> claims=new HashMap<>();
+        claims.put("userCode",userCode);
+
         return createToken(claims,userName);
     }
 

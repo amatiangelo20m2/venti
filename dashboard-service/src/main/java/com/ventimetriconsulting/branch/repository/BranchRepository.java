@@ -1,6 +1,6 @@
-package com.ventimetriconsulting.repository;
+package com.ventimetriconsulting.branch.repository;
 
-import com.ventimetriconsulting.entity.Branch;
+import com.ventimetriconsulting.branch.entity.Branch;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

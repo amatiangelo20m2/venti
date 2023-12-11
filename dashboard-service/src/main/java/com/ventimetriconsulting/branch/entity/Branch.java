@@ -1,6 +1,6 @@
-package com.ventimetriconsulting.entity;
+package com.ventimetriconsulting.branch.entity;
 
-import com.ventimetriconsulting.entity.dto.BranchType;
+import com.ventimetriconsulting.branch.entity.dto.BranchType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,9 +35,8 @@ public class Branch {
 
     @Column(
             name = "branch_code",
-
             unique = true,
-            length = 8
+            length = 10
     )
     private String branchCode;
     private String name = "";

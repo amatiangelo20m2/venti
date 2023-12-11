@@ -60,7 +60,8 @@ public class AuthService {
                         .userCode(userEntity.getUserCode())
                         .status(userEntity.getProfileStatus())
                         .build())
-                .accessToken(jwtService.generateToken(credentials.getEmail()))
+
+                .accessToken(jwtService.generateToken(credentials.getEmail(), userEntity.getUserCode()))
                 .build();
     }
 
@@ -143,7 +144,7 @@ public class AuthService {
                                 .status(existingUserOpt.get().getProfileStatus())
                                 .userCode(existingUserOpt.get().getUserCode())
                                 .build())
-                        .accessToken(jwtService.generateToken(credentials.getEmail()))
+                        .accessToken(jwtService.generateToken(credentials.getEmail(), existingUserOpt.get().getUserCode()))
                         .build();
 
             }else{
@@ -173,7 +174,7 @@ public class AuthService {
                             .status(existingUserOpt.get().getProfileStatus())
                             .userCode(existingUserOpt.get().getUserCode())
                             .build())
-                    .accessToken(jwtService.generateToken(existingUserOpt.get().getEmail()))
+                    .accessToken(jwtService.generateToken(existingUserOpt.get().getEmail(), existingUserOpt.get().getUserCode()))
                     .build();
         }else{
             log.error("Utente non trovato con la seguente mail [" + jwtService.extractUsername(accessToken.getAccessToken()) + "] dopo autenticatione con jwt");
