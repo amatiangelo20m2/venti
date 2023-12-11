@@ -14,4 +14,5 @@ public class UserResponseEntity {
     private String email;
     private String avatar;
     private ProfileStatus status;
+    private String userCode;
 }

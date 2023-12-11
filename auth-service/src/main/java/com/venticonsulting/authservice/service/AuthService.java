@@ -2,6 +2,7 @@ package com.venticonsulting.authservice.service;
 
 import com.venticonsulting.authservice.entity.JwtEntity;
 import com.venticonsulting.authservice.entity.ProfileStatus;
+import com.venticonsulting.authservice.entity.SignInMethod;
 import com.venticonsulting.authservice.entity.UserEntity;
 import com.venticonsulting.authservice.entity.dto.*;
 import com.venticonsulting.authservice.exception.customexceptions.BadCredentialsException;
@@ -42,6 +43,7 @@ public class AuthService {
                 .password(passwordEncoder.encode(credentials.getPassword()))
                 .email(credentials.getEmail())
                 .profileStatus(ProfileStatus.ONLINE)
+                .signInMethod(SignInMethod.PASSWORD)
                 .avatar("")
                 .id(0)
                 .build();
@@ -55,6 +57,7 @@ public class AuthService {
                         .name(userEntity.getName())
                         .phone(userEntity.getPhone())
                         .avatar(userEntity.getAvatar())
+                        .userCode(userEntity.getUserCode())
                         .status(userEntity.getProfileStatus())
                         .build())
                 .accessToken(jwtService.generateToken(credentials.getEmail()))
@@ -105,6 +108,7 @@ public class AuthService {
                     .phone(userOpt.get().getPhone())
                     .status(userOpt.get().getProfileStatus())
                     .avatar(userOpt.get().getAvatar())
+                    .userCode(userOpt.get().getUserCode())
                     .build();
         }else{
             log.error("User not found with the following email [{}] ", email);
@@ -137,6 +141,7 @@ public class AuthService {
                                 .phone(existingUserOpt.get().getPhone())
                                 .avatar(existingUserOpt.get().getAvatar())
                                 .status(existingUserOpt.get().getProfileStatus())
+                                .userCode(existingUserOpt.get().getUserCode())
                                 .build())
                         .accessToken(jwtService.generateToken(credentials.getEmail()))
                         .build();
@@ -166,6 +171,7 @@ public class AuthService {
                             .phone(existingUserOpt.get().getPhone())
                             .avatar(existingUserOpt.get().getAvatar())
                             .status(existingUserOpt.get().getProfileStatus())
+                            .userCode(existingUserOpt.get().getUserCode())
                             .build())
                     .accessToken(jwtService.generateToken(existingUserOpt.get().getEmail()))
                     .build();

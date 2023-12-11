@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Entity(name = "UserEntity")
 @Table(name = "USER_ENTITY", uniqueConstraints=@UniqueConstraint(columnNames={"id", "email"}))
 @NoArgsConstructor
@@ -41,10 +43,20 @@ public class UserEntity {
                 nullable = false
         )
         private String email;
-        private String userid;
+        private String userCode;
         private String avatar;
         private ProfileStatus profileStatus;
         @Column(length = 60)
         private String password;
+        private SignInMethod signInMethod;
 
+        @PrePersist
+        public void generateUniqueCode() {
+                this.userCode = generateUniqueHexCode();
+        }
+
+        private String generateUniqueHexCode() {
+                String uuid = UUID.randomUUID().toString().replace("-", "");
+                return "C-" + uuid.substring(0, 8).toUpperCase();
+        }
 }

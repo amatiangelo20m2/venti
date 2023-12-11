@@ -57,6 +57,7 @@ public class JwtService {
 
     private String createToken(Map<String, Object> claims, String userName) {
         return Jwts.builder()
+                .setIssuer("auth-service")
                 .setClaims(claims)
                 .setSubject(userName)
                 .setIssuedAt(new Date(System.currentTimeMillis()))

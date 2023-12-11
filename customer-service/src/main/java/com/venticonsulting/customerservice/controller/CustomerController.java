@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(path = "/api/user")
+@RequestMapping(path = "/api/customer")
 //@CrossOrigin(origins = "*")
 @AllArgsConstructor
 public class CustomerController {
