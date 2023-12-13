@@ -1,5 +1,6 @@
 package com.ventimetriconsulting.branch.controller;
 
+import com.ventimetriconsulting.branch.entity.dto.BranchReservationConfiguration;
 import com.ventimetriconsulting.branch.service.BranchService;
 import com.ventimetriconsulting.branch.entity.dto.BranchCreationEntity;
 import com.ventimetriconsulting.branch.entity.dto.BranchResponseEntity;
@@ -19,8 +20,14 @@ public class BranchController {
     public BranchResponseEntity save(@RequestBody BranchCreationEntity branchCreationEntity) { return branchService.createBranch(branchCreationEntity); }
 
     @GetMapping(path = "/getbranchlist")
-    public List<BranchResponseEntity> branchResponseEntityList(@RequestParam String userCode){
-        return branchService.retrieveBranchesByUserCode(userCode);
+    public List<BranchResponseEntity> getbranchlist(@RequestParam String userCode){
+        return branchService.getBranchesByUserCode(userCode);
+    }
+
+    @GetMapping(path = "/branchconf")
+    public BranchReservationConfiguration getBranchReservationConfiguration(@RequestParam String branchCode) {
+
+        return branchService.retrieveBranchReservationInformation(branchCode);
 
     }
 }

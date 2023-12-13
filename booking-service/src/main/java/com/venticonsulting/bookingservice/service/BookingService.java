@@ -1,12 +1,12 @@
-package com.venticonsulting.customerservice.service;
+package com.venticonsulting.bookingservice.service;
 
-import com.venticonsulting.customerservice.entity.CustomerEntity;
-import com.venticonsulting.customerservice.entity.dto.CustomerCreateEntity;
-import com.venticonsulting.customerservice.entity.dto.CustomerResponseEntity;
-import com.venticonsulting.customerservice.entity.dto.CustomerUpdateEntity;
-import com.venticonsulting.customerservice.exception.CustomerAlreadyPresentException;
-import com.venticonsulting.customerservice.exception.CustomerNotFoundException;
-import com.venticonsulting.customerservice.repository.CustomerRepository;
+import com.venticonsulting.bookingservice.entity.Customer;
+import com.venticonsulting.bookingservice.entity.dto.CustomerCreateEntity;
+import com.venticonsulting.bookingservice.entity.dto.CustomerResponseEntity;
+import com.venticonsulting.bookingservice.entity.dto.CustomerUpdateEntity;
+import com.venticonsulting.bookingservice.exception.CustomerAlreadyPresentException;
+import com.venticonsulting.bookingservice.exception.CustomerNotFoundException;
+import com.venticonsulting.bookingservice.repository.BookingRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,14 +17,14 @@ import java.util.Optional;
 @Service
 @Slf4j
 @AllArgsConstructor
-public class CustomerService {
+public class BookingService {
 
-    private CustomerRepository customerRepository;
+    private BookingRepository bookingRepository;
 
     @Transactional
-    public CustomerEntity addCustomer(CustomerCreateEntity userCreateEntity) {
+    public Customer addCustomer(CustomerCreateEntity userCreateEntity) {
         log.info("Save Customer: " + userCreateEntity.toString());
-        CustomerEntity customerEntity = CustomerEntity
+        Customer customerEntity = Customer
                 .builder()
                 .name(userCreateEntity.getName())
                 .phone(userCreateEntity.getPhone())
@@ -32,10 +32,10 @@ public class CustomerService {
                 .dataTreatment(userCreateEntity.isDataTreatment())
                 .build();
 
-        if (customerRepository.findByPhone(userCreateEntity.getPhone()).isPresent()) {
+        if (bookingRepository.findByPhone(userCreateEntity.getPhone()).isPresent()) {
             throw new CustomerAlreadyPresentException("Phone number already in use : " + userCreateEntity.getPhone());
         } else {
-            return customerRepository.save(customerEntity);
+            return bookingRepository.save(customerEntity);
         }
     }
 
@@ -43,18 +43,18 @@ public class CustomerService {
     public void updateUser(CustomerUpdateEntity customerUpdateEntity) {
         log.info("Update customer with id {} : {}", customerUpdateEntity.getUserId(), customerUpdateEntity);
 
-        Optional<CustomerEntity> existingUserOpt = customerRepository.findById(customerUpdateEntity.getUserId());
+        Optional<Customer> existingUserOpt = bookingRepository.findById(customerUpdateEntity.getUserId());
 
         if (existingUserOpt.isPresent()) {
-            CustomerEntity existingUser = getUserEntity(customerUpdateEntity, existingUserOpt);
-            customerRepository.save(existingUser);
+            Customer existingUser = getUserEntity(customerUpdateEntity, existingUserOpt);
+            bookingRepository.save(existingUser);
         } else {
             throw new CustomerNotFoundException("Customer not found with the following id: " + customerUpdateEntity.getUserId());
         }
     }
 
-    private static CustomerEntity getUserEntity(CustomerUpdateEntity customerUpdateEntity, Optional<CustomerEntity> existingUserOpt) {
-        CustomerEntity existingUser = existingUserOpt.get();
+    private static Customer getUserEntity(CustomerUpdateEntity customerUpdateEntity, Optional<Customer> existingUserOpt) {
+        Customer existingUser = existingUserOpt.get();
 
         if (customerUpdateEntity.getName() != null) {
             existingUser.setName(customerUpdateEntity.getName());
@@ -73,7 +73,7 @@ public class CustomerService {
     public CustomerResponseEntity retrieveUserById(long id) {
         log.info("Retrieve customer by id : {}", id);
 
-        Optional<CustomerEntity> userOpt = customerRepository.findById(id);
+        Optional<Customer> userOpt = bookingRepository.findById(id);
         if(userOpt.isPresent()){
             return CustomerResponseEntity
                     .builder()
@@ -89,8 +89,8 @@ public class CustomerService {
 
     public void deleteUserById(long id) {
         log.info("Delete user by id : {}", id);
-        if(customerRepository.findById(id).isPresent()){
-            customerRepository.deleteById(id);
+        if(bookingRepository.findById(id).isPresent()){
+            bookingRepository.deleteById(id);
         }else{
             throw new CustomerNotFoundException("Customer not found with the following id: " + id);
         }

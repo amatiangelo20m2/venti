@@ -1,4 +1,4 @@
-package com.venticonsulting.customerservice.exception;
+package com.venticonsulting.bookingservice.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;

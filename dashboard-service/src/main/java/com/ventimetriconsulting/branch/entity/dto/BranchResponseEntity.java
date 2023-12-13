@@ -1,5 +1,7 @@
 package com.ventimetriconsulting.branch.entity.dto;
 
+import com.ventimetriconsulting.branch.entity.BranchConfiguration;
+import com.ventimetriconsulting.branch.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,5 +20,9 @@ public class BranchResponseEntity {
     private String vat;
     private BranchType type;
     private String branchCode;
+    private Role role;
+
+    private BranchConfiguration branchConfiguration;
+
 
 }

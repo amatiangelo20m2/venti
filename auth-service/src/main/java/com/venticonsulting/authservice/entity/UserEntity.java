@@ -62,6 +62,6 @@ public class UserEntity {
 
         private String generateUniqueHexCode() {
                 String uuid = UUID.randomUUID().toString().replace("-", "");
-                return "C-" + uuid.substring(0, 8).toUpperCase();
+                return "U" + uuid.substring(0, 9).toUpperCase();
         }
 }

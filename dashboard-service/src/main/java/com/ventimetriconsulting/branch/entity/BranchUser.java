@@ -30,10 +30,11 @@ public class BranchUser {
     )
     private long id;
 
-    @Column(
-            name = "branch_code"
-    )
-    private String branchCode;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "branch_code")
+    private Branch branch;
+
     @Column(
             name = "user_code"
     )

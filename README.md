@@ -71,3 +71,7 @@ JWT - Security api
 
 Ho generato la chiave di crittografia a 256 bit qui
 https://seanwasere.com/generate-random-hex/
+
+Waapi
+
+token - w5c6auybVHzNJZtyVSNe3C1uGAxtvzoaaAeyhmYia3455892

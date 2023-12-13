@@ -3,6 +3,7 @@ package com.ventimetriconsulting.branch.entity;
 import com.ventimetriconsulting.branch.entity.dto.BranchType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Cascade;
 
 import java.util.UUID;
 
@@ -49,6 +50,12 @@ public class Branch {
     private String vat = "";
     @Enumerated
     private BranchType type;
+
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "branch_config_id", referencedColumnName = "branch_config_id")
+    private BranchConfiguration branchConfiguration;
+
     @PrePersist
     public void generateUniqueCode() {
         this.branchCode = generateUniqueHexCode();
@@ -56,6 +63,6 @@ public class Branch {
 
     private String generateUniqueHexCode() {
         String uuid = UUID.randomUUID().toString().replace("-", "");
-        return "B-" + uuid.substring(0, 8).toUpperCase();
+        return "B" + uuid.substring(0, 9).toUpperCase();
     }
 }

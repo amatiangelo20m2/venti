@@ -1,4 +1,4 @@
-package com.venticonsulting.customerservice.exception;
+package com.venticonsulting.bookingservice.exception;
 
 public class CustomerNotFoundException extends RuntimeException {
     public CustomerNotFoundException(String message) {

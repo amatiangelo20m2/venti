@@ -1,4 +1,4 @@
-package com.venticonsulting.customerservice.entity;
+package com.venticonsulting.bookingservice.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +14,7 @@ import java.sql.Date;
 @NoArgsConstructor
 @Builder
 @Data
-public class CustomerEntity {
+public class Customer {
 
         @Id
         private String customerId;
@@ -23,5 +23,4 @@ public class CustomerEntity {
         private String email;
         private Date dob;
         private boolean dataTreatment;
-
 }

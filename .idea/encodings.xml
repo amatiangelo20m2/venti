@@ -9,8 +9,8 @@
     <file url="file://$PROJECT_DIR$/api-gw/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/auth-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/auth-service/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/customer-service/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/customer-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/booking-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/booking-service/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/dashboard-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/discovery-server/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/discovery-server/src/main/resources" charset="UTF-8" />

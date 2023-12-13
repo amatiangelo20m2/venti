@@ -1,14 +1,15 @@
-package com.venticonsulting.customerservice.entity.dto;
+package com.venticonsulting.bookingservice.entity.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 
 @AllArgsConstructor
 @Data
 @Builder
-public class CustomerUpdateEntity {
-    private long userId;
+@ToString
+public class CustomerCreateEntity {
     private String name;
     private String phone;
     private String email;
