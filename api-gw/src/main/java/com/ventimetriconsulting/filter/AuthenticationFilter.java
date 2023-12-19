@@ -13,8 +13,6 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
     @Autowired
     private RouteValidator validator;
 
-    //    @Autowired
-//    private RestTemplate template;
     @Autowired
     private JwtUtil jwtUtil;
 
@@ -28,7 +26,6 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
 
         return ((exchange, chain) -> {
             if (validator.isSecured.test(exchange.getRequest())) {
-                //header contains token or not
                 if (!exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
                     throw new RuntimeException("missing authorization header");
                 }

@@ -9,6 +9,7 @@ import com.ventimetriconsulting.branch.entity.dto.BranchReservationConfiguration
 import com.ventimetriconsulting.branch.entity.dto.BranchResponseEntity;
 import com.ventimetriconsulting.branch.repository.BranchRepository;
 import com.ventimetriconsulting.branch.repository.BranchUserRepository;
+import com.ventimetriconsulting.exception.BranchNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -119,5 +120,17 @@ public class BranchService {
 
 
         return null;
+    }
+
+    public BranchResponseEntity getBranch(String userCode, String branchCode) {
+
+        log.info("Retrieve branch for user with code {} and branch with code {}", userCode, branchCode);
+        Optional<BranchUser> branchByUserCodeAndBranchCode = branchUserRepository.findBranchesByUserCodeAndBranchCode(userCode, branchCode);
+
+        if(branchByUserCodeAndBranchCode.isPresent()){
+
+            return convertToBranchResponseEntity(branchByUserCodeAndBranchCode.get());
+        }
+        throw new BranchNotFoundException("Branch not found for user with code [" + userCode + "] and branch with code [" + branchCode + "] ");
     }
 }

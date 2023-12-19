@@ -35,4 +35,10 @@ public class BookingController {
     public void updateUser(@RequestBody CustomerUpdateEntity customerUpdateEntity){
         customerService.updateUser(customerUpdateEntity);
     }
+
+    @GetMapping(path = "/configuration/retrieve")
+    @ResponseStatus(HttpStatus.OK)
+    public void retrieveConfiguration(@RequestParam String branchCode){
+        customerService.retrieveConfigurationByBranchCode(branchCode);
+    }
 }

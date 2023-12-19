@@ -95,4 +95,8 @@ public class BookingService {
             throw new CustomerNotFoundException("Customer not found with the following id: " + id);
         }
     }
+
+    public void retrieveConfigurationByBranchCode(String branchCode) {
+
+    }
 }
