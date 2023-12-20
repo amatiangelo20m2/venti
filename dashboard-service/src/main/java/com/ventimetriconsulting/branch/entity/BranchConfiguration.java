@@ -11,6 +11,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 public class BranchConfiguration {
+
     @Id
     @SequenceGenerator(
             name = "branch_config_id",
@@ -26,8 +27,5 @@ public class BranchConfiguration {
             updatable = false
     )
     private long branchConfId;
-
-    private String waapiInstanceId;
-    private String instanceStatus;
 
 }

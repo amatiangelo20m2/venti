@@ -1,6 +1,5 @@
 package com.ventimetriconsulting;
 
-import com.ventimetriconsulting.filter.AuthenticationFilter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -13,8 +12,4 @@ public class ApiGatewayApp {
     SpringApplication.run(ApiGatewayApp.class, args);
   }
 
-  @Bean
-  public AuthenticationFilter authenticationFilter() {
-    return new AuthenticationFilter();
-  }
 }

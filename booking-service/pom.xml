@@ -57,10 +57,30 @@
       <artifactId>hibernate-validator</artifactId>
       <version>7.0.2.Final</version> <!-- Use the latest version available -->
     </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-webflux</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
-    <finalName>customer-service</finalName>
+    <finalName>booking-service</finalName>
     <plugins>
       <plugin>
         <groupId>org.springframework.boot</groupId>

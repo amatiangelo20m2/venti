@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class BookingController {
 
     private BookingService customerService;
+
     @PostMapping(path = "/customer/save")
     @ResponseStatus(HttpStatus.CREATED)
     public Customer save(@RequestBody CustomerCreateEntity userCreateEntity) { return customerService.addCustomer(userCreateEntity); }

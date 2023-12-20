@@ -1,11 +1,7 @@
 package com.ventimetriconsulting.branch.service;
 
-import com.ventimetriconsulting.branch.entity.Branch;
-import com.ventimetriconsulting.branch.entity.BranchConfiguration;
-import com.ventimetriconsulting.branch.entity.BranchUser;
-import com.ventimetriconsulting.branch.entity.Role;
+import com.ventimetriconsulting.branch.entity.*;
 import com.ventimetriconsulting.branch.entity.dto.BranchCreationEntity;
-import com.ventimetriconsulting.branch.entity.dto.BranchReservationConfiguration;
 import com.ventimetriconsulting.branch.entity.dto.BranchResponseEntity;
 import com.ventimetriconsulting.branch.repository.BranchRepository;
 import com.ventimetriconsulting.branch.repository.BranchUserRepository;
@@ -34,16 +30,11 @@ public class BranchService {
     @Transactional
     public BranchResponseEntity createBranch(BranchCreationEntity branchCreationEntity) {
 
-        log.info("Branch Service - Create branch by user [{}] - Branch Entity {}",
+        log.info("Branch Service - Create branch by user [{}] - Branch Type {} - Branch Entity {}",
                 branchCreationEntity.getUserCode(),
+                branchCreationEntity.getType(),
                 branchCreationEntity);
 
-        BranchConfiguration branchConfiguration = BranchConfiguration.
-                builder()
-                .branchConfId(0)
-                .waapiInstanceId("")
-                .instanceStatus("")
-                .build();
 
         Branch savedBranch = branchRepository.save(
                 Branch.builder()
@@ -54,7 +45,6 @@ public class BranchService {
                         .address(branchCreationEntity.getAddress())
                         .email(branchCreationEntity.getEmail())
                         .phoneNumber(branchCreationEntity.getPhone())
-                        .branchConfiguration(branchConfiguration)
                         .type(branchCreationEntity.getType())
                         .build());
 
@@ -76,7 +66,6 @@ public class BranchService {
                 .type(savedBranch.getType())
                 .name(savedBranch.getName())
                 .role(Role.PROPRIETARIO)
-                .branchConfiguration(branchConfiguration)
                 .build();
     }
 
@@ -106,21 +95,10 @@ public class BranchService {
                 .branchCode(branchUser.getBranch().getBranchCode())
                 .role(branchUser.getRole())
                 .branchConfiguration(branchUser.getBranch().getBranchConfiguration())
+                .branchSchedule(branchUser.getBranch().getBranchSchedule())
                 .build();
     }
 
-    public BranchReservationConfiguration retrieveBranchReservationInformation(String branchCode) {
-
-        log.info("Retrieve branch information for reservation form by branchCode: {}", branchCode);
-
-        Optional<Branch> branchByCode = branchRepository.findByBranchCode(branchCode);
-        if(branchByCode.isPresent()){
-
-        }
-
-
-        return null;
-    }
 
     public BranchResponseEntity getBranch(String userCode, String branchCode) {
 
