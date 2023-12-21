@@ -58,34 +58,51 @@ services:
     container_name: zipkin
     ports:
       - "9411:9411"
-  postgres:
-    container_name: postgres_20m2
+  db20m2:
+    container_name: db20m2
     image: postgres:alpine
     environment:
-      POSTGRES_DB: postgres_20m2
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: db20m2
+      POSTGRES_USER: zLw473vAW8ELDkV
+      POSTGRES_PASSWORD: QyuhTTLOCOWfdFu
       PGDATA: /data/postgres
     volumes:
-      - ./postgres-20m2:/data/postgres
+      - ./db20m2data:/data/postgres
     expose:
-      - "5431"
+      - "5433"
     ports:
-      - "5431:5431"
-    command: -p 5431
+      - "5433:5433"
+    command: -p 5433
     restart: always
-  postgres-pgadmin:
-    container_name: postgres-pgadmin
+  db20m2booking:
+    container_name: db20m2booking
+    image: postgres:alpine
+    environment:
+      POSTGRES_DB: db20m2booking
+      POSTGRES_USER: zLw473vAW8ELDkV
+      POSTGRES_PASSWORD: QyuhTTLOCOWfdFu
+      PGDATA: /data/postgres
+    volumes:
+      - ./db20m2databooking:/data/postgres
+    expose:
+      - "5434"
+    ports:
+      - "5434:5434"
+    command: -p 5434
+    restart: always
+  pgadmin20m2:
+    container_name: pgadmin20m2
     image: dpage/pgadmin4
     restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: amati.angelo90@gmail.com
       PGADMIN_DEFAULT_PASSWORD: EM6MbK55bpHUtgVN
     depends_on:
-      - postgres
+      - db20m2
+      - db20m2booking
     ports:
       - "5050:80"
-  mongo:
+  dbmongo20m2:
     image: mongo:latest
     container_name: customer-mongo
     restart: always
