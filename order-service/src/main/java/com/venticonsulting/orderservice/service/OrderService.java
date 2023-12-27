@@ -3,20 +3,15 @@ package com.venticonsulting.orderservice.service;
 import com.venticonsulting.orderservice.dto.InventoryResponse;
 import com.venticonsulting.orderservice.dto.OrderLineItemsDto;
 import com.venticonsulting.orderservice.dto.OrderRequest;
-import com.venticonsulting.orderservice.event.OrderPlacedEvent;
 import com.venticonsulting.orderservice.model.Order;
 import com.venticonsulting.orderservice.model.OrderLineItems;
 import com.venticonsulting.orderservice.repository.OrderRepository;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;

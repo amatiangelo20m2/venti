@@ -39,7 +39,8 @@ public class OrderController {
   }
 
   public CompletableFuture<String> fallbackMethod(OrderRequest orderRequest, RuntimeException runtimeException){
-    return CompletableFuture.supplyAsync(()-> "Ooops, retry in two minutes. The inventory service seems to be down. If the error persist, call the system manager");
+    return CompletableFuture.supplyAsync(()-> "Ooops, retry in two minutes. The inventory service seems to be down. " +
+            "If the error persist, call the system manager");
   }
 
 }

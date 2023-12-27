@@ -1,35 +1,35 @@
 version: "3.8"
 services:
   ## Keycloak Config with Mysql database
-  keycloak-postgres:
-    container_name: db_20m2_keycloak_postgres
-    image: postgres:alpine
-    volumes:
-      - ./postgres_keycloak_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: keycloak-postgres
-      POSTGRES_USER: amati.angelo@20m2.it
-      POSTGRES_PASSWORD: 5Gv94E4uefK8qm92
-    ports:
-      - "5433:5432"
-  keycloak:
-    container_name: keycloak
-    image: quay.io/keycloak/keycloak:18.0.0
-    command: [ "start-dev", "--import-realm" ]
-    environment:
-      DB_VENDOR: POSTGRES
-      DB_ADDR: keycloak-postgres
-      DB_DATABASE: keycloak-postgres
-      DB_USER: amati.angelo@20m2.it
-      DB_PASSWORD: 5Gv94E4uefK8qm92
-      KEYCLOAK_ADMIN: amati.angelo@20m2.it
-      KEYCLOAK_ADMIN_PASSWORD: 5Gv94E4uefK8qm92
-    ports:
-      - "8181:8080"
-    volumes:
-      - ./realms/:/opt/jboss/keycloak/standalone/data/imports/
-    depends_on:
-      - keycloak-postgres
+#  keycloak-postgres:
+#    container_name: db_20m2_keycloak_postgres
+#    image: postgres:alpine
+#    volumes:
+#      - ./postgres_keycloak_data:/var/lib/postgresql/data
+#    environment:
+#      POSTGRES_DB: keycloak-postgres
+#      POSTGRES_USER: amati.angelo@20m2.it
+#      POSTGRES_PASSWORD: 5Gv94E4uefK8qm92
+#    ports:
+#      - "5433:5432"
+#  keycloak:
+#    container_name: keycloak
+#    image: quay.io/keycloak/keycloak:18.0.0
+#    command: [ "start-dev", "--import-realm" ]
+#    environment:
+#      DB_VENDOR: POSTGRES
+#      DB_ADDR: keycloak-postgres
+#      DB_DATABASE: keycloak-postgres
+#      DB_USER: amati.angelo@20m2.it
+#      DB_PASSWORD: 5Gv94E4uefK8qm92
+#      KEYCLOAK_ADMIN: amati.angelo@20m2.it
+#      KEYCLOAK_ADMIN_PASSWORD: 5Gv94E4uefK8qm92
+#    ports:
+#      - "8181:8080"
+#    volumes:
+#      - ./realms/:/opt/jboss/keycloak/standalone/data/imports/
+#    depends_on:
+#      - keycloak-postgres
   zookeeper:
     image: confluentinc/cp-zookeeper:7.0.1
     container_name: zookeeper
@@ -58,58 +58,71 @@ services:
     container_name: zipkin
     ports:
       - "9411:9411"
-  postgres:
-    container_name: postgres_20m2
+  db20m2:
+    container_name: db20m2
     image: postgres:alpine
     environment:
-      POSTGRES_DB: postgres_20m2
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: db20m2
+      POSTGRES_USER: zLw473vAW8ELDkV
+      POSTGRES_PASSWORD: QyuhTTLOCOWfdFu
       PGDATA: /data/postgres
     volumes:
-      - ./postgres-20m2:/data/postgres
+      - ./db20m2data:/data/postgres
     expose:
-      - "5431"
+      - "5433"
     ports:
-      - "5431:5431"
-    command: -p 5431
+      - "5433:5433"
+    command: -p 5433
     restart: always
-  postgres-pgadmin:
-    container_name: postgres-pgadmin
+  db20m2booking:
+    container_name: db20m2booking
+    image: postgres:alpine
+    environment:
+      POSTGRES_DB: db20m2booking
+      POSTGRES_USER: zLw473vAW8ELDkV
+      POSTGRES_PASSWORD: QyuhTTLOCOWfdFu
+      PGDATA: /data/postgres
+    volumes:
+      - ./db20m2databooking:/data/postgres
+    expose:
+      - "5434"
+    ports:
+      - "5434:5434"
+    command: -p 5434
+    restart: always
+  pgadmin20m2:
+    container_name: pgadmin20m2
     image: dpage/pgadmin4
     restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: amati.angelo90@gmail.com
       PGADMIN_DEFAULT_PASSWORD: EM6MbK55bpHUtgVN
     depends_on:
-      - postgres
+      - db20m2
+      - db20m2booking
     ports:
       - "5050:80"
-#  mongodb:
-#    image: mongo
-#    container_name: ventimetri_mongo_db
-#    ports:
-#      - "27017:27017"
-#    volumes:
-#      - data:/data
-#    environment:
-#      - MONGO_INITDB_ROOT_USERNAME=mongo
-#      - MONGO_INITDB_ROOT_PASSWORD=3QuHPncVSq
-#      - MONGO_INITDB_DATABASE=ventimetri_mongo_db
-#    networks:
-#      - mongodb_network
-#  mongo-express:
-#    image: mongo-express
-#    container_name: mongodb_express
-#    restart: always
-#    ports:
-#      - "8081:8081"
-#    environment:
-#      - ME_CONFIG_MONGODB_ADMINUSERNAME=mongodbuser20m2
-#      - ME_CONFIG_MONGODB_ADMINPASSWORD=mongodbpassword20m2
-#      - ME_CONFIG_MONGODB_SERVER=mongodb
-#    networks:
-#      - mongodb_network
+  dbmongo20m2:
+    image: mongo:latest
+    container_name: customer-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: booking20m2
+      MONGO_INITDB_ROOT_PASSWORD: booking20m2
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: 20m2-mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_ADMINUSERNAME: booking20m2
+      ME_CONFIG_MONGODB_ADMINPASSWORD: booking20m2
+
 #  discovery-server:
 #    image: amatiangelo1990/20m2:discovery-server
 #    container_name: discovery-server
