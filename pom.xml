@@ -36,10 +36,10 @@
     <module>discovery-server</module>
     <module>inventory-service</module>
     <module>product-service</module>
-    <module>booking-service</module>
     <module>order-service</module>
     <module>auth-service</module>
     <module>dashboard-service</module>
+    <module>bookingreserve-service</module>
   </modules>
 
   <dependencyManagement>
