@@ -211,6 +211,23 @@ public class WhatsAppApiService {
                 });
     }
 
+    private void rebootInstance(String instanceId) {
+        waapiWebClientBean.delete()
+                .uri("/api/v1/instances/" + instanceId + "/client/action/reboot")
+                .retrieve()
+                .onStatus(
+                        HttpStatusCode::is4xxClientError,
+                        clientResponse -> Mono.error(new Exception("Client Error"))
+                )
+                .onStatus(
+                        HttpStatusCode::is5xxServerError,
+                        clientResponse -> Mono.error(new Exception("Server Error"))
+                )
+                .bodyToMono(String.class)
+                .subscribe(responseBody -> {
+                    log.info("Method to reboot isntance with id {} called. Response: {}", instanceId, responseBody);
+                });
+    }
 
     private void haveSomeTimeToSleep(int sleep) {
         try {
@@ -219,4 +236,66 @@ public class WhatsAppApiService {
             log.warn("Sleep time between creation instance on waapi server not working. Nothing bad actually, the process can be go on");
         }
     }
+
+    @Transactional
+    public WaApiConfigDTO checkWaApiStatus(String branchCode) {
+
+        log.info("Retrieve waapi configuration for branch with code {}" , branchCode);
+
+        Optional<WaApiConfigEntity> branchByCode = waApiConfigRepository.findAllByBranchCode(branchCode);
+
+        if(branchByCode.isPresent()) {
+
+            MeResponse meResponse = retrieveClientInfo(branchByCode.get().getInstanceId());
+
+            if("success".equalsIgnoreCase(meResponse.getStatus())
+                    && "success".equalsIgnoreCase(meResponse.getMe().getStatus())){
+                branchByCode.get().setInstanceId(meResponse.getMe().getInstanceId());
+                branchByCode.get().setFormattedNumber(meResponse.getMe().getData().getFormattedNumber());
+                branchByCode.get().setDisplayName(meResponse.getMe().getData().getDisplayName());
+                branchByCode.get().setProfilePicUrl(meResponse.getMe().getData().getProfilePicUrl());
+                branchByCode.get().setInstanceStatus("OK");
+                branchByCode.get().setExplanation("");
+                branchByCode.get().setMessage("");
+                branchByCode.get().setLastQrCode("");
+                branchByCode.get().setUpdateDate(new Date());
+            }
+
+            return WaApiConfigDTO.fromEntity(branchByCode.get());
+        }
+        return null;
+    }
+
+    @Transactional
+    public WaApiConfigDTO reboot(String branchCode) {
+        log.info("Reboot waapi configuration for branch with code {}" , branchCode);
+
+        Optional<WaApiConfigEntity> branchByCode = waApiConfigRepository.findAllByBranchCode(branchCode);
+
+        if(branchByCode.isPresent()) {
+
+            rebootInstance(branchByCode.get().getInstanceId());
+            haveSomeTimeToSleep(4000);
+
+            MeResponse meResponse = retrieveClientInfo(branchByCode.get().getInstanceId());
+
+            if("success".equalsIgnoreCase(meResponse.getStatus())
+                    && "success".equalsIgnoreCase(meResponse.getMe().getStatus())){
+                branchByCode.get().setInstanceId(meResponse.getMe().getInstanceId());
+                branchByCode.get().setFormattedNumber(meResponse.getMe().getData().getFormattedNumber());
+                branchByCode.get().setDisplayName(meResponse.getMe().getData().getDisplayName());
+                branchByCode.get().setProfilePicUrl(meResponse.getMe().getData().getProfilePicUrl());
+                branchByCode.get().setInstanceStatus("OK");
+                branchByCode.get().setExplanation("");
+                branchByCode.get().setMessage("");
+                branchByCode.get().setLastQrCode("");
+                branchByCode.get().setUpdateDate(new Date());
+            }
+
+            return WaApiConfigDTO.fromEntity(branchByCode.get());
+        }
+        return null;
+    }
+
+
 }

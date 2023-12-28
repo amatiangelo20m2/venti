@@ -23,23 +23,18 @@ public class WaapiController {
         return whatsAppApiService.configureNumberForWhatsAppMessaging(branchCode);
     }
 
-    @DeleteMapping(path = "/instance/delete")
+    @GetMapping(path = "/instance/checkstatus")
     @ResponseStatus(HttpStatus.OK)
-    public void retrieveUserById(@RequestParam String instanceId){
-        whatsAppApiService.deleteInstance(instanceId);
+    public WaApiConfigDTO checkWaApiStatus(@RequestParam String branchCode){
+        return whatsAppApiService.checkWaApiStatus(branchCode);
     }
 
-//    @GetMapping(path = "/instance/retrieve/status")
-//    @ResponseStatus(HttpStatus.OK)
-//    public void retrieveIntanceStatus(@RequestParam String instanceId){
-//        whatsAppApiService.retrieveIntanceStatus(instanceId);
-//    }
+    @GetMapping(path = "/instance/reboot")
+    @ResponseStatus(HttpStatus.OK)
+    public WaApiConfigDTO reboot(@RequestParam String branchCode){
+        return whatsAppApiService.reboot(branchCode);
+    }
 
-//    @GetMapping(path = "/instance/retrieve/clientinfo")
-//    @ResponseStatus(HttpStatus.OK)
-//    public void retrieveClientInfo(@RequestParam String instanceId){
-//        whatsAppApiService.retrieveClientInfo(instanceId);
-//    }
 //
 //    @GetMapping(path = "/instance/retrieveqr")
 //    @ResponseStatus(HttpStatus.OK)

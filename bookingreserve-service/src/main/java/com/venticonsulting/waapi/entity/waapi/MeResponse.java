@@ -21,10 +21,17 @@ public class MeResponse {
         private String instanceId;
         private String explanation;
         private String instanceStatus;
+        @JsonProperty("data")
+        private DataMe dataMe;
 
         @JsonProperty("status")
         public String getStatus() {
             return status;
+        }
+
+        @JsonProperty("data")
+        public DataMe getData() {
+            return dataMe;
         }
 
         public void setStatus(String status) {
@@ -66,6 +73,24 @@ public class MeResponse {
         public void setInstanceStatus(String instanceStatus) {
             this.instanceStatus = instanceStatus;
         }
+    }
+
+    @Data
+    @AllArgsConstructor
+    @Builder
+    @Getter
+    @ToString
+    @NoArgsConstructor
+    public static class DataMe {
+        @JsonProperty("displayName")
+        private String displayName;
+        @JsonProperty("contactId")
+        private String contactId;
+        @JsonProperty("formattedNumber")
+        private String formattedNumber;
+        @JsonProperty("profilePicUrl")
+        private String profilePicUrl;
+
     }
 
     @Data

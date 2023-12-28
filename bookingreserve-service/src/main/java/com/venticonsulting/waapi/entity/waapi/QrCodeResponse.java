@@ -2,7 +2,9 @@ package com.venticonsulting.waapi.entity.waapi;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
 
+@Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class QrCodeResponse {
 
@@ -15,24 +17,12 @@ public class QrCodeResponse {
     @JsonProperty("status")
     private String status;
 
-    public QrCode getQrCode() {
-        return qrCode;
-    }
-
     public void setQrCode(QrCode qrCode) {
         this.qrCode = qrCode;
     }
 
-    public Links getLinks() {
-        return links;
-    }
-
     public void setLinks(Links links) {
         this.links = links;
-    }
-
-    public String getStatus() {
-        return status;
     }
 
     public void setStatus(String status) {
