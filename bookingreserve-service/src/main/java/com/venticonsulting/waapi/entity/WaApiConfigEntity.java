@@ -8,7 +8,7 @@ import java.util.Date;
 @Entity(name = "WaApiConfig")
 @Table(name = "WA_API_CONF",
         uniqueConstraints=
-        @UniqueConstraint(columnNames={"waapi_conf_id", "branch_code"}))
+        @UniqueConstraint(columnNames={"waapi_conf_id"}))
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -30,26 +30,22 @@ public class WaApiConfigEntity {
             updatable = false
     )
     private long waapiConfId;
-    @Column(
-            name = "branch_code",
-            unique = true,
-            length = 10
-    )
-
-    private String branchCode;
     private String instanceId;
     private String displayName;
     private String formattedNumber;
     private String profilePicUrl;
-    //TEXT is a CLOB value
+
     @Column(name = "last_qr_code", columnDefinition = "TEXT")
     private String lastQrCode;
     private String owner;
     private Date creationDate;
     private Date updateDate;
-
     private String instanceStatus;
     private String message;
     private String explanation;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurant_conf_id")
+    private RestaurantConfiguration restaurantConfiguration;
 
 }

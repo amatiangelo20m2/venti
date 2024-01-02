@@ -48,8 +48,6 @@ public class BranchService {
                         .type(branchCreationEntity.getType())
                         .build());
 
-
-
         branchUserRepository.save(BranchUser.builder()
                 .id(0)
                 .branch(savedBranch)

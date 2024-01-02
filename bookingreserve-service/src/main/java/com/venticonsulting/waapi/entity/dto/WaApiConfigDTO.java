@@ -14,7 +14,7 @@ import java.util.Date;
 @Builder
 public class WaApiConfigDTO {
     private long waapiConfId;
-    private String branchCode;
+
     private String instanceId;
     private String instanceStatus;
     private String displayName;
@@ -30,7 +30,6 @@ public class WaApiConfigDTO {
     public static WaApiConfigDTO fromEntity(WaApiConfigEntity entity) {
         WaApiConfigDTO dto = new WaApiConfigDTO();
         dto.setWaapiConfId(entity.getWaapiConfId());
-        dto.setBranchCode(entity.getBranchCode());
         dto.setInstanceId(entity.getInstanceId());
         dto.setInstanceStatus(entity.getInstanceStatus());
         dto.setDisplayName(entity.getDisplayName());

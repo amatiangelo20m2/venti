@@ -1,6 +1,5 @@
 package com.ventimetriconsulting.branch.controller;
 
-import com.ventimetriconsulting.branch.entity.BranchConfiguration;
 import com.ventimetriconsulting.branch.entity.dto.DashboardData;
 import com.ventimetriconsulting.branch.service.BranchService;
 import com.ventimetriconsulting.branch.entity.dto.BranchCreationEntity;

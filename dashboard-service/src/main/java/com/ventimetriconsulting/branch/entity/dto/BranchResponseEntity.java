@@ -1,7 +1,5 @@
 package com.ventimetriconsulting.branch.entity.dto;
 
-import com.ventimetriconsulting.branch.entity.BranchConfiguration;
-import com.ventimetriconsulting.branch.entity.BranchSchedule;
 import com.ventimetriconsulting.branch.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
