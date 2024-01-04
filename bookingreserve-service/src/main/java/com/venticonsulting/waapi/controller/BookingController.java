@@ -41,4 +41,10 @@ public class BookingController {
         return bookingService.updateTimeRangeConfiguration(updateRestaurantConfigurationRequest);
     }
 
+    @DeleteMapping(path = "/deletetimerange")
+    @ResponseStatus(HttpStatus.OK)
+    public RestaurantConfigurationDTO deleteTimeRange(@RequestParam long timeRangeId){
+        return bookingService.deleteTimeRange(timeRangeId);
+    }
+
 }

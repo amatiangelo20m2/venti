@@ -92,8 +92,6 @@ public class BranchService {
                 .type(branchUser.getBranch().getType())
                 .branchCode(branchUser.getBranch().getBranchCode())
                 .role(branchUser.getRole())
-                .branchConfiguration(branchUser.getBranch().getBranchConfiguration())
-                .branchSchedule(branchUser.getBranch().getBranchSchedule())
                 .build();
     }
 

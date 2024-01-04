@@ -51,13 +51,6 @@ public class Branch {
     @Enumerated
     private BranchType type;
 
-    @OneToOne(mappedBy = "branch", cascade = CascadeType.ALL, orphanRemoval = true)
-    private BranchSchedule branchSchedule;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "branch_config_id", referencedColumnName = "branch_config_id")
-    private BranchConfiguration branchConfiguration;
-
     @PrePersist
     public void generateUniqueCode() {
         this.branchCode = generateUniqueHexCode();

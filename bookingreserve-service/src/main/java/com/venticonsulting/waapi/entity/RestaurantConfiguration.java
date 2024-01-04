@@ -41,9 +41,20 @@ public class RestaurantConfiguration implements Serializable {
     )
     private String branchCode;
 
-    private int guests;
+    @Column(name = "guests")
+    private int guests = 0;
 
-    private boolean allowOverbooking;
+    @Column(name = "allow_overbooking")
+    private boolean allowOverbooking = false;
+
+    @Column(name = "confirm_reservation")
+    private boolean confirmReservation = false;
+
+    @Column(name = "booking_slot_in_minutes")
+    private int bookingSlotInMinutes = 0;
+
+    @Column(name = "recovery_number")
+    private String recoveryNumber;
 
     @OneToMany(mappedBy = "restaurantConfiguration", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<BranchTimeRange> branchTimeRanges;
@@ -52,7 +63,5 @@ public class RestaurantConfiguration implements Serializable {
     private WaApiConfigEntity waApiConfig;
 
     private Date creationDate;
-
-    private int bookingSlotInMinutes;
 
 }

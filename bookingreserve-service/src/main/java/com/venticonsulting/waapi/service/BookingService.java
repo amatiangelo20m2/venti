@@ -3,10 +3,7 @@ package com.venticonsulting.waapi.service;
 import com.venticonsulting.waapi.entity.BranchTimeRange;
 import com.venticonsulting.waapi.entity.RestaurantConfiguration;
 import com.venticonsulting.waapi.entity.WaApiConfigEntity;
-import com.venticonsulting.waapi.entity.dto.RestaurantConfigurationDTO;
-import com.venticonsulting.waapi.entity.dto.BranchTimeRangeDTO;
-import com.venticonsulting.waapi.entity.dto.UpdateRestaurantConfigurationRequest;
-import com.venticonsulting.waapi.entity.dto.WaApiConfigDTO;
+import com.venticonsulting.waapi.entity.dto.*;
 import com.venticonsulting.waapi.entity.utils.WeekDayItalian;
 import com.venticonsulting.waapi.entity.waapi.CreateUpdateResponse;
 import com.venticonsulting.waapi.entity.waapi.MeResponse;
@@ -290,9 +287,10 @@ public class BookingService {
                 = branchTimeRangeRepository.findByBranchTimeRangeId(updateRestaurantConfigurationRequest.getListConfIds());
 
         if(byRestaurantConfIdIn.isPresent()){
+
             for(BranchTimeRange branchTimeRange : byRestaurantConfIdIn.get()) {
                 branchTimeRange.getTimeRanges().clear();
-                branchTimeRange.getTimeRanges().addAll(updateRestaurantConfigurationRequest.getTimeRanges());
+                branchTimeRange.getTimeRanges().addAll(TimeRangeUpdateRequest.convertTimeRange(updateRestaurantConfigurationRequest.getTimeRanges()));
             }
         }else{
             throw new MethodNotFoundException("Method not implemented yet");
@@ -312,4 +310,9 @@ public class BookingService {
     }
 
 
+    @Transactional
+    public RestaurantConfigurationDTO deleteTimeRange(long timeRangeId) {
+        //TODO to implement
+        return null;
+    }
 }
