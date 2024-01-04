@@ -2,6 +2,7 @@ package com.venticonsulting.waapi.entity.dto;
 
 import com.venticonsulting.waapi.entity.BranchTimeRange;
 import com.venticonsulting.waapi.entity.TimeRange;
+import com.venticonsulting.waapi.entity.utils.WeekDayItalian;
 import lombok.*;
 
 import java.time.DayOfWeek;
@@ -17,10 +18,9 @@ import java.util.stream.Collectors;
 @ToString
 public class BranchTimeRangeDTO {
     private Long id;
-    private DayOfWeek dayOfWeek;
+    private WeekDayItalian dayOfWeek;
     private List<TimeRange> timeRanges;
     private LocalDate particularDate;
-    private boolean isOpen;
 
     public static List<BranchTimeRangeDTO> convertList(List<BranchTimeRange> branchTimeRanges) {
         if (branchTimeRanges == null) {
@@ -37,7 +37,24 @@ public class BranchTimeRangeDTO {
                 .dayOfWeek(branchTimeRange.getDayOfWeek())
                 .timeRanges(branchTimeRange.getTimeRanges())
                 .particularDate(branchTimeRange.getParticularDate())
-                .isOpen(branchTimeRange.isOpen())
+                .build();
+    }
+
+    public static List<BranchTimeRange> convertListToEntity(List<BranchTimeRangeDTO> branchTimeRangeDTOs) {
+        if (branchTimeRangeDTOs == null) {
+            return Collections.emptyList();
+        }
+        return branchTimeRangeDTOs.stream()
+                .map(BranchTimeRangeDTO::convertToEntity)
+                .collect(Collectors.toList());
+    }
+
+    public static BranchTimeRange convertToEntity(BranchTimeRangeDTO branchTimeRangeDTO) {
+        return BranchTimeRange.builder()
+                .branchTimeRangeId(branchTimeRangeDTO.getId())
+                .dayOfWeek(branchTimeRangeDTO.getDayOfWeek())
+                .timeRanges(branchTimeRangeDTO.getTimeRanges())
+                .particularDate(branchTimeRangeDTO.getParticularDate())
                 .build();
     }
 

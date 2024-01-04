@@ -3,6 +3,7 @@ package com.venticonsulting.waapi.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Entity(name = "WaApiConfig")
@@ -14,7 +15,7 @@ import java.util.Date;
 @Data
 @Builder
 @ToString
-public class WaApiConfigEntity {
+public class WaApiConfigEntity implements Serializable {
     @Id
     @SequenceGenerator(
             name = "waapi_conf_id",

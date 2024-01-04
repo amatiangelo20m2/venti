@@ -1,11 +1,11 @@
 package com.venticonsulting.waapi.entity;
 
+import com.venticonsulting.waapi.entity.utils.WeekDayItalian;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.DayOfWeek;
+import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -15,7 +15,7 @@ import java.util.List;
 @Data
 @Builder
 @ToString
-public class BranchTimeRange {
+public class BranchTimeRange implements Serializable {
     @Id
     @SequenceGenerator(
             name = "branch_time_range_id",
@@ -38,7 +38,7 @@ public class BranchTimeRange {
 
     @Column(name = "day_of_week", nullable = false)
     @Enumerated(EnumType.STRING)
-    private DayOfWeek dayOfWeek;
+    private WeekDayItalian dayOfWeek;
 
     @Column(name = "particular_date")
     private LocalDate particularDate;
@@ -51,6 +51,4 @@ public class BranchTimeRange {
     @OrderColumn(name = "position")
     private List<TimeRange> timeRanges;
 
-    @Column(name = "closed", nullable = false)
-    private boolean isOpen = false;
 }

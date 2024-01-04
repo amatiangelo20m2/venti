@@ -5,13 +5,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BookingConfigurationDTO {
+public class RestaurantConfigurationDTO {
     private String branchCode;
-
+    private int guests;
+    private boolean allowOverbooking;
     private WaApiConfigDTO waApiConfigDTO;
-    private RestaurantOpeningConfigurationDTO restaurantOpeningConfigurationDTO;
+    private List<BranchTimeRangeDTO> branchTimeRanges;
+    private int bookingSlotInMinutes;
 }

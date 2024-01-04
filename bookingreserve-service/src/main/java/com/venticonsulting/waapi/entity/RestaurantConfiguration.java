@@ -3,6 +3,7 @@ package com.venticonsulting.waapi.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -15,7 +16,7 @@ import java.util.List;
 @Data
 @Builder
 @ToString
-public class RestaurantConfiguration {
+public class RestaurantConfiguration implements Serializable {
 
     @Id
     @SequenceGenerator(
@@ -40,6 +41,10 @@ public class RestaurantConfiguration {
     )
     private String branchCode;
 
+    private int guests;
+
+    private boolean allowOverbooking;
+
     @OneToMany(mappedBy = "restaurantConfiguration", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<BranchTimeRange> branchTimeRanges;
 
@@ -47,5 +52,7 @@ public class RestaurantConfiguration {
     private WaApiConfigEntity waApiConfig;
 
     private Date creationDate;
+
+    private int bookingSlotInMinutes;
 
 }

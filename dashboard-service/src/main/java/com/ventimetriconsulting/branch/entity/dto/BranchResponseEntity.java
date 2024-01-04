@@ -20,8 +20,4 @@ public class BranchResponseEntity {
     private BranchType type;
     private String branchCode;
     private Role role;
-
-    private BranchConfiguration branchConfiguration;
-    private BranchSchedule branchSchedule;
-
 }

@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.time.LocalTime;
 
 @Embeddable
@@ -14,7 +15,7 @@ import java.time.LocalTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TimeRange {
+public class TimeRange implements Serializable {
 
     @Column(name = "start_time", nullable = false)
     private LocalTime startTime;
