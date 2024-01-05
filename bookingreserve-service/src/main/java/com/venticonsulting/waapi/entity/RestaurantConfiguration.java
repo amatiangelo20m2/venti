@@ -2,7 +2,6 @@ package com.venticonsulting.waapi.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -47,14 +46,23 @@ public class RestaurantConfiguration implements Serializable {
     @Column(name = "allow_overbooking")
     private boolean allowOverbooking = false;
 
-    @Column(name = "confirm_reservation")
-    private boolean confirmReservation = false;
+    @Column(name = "allow_overlap")
+    private boolean allowOverlap = false;
 
     @Column(name = "booking_slot_in_minutes")
     private int bookingSlotInMinutes = 0;
 
+    @Column(name = "confirm_reservation")
+    private boolean confirmReservation = false;
+
     @Column(name = "recovery_number")
     private String recoveryNumber;
+
+    @Column(name = "allow_booking_deletetion")
+    private boolean allowBookingDeletion;
+
+    @Column(name = "min_before_delete_reservation_is_allowed")
+    private int minBeforeDeleteReservationIsAllowed = 0;
 
     @OneToMany(mappedBy = "restaurantConfiguration", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<BranchTimeRange> branchTimeRanges;
