@@ -43,8 +43,8 @@ public class RestaurantConfiguration implements Serializable {
     @Column(name = "guests")
     private int guests = 0;
 
-    @Column(name = "allow_overbooking")
-    private boolean allowOverbooking = false;
+    @Column(name = "allow_waiting_list")
+    private boolean allowWaitingList = false;
 
     @Column(name = "allow_overlap")
     private boolean allowOverlap = false;
@@ -58,11 +58,11 @@ public class RestaurantConfiguration implements Serializable {
     @Column(name = "recovery_number")
     private String recoveryNumber;
 
-    @Column(name = "allow_booking_deletetion")
-    private boolean allowBookingDeletion;
+    @Column(name = "allow_editing_booking")
+    private boolean allowEditingBooking;
 
-    @Column(name = "min_before_delete_reservation_is_allowed")
-    private int minBeforeDeleteReservationIsAllowed = 0;
+    @Column(name = "min_before_editing_reservation_is_allowed")
+    private int minBeforeEditingReservationIsAllowed = 0;
 
     @OneToMany(mappedBy = "restaurantConfiguration", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<BranchTimeRange> branchTimeRanges;

@@ -102,11 +102,16 @@ public class BookingService {
                     .restaurantConfiguration(restaurantConfiguration.get())
                     .build());
 
+
             return RestaurantConfigurationDTO
                     .builder()
                     .confirmReservation(restaurantConfiguration.get().isConfirmReservation())
                     .bookingSlotInMinutes(0)
-                    .allowOverbooking(restaurantConfiguration.get().isAllowOverbooking())
+                    .allowWaitingList(restaurantConfiguration.get().isAllowWaitingList())
+                    .allowEditingBooking(restaurantConfiguration.get().isAllowEditingBooking())
+                    .recoveryNumber("")
+                    .allowOverlap(true)
+                    .minBeforeEditingReservationIsAllowed(0)
                     .guests(restaurantConfiguration.get().getGuests())
                     .branchCode(branchCode)
                     .waApiConfigDTO(WaApiConfigDTO.fromEntity(waConfig))
@@ -124,13 +129,7 @@ public class BookingService {
                 restaurantConfByBranchCode.get().getWaApiConfig().setUpdateDate(new Date());
             }
 
-            return RestaurantConfigurationDTO.builder()
-                    .confirmReservation(restaurantConfByBranchCode.get().isConfirmReservation())
-                    .guests(restaurantConfByBranchCode.get().getGuests())
-                    .allowOverbooking(restaurantConfByBranchCode.get().isAllowOverbooking())
-                    .waApiConfigDTO(WaApiConfigDTO.fromEntity(restaurantConfByBranchCode.get().getWaApiConfig()))
-                    .bookingSlotInMinutes(0)
-                    .build();
+            return RestaurantConfigurationDTO.fromEntity(restaurantConfByBranchCode.get());
         }
     }
 
@@ -139,13 +138,14 @@ public class BookingService {
         RestaurantConfiguration restaurantConfiguration = restaurantConfigurationRepository.save(
                 RestaurantConfiguration.builder()
                         .confirmReservation(true)
-                        .allowBookingDeletion(false)
+                        .allowEditingBooking(false)
                         .allowOverlap(true)
-                        .minBeforeDeleteReservationIsAllowed(0)
+                        .minBeforeEditingReservationIsAllowed(0)
                         .restaurantConfId(0L)
                         .guests(0)
                         .bookingSlotInMinutes(0)
-                        .allowOverbooking(false)
+                        .allowWaitingList(true)
+                        .bookingSlotInMinutes(0)
                         .branchCode(branchCode)
                         .creationDate(new Date())
                         .build());
@@ -168,17 +168,6 @@ public class BookingService {
         haveSomeTimeToSleep(500);
     }
 
-//    private List<TimeRange> buildDefaultTimeRangeList() {
-//        List<TimeRange> timeRanges = new ArrayList<>();
-//
-//        timeRanges.add(TimeRange.builder()
-//                .startTime(LocalTime.of(0, 0))
-//                .endTime(LocalTime.of(0, 0))
-//                .isOpen(false)
-//                .build());
-//
-//        return timeRanges;
-//    }
 
     private void haveSomeTimeToSleep(int sleep) {
         try {
@@ -232,15 +221,7 @@ public class BookingService {
                 //TODO: manage status qr or booting after reboot
             }
 
-            return RestaurantConfigurationDTO.builder()
-                    .confirmReservation(restaurantConfiguration.get().isConfirmReservation())
-                    .guests(restaurantConfiguration.get().getGuests())
-                    .allowOverbooking(restaurantConfiguration.get().isAllowOverbooking())
-                    .branchCode(branchCode)
-                    .bookingSlotInMinutes(0)
-                    .waApiConfigDTO(WaApiConfigDTO.fromEntity(restaurantConfiguration.get().getWaApiConfig()))
-                    .branchTimeRanges(BranchTimeRangeDTO.convertList(restaurantConfiguration.get().getBranchTimeRanges()))
-                    .build();
+            return RestaurantConfigurationDTO.fromEntity(restaurantConfiguration.get());
         }
         return null;
     }
@@ -271,14 +252,7 @@ public class BookingService {
                 restaurantConfiguration.get().getWaApiConfig().setUpdateDate(new Date());
             }
 
-            return RestaurantConfigurationDTO
-                    .builder()
-                    .bookingSlotInMinutes(0)
-                    .guests(restaurantConfiguration.get().getGuests())
-                    .confirmReservation(restaurantConfiguration.get().isConfirmReservation())
-                    .allowOverbooking(restaurantConfiguration.get().isAllowOverbooking())
-                    .waApiConfigDTO(WaApiConfigDTO.fromEntity(restaurantConfiguration.get().getWaApiConfig()))
-                    .build();
+            return RestaurantConfigurationDTO.fromEntity(restaurantConfiguration.get());
         }
         return null;
     }
@@ -306,15 +280,7 @@ public class BookingService {
 
         Optional<RestaurantConfiguration> restaurantConfiguration = restaurantConfigurationRepository.findByBranchCode(updateRestaurantConfigurationRequest.getBranchCode());
 
-        return restaurantConfiguration.map(configuration -> RestaurantConfigurationDTO.builder()
-                .guests(configuration.getGuests())
-                .confirmReservation(configuration.isConfirmReservation())
-                .allowOverbooking(configuration.isAllowOverbooking())
-                .branchCode(restaurantConfiguration.get().getBranchCode())
-                .bookingSlotInMinutes(0)
-                .waApiConfigDTO(WaApiConfigDTO.fromEntity(configuration.getWaApiConfig()))
-                .branchTimeRanges(BranchTimeRangeDTO.convertList(configuration.getBranchTimeRanges()))
-                .build()).orElse(null);
+        return RestaurantConfigurationDTO.fromEntity(restaurantConfiguration.get());
 
     }
 

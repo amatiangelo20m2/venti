@@ -14,28 +14,30 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class RestaurantConfigurationDTO {
+    private Long restaurantConfId;
     private String branchCode;
     private int guests;
-    private boolean allowOverbooking;
+    private boolean allowWaitingList;
     private boolean confirmReservation;
     private boolean allowOverlap;
-    private boolean allowBookingDeletion;
+    private boolean allowEditingBooking;
     private int bookingSlotInMinutes;
-    private int minBeforeDeleteReservationIsAllowed;
+    private int minBeforeEditingReservationIsAllowed;
     private String recoveryNumber;
     private WaApiConfigDTO waApiConfigDTO;
     private List<BranchTimeRangeDTO> branchTimeRanges;
 
     public static RestaurantConfigurationDTO fromEntity(RestaurantConfiguration restaurantConfiguration) {
         return RestaurantConfigurationDTO.builder()
+                .restaurantConfId(restaurantConfiguration.getRestaurantConfId())
                 .branchCode(restaurantConfiguration.getBranchCode())
                 .guests(restaurantConfiguration.getGuests())
-                .allowOverbooking(restaurantConfiguration.isAllowOverbooking())
+                .allowWaitingList(restaurantConfiguration.isAllowWaitingList())
                 .confirmReservation(restaurantConfiguration.isConfirmReservation())
                 .allowOverlap(restaurantConfiguration.isAllowOverlap())
-                .allowBookingDeletion(restaurantConfiguration.isAllowBookingDeletion())
+                .allowEditingBooking(restaurantConfiguration.isAllowEditingBooking())
                 .bookingSlotInMinutes(restaurantConfiguration.getBookingSlotInMinutes())
-                .minBeforeDeleteReservationIsAllowed(restaurantConfiguration.getMinBeforeDeleteReservationIsAllowed())
+                .minBeforeEditingReservationIsAllowed(restaurantConfiguration.getMinBeforeEditingReservationIsAllowed())
                 .recoveryNumber(restaurantConfiguration.getRecoveryNumber())
                 .waApiConfigDTO(WaApiConfigDTO.fromEntity(restaurantConfiguration.getWaApiConfig()))
                 .branchTimeRanges(BranchTimeRangeDTO.convertList(restaurantConfiguration.getBranchTimeRanges()))
