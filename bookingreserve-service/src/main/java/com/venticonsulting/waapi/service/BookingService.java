@@ -105,13 +105,11 @@ public class BookingService {
 
             return RestaurantConfigurationDTO
                     .builder()
-                    .confirmReservation(restaurantConfiguration.get().isConfirmReservation())
+                    .isReservationConfirmedManually(restaurantConfiguration.get().isReservationConfirmedManually())
                     .bookingSlotInMinutes(0)
-                    .allowWaitingList(restaurantConfiguration.get().isAllowWaitingList())
-                    .allowEditingBooking(restaurantConfiguration.get().isAllowEditingBooking())
-                    .recoveryNumber("")
-                    .allowOverlap(true)
-                    .minBeforeEditingReservationIsAllowed(0)
+                    .guestReceivingAuthConfirm(restaurantConfiguration.get().getGuestReceivingAuthConfirm())
+                    .restaurantConfId(restaurantConfiguration.get().getRestaurantConfId())
+                    .minBeforeSendConfirmMessage(restaurantConfiguration.get().getMinBeforeSendConfirmMessage())
                     .guests(restaurantConfiguration.get().getGuests())
                     .branchCode(branchCode)
                     .waApiConfigDTO(WaApiConfigDTO.fromEntity(waConfig))
@@ -137,14 +135,12 @@ public class BookingService {
 
         RestaurantConfiguration restaurantConfiguration = restaurantConfigurationRepository.save(
                 RestaurantConfiguration.builder()
-                        .confirmReservation(true)
-                        .allowEditingBooking(false)
-                        .allowOverlap(true)
-                        .minBeforeEditingReservationIsAllowed(0)
                         .restaurantConfId(0L)
+                        .isReservationConfirmedManually(false)
+                        .minBeforeSendConfirmMessage(0)
+                        .guestReceivingAuthConfirm(0)
                         .guests(0)
                         .bookingSlotInMinutes(0)
-                        .allowWaitingList(true)
                         .bookingSlotInMinutes(0)
                         .branchCode(branchCode)
                         .creationDate(new Date())
@@ -158,6 +154,7 @@ public class BookingService {
                 BranchTimeRange timeRange = BranchTimeRange.builder()
                         .restaurantConfiguration(restaurantConfiguration)
                         .dayOfWeek(dayOfWeek)
+                        .isClosed(true)
                         .timeRanges(new ArrayList<>())
                         .build();
                 defaultTimeRanges.add(timeRange);
@@ -289,5 +286,25 @@ public class BookingService {
     public RestaurantConfigurationDTO deleteTimeRange(long timeRangeId) {
         //TODO to implement
         return null;
+    }
+
+    @Transactional
+    public RestaurantConfigurationDTO updateConfiguration(BranchOpeningEditConfigurationRequest branchOpeningEditConfigurationRequest) {
+
+        log.info("Updating reservation configuration for branch with code {} ", branchOpeningEditConfigurationRequest.getBranchCode());
+        Optional<RestaurantConfiguration> byBranchCode = restaurantConfigurationRepository.findByBranchCode(branchOpeningEditConfigurationRequest.getBranchCode());
+
+        if(byBranchCode.isPresent()){
+
+            byBranchCode.get().setGuests(branchOpeningEditConfigurationRequest.getGuests());
+            byBranchCode.get().setReservationConfirmedManually(branchOpeningEditConfigurationRequest.isReservationConfirmedManually());
+            byBranchCode.get().setBookingSlotInMinutes(branchOpeningEditConfigurationRequest.getBookingSlotInMinutes());
+            byBranchCode.get().setGuestReceivingAuthConfirm(branchOpeningEditConfigurationRequest.getGuestReceivingAuthConfirm());
+            byBranchCode.get().setMinBeforeSendConfirmMessage(branchOpeningEditConfigurationRequest.getMinBeforeSendConfirmMessage());
+
+            return RestaurantConfigurationDTO.fromEntity(byBranchCode.get());
+        }else{
+            return null;
+        }
     }
 }

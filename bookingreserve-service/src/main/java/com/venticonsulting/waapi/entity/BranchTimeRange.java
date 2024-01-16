@@ -40,6 +40,9 @@ public class BranchTimeRange implements Serializable {
     @Enumerated(EnumType.STRING)
     private WeekDayItalian dayOfWeek;
 
+    @Column(name = "is_closed")
+    private boolean isClosed = true;
+
     @Column(name = "particular_date")
     private LocalDate particularDate;
 
@@ -50,5 +53,6 @@ public class BranchTimeRange implements Serializable {
     )
     @OrderColumn(name = "position")
     private List<TimeRange> timeRanges;
+
 
 }

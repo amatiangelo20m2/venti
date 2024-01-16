@@ -43,26 +43,17 @@ public class RestaurantConfiguration implements Serializable {
     @Column(name = "guests")
     private int guests = 0;
 
-    @Column(name = "allow_waiting_list")
-    private boolean allowWaitingList = false;
-
-    @Column(name = "allow_overlap")
-    private boolean allowOverlap = false;
-
     @Column(name = "booking_slot_in_minutes")
     private int bookingSlotInMinutes = 0;
 
-    @Column(name = "confirm_reservation")
-    private boolean confirmReservation = false;
+    @Column(name = "is_reservation_confirmed_manually")
+    private boolean isReservationConfirmedManually = false;
 
-    @Column(name = "recovery_number")
-    private String recoveryNumber;
+    @Column(name = "guest_receiving_auth_confirm")
+    private int guestReceivingAuthConfirm = 0;
 
-    @Column(name = "allow_editing_booking")
-    private boolean allowEditingBooking;
-
-    @Column(name = "min_before_editing_reservation_is_allowed")
-    private int minBeforeEditingReservationIsAllowed = 0;
+    @Column(name = "min_before_send_confirm_message")
+    private int minBeforeSendConfirmMessage = 0;
 
     @OneToMany(mappedBy = "restaurantConfiguration", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<BranchTimeRange> branchTimeRanges;

@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 public class BranchTimeRangeDTO {
     private Long id;
     private WeekDayItalian dayOfWeek;
+    private boolean isClosed;
     private List<TimeRange> timeRanges;
     private LocalDate particularDate;
 
@@ -33,6 +34,7 @@ public class BranchTimeRangeDTO {
 
     public static BranchTimeRangeDTO convert(BranchTimeRange branchTimeRange) {
         return BranchTimeRangeDTO.builder()
+                .isClosed(branchTimeRange.isClosed())
                 .id(branchTimeRange.getBranchTimeRangeId())
                 .dayOfWeek(branchTimeRange.getDayOfWeek())
                 .timeRanges(branchTimeRange.getTimeRanges())
@@ -52,6 +54,7 @@ public class BranchTimeRangeDTO {
     public static BranchTimeRange convertToEntity(BranchTimeRangeDTO branchTimeRangeDTO) {
         return BranchTimeRange.builder()
                 .branchTimeRangeId(branchTimeRangeDTO.getId())
+                .isClosed(branchTimeRangeDTO.isClosed())
                 .dayOfWeek(branchTimeRangeDTO.getDayOfWeek())
                 .timeRanges(branchTimeRangeDTO.getTimeRanges())
                 .particularDate(branchTimeRangeDTO.getParticularDate())

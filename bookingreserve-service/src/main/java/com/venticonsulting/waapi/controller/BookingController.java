@@ -1,5 +1,6 @@
 package com.venticonsulting.waapi.controller;
 
+import com.venticonsulting.waapi.entity.dto.BranchOpeningEditConfigurationRequest;
 import com.venticonsulting.waapi.entity.dto.RestaurantConfigurationDTO;
 import com.venticonsulting.waapi.entity.dto.UpdateRestaurantConfigurationRequest;
 import com.venticonsulting.waapi.service.BookingService;
@@ -46,5 +47,14 @@ public class BookingController {
     public RestaurantConfigurationDTO deleteTimeRange(@RequestParam long timeRangeId){
         return bookingService.deleteTimeRange(timeRangeId);
     }
+
+    @PostMapping(path = "/updateconfiguration")
+    @ResponseStatus(HttpStatus.OK)
+    public RestaurantConfigurationDTO updateConfiguration(@RequestBody BranchOpeningEditConfigurationRequest branchOpeningEditConfigurationRequest){
+
+        return bookingService.updateConfiguration(branchOpeningEditConfigurationRequest);
+    }
+
+
 
 }
