@@ -1,15 +1,15 @@
 package com.venticonsulting.waapi.service;
 
-import com.venticonsulting.waapi.entity.BranchTimeRange;
-import com.venticonsulting.waapi.entity.RestaurantConfiguration;
-import com.venticonsulting.waapi.entity.WaApiConfigEntity;
+import com.venticonsulting.waapi.entity.configuration.BranchTimeRange;
+import com.venticonsulting.waapi.entity.configuration.BranchConfiguration;
+import com.venticonsulting.waapi.entity.configuration.WaApiConfigEntity;
 import com.venticonsulting.waapi.entity.dto.*;
 import com.venticonsulting.waapi.entity.utils.WeekDayItalian;
 import com.venticonsulting.waapi.entity.waapi.CreateUpdateResponse;
 import com.venticonsulting.waapi.entity.waapi.MeResponse;
 import com.venticonsulting.waapi.entity.waapi.QrCodeResponse;
 import com.venticonsulting.waapi.repository.BranchTimeRangeRepository;
-import com.venticonsulting.waapi.repository.RestaurantConfigurationRepository;
+import com.venticonsulting.waapi.repository.BranchConfigurationRepository;
 import com.venticonsulting.waapi.repository.WaApiConfigRepository;
 import jakarta.el.MethodNotFoundException;
 import jakarta.transaction.Transactional;
@@ -26,36 +26,36 @@ import java.util.Optional;
 public class BookingService {
 
     private final WaApiConfigRepository waApiConfigRepository;
-    private final RestaurantConfigurationRepository restaurantConfigurationRepository;
+    private final BranchConfigurationRepository branchConfigurationRepository;
     private final WaApiService waApiService;
     private final BranchTimeRangeRepository branchTimeRangeRepository;
 
     public BookingService(WaApiConfigRepository waApiConfigRepository,
-                          RestaurantConfigurationRepository restaurantConfigurationRepository,
+                          BranchConfigurationRepository branchConfigurationRepository,
                           WaApiService waApiService,
                           BranchTimeRangeRepository branchTimeRangeRepository) {
 
         this.waApiConfigRepository = waApiConfigRepository;
-        this.restaurantConfigurationRepository = restaurantConfigurationRepository;
+        this.branchConfigurationRepository = branchConfigurationRepository;
         this.waApiService = waApiService;
         this.branchTimeRangeRepository = branchTimeRangeRepository;
     }
 
     @Transactional
-    public RestaurantConfigurationDTO configureNumberForWhatsAppMessaging(String branchCode) {
+    public BranchConfigurationDTO configureNumberForWhatsAppMessaging(String branchCode) {
 
         log.info("Create what's app configuration for branch with code {}" , branchCode);
-        Optional<RestaurantConfiguration> restaurantConfByBranchCode
-                = restaurantConfigurationRepository.findByBranchCode(branchCode);
+        Optional<BranchConfiguration> branchConfByBranchCode
+                = branchConfigurationRepository.findByBranchCode(branchCode);
 
-        if(restaurantConfByBranchCode.isEmpty()){
+        if(branchConfByBranchCode.isEmpty()){
 
             //configuro qui i giorni di apertura per il branch appena configurato
             configureOpeningTime(branchCode);
 
             log.info("There no configuration found for branch with code {}, let's create a brand new one.." , branchCode);
             CreateUpdateResponse createUpdateResponse = waApiService.createInstance();
-            haveSomeTimeToSleep(1000);
+            haveSomeTimeToSleep(2000);
 
             MeResponse meResponse;
             int maxIterations = 10;
@@ -67,7 +67,7 @@ public class BookingService {
 
                 if (meResponse != null
                         && !"success".equals(meResponse.getStatus())) {
-                    haveSomeTimeToSleep(1000);
+                    haveSomeTimeToSleep(2000);
                 }
 
                 currentIteration++;
@@ -84,7 +84,7 @@ public class BookingService {
 
             QrCodeResponse qrCodeResponse = waApiService.retrieveQrCode(createUpdateResponse.getInstance().getId());
 
-            Optional<RestaurantConfiguration> restaurantConfiguration = restaurantConfigurationRepository
+            Optional<BranchConfiguration> branchConfiguration = branchConfigurationRepository
                     .findByBranchCode(branchCode);
 
             WaApiConfigEntity waConfig = waApiConfigRepository.save(WaApiConfigEntity.builder()
@@ -99,43 +99,43 @@ public class BookingService {
                     .profilePicUrl("")
                     .message(meResponse.getMe().getMessage())
                     .explanation(meResponse.getMe().getExplanation())
-                    .restaurantConfiguration(restaurantConfiguration.get())
+                    .branchConfiguration(branchConfiguration.get())
                     .build());
 
 
-            return RestaurantConfigurationDTO
+            return BranchConfigurationDTO
                     .builder()
-                    .isReservationConfirmedManually(restaurantConfiguration.get().isReservationConfirmedManually())
+                    .isReservationConfirmedManually(branchConfiguration.get().isReservationConfirmedManually())
                     .bookingSlotInMinutes(0)
-                    .guestReceivingAuthConfirm(restaurantConfiguration.get().getGuestReceivingAuthConfirm())
-                    .restaurantConfId(restaurantConfiguration.get().getRestaurantConfId())
-                    .minBeforeSendConfirmMessage(restaurantConfiguration.get().getMinBeforeSendConfirmMessage())
-                    .guests(restaurantConfiguration.get().getGuests())
+                    .guestReceivingAuthConfirm(branchConfiguration.get().getGuestReceivingAuthConfirm())
+                    .branchConfId(branchConfiguration.get().getBranchConfId())
+                    .minBeforeSendConfirmMessage(branchConfiguration.get().getMinBeforeSendConfirmMessage())
+                    .guests(branchConfiguration.get().getGuests())
                     .branchCode(branchCode)
                     .waApiConfigDTO(WaApiConfigDTO.fromEntity(waConfig))
-                    .branchTimeRanges(BranchTimeRangeDTO.convertList(restaurantConfiguration.get().getBranchTimeRanges()))
+                    .branchTimeRanges(BranchTimeRangeDTO.convertList(branchConfiguration.get().getBranchTimeRanges()))
                     .build();
         }else {
             // retrieve status and if is in qr code try to get the qr code
             log.info("Retrieve status of waapi instance and if is in qr code try to get a new qr code to configure branch with code {}", branchCode);
-            MeResponse meResponse = waApiService.retrieveClientInfo(restaurantConfByBranchCode.get().getWaApiConfig().getInstanceId());
+            MeResponse meResponse = waApiService.retrieveClientInfo(branchConfByBranchCode.get().getWaApiConfig().getInstanceId());
 
             if("success".equalsIgnoreCase(meResponse.getStatus())
                     && "error".equalsIgnoreCase(meResponse.getMe().getStatus())){
-                QrCodeResponse qrCodeResponse = waApiService.retrieveQrCode(restaurantConfByBranchCode.get().getWaApiConfig().getInstanceId());
-                restaurantConfByBranchCode.get().getWaApiConfig().setLastQrCode(qrCodeResponse.getQrCode().getData().getQrCode());
-                restaurantConfByBranchCode.get().getWaApiConfig().setUpdateDate(new Date());
+                QrCodeResponse qrCodeResponse = waApiService.retrieveQrCode(branchConfByBranchCode.get().getWaApiConfig().getInstanceId());
+                branchConfByBranchCode.get().getWaApiConfig().setLastQrCode(qrCodeResponse.getQrCode().getData().getQrCode());
+                branchConfByBranchCode.get().getWaApiConfig().setUpdateDate(new Date());
             }
 
-            return RestaurantConfigurationDTO.fromEntity(restaurantConfByBranchCode.get());
+            return BranchConfigurationDTO.fromEntity(branchConfByBranchCode.get());
         }
     }
 
     private void configureOpeningTime(String branchCode) {
 
-        RestaurantConfiguration restaurantConfiguration = restaurantConfigurationRepository.save(
-                RestaurantConfiguration.builder()
-                        .restaurantConfId(0L)
+        BranchConfiguration branchConfiguration = branchConfigurationRepository.save(
+                BranchConfiguration.builder()
+                        .branchConfId(0L)
                         .isReservationConfirmedManually(false)
                         .minBeforeSendConfirmMessage(0)
                         .guestReceivingAuthConfirm(0)
@@ -152,7 +152,7 @@ public class BookingService {
         for (WeekDayItalian dayOfWeek : WeekDayItalian.values()) {
             if(!WeekDayItalian.FESTIVO.equals(dayOfWeek)){
                 BranchTimeRange timeRange = BranchTimeRange.builder()
-                        .restaurantConfiguration(restaurantConfiguration)
+                        .branchConfiguration(branchConfiguration)
                         .dayOfWeek(dayOfWeek)
                         .isClosed(true)
                         .timeRanges(new ArrayList<>())
@@ -175,27 +175,27 @@ public class BookingService {
     }
 
     @Transactional
-    public RestaurantConfigurationDTO checkWaApiStatus(String branchCode) {
+    public BranchConfigurationDTO checkWaApiStatus(String branchCode) {
 
         log.info("Retrieve waapi configuration for branch with code {}" , branchCode);
 
-        Optional<RestaurantConfiguration> restaurantConfiguration = restaurantConfigurationRepository.findByBranchCode(branchCode);
+        Optional<BranchConfiguration> branchConfiguration = branchConfigurationRepository.findByBranchCode(branchCode);
 
-        if(restaurantConfiguration.isPresent()) {
+        if(branchConfiguration.isPresent()) {
 
-            MeResponse meResponse = waApiService.retrieveClientInfo(restaurantConfiguration.get().getWaApiConfig().getInstanceId());
+            MeResponse meResponse = waApiService.retrieveClientInfo(branchConfiguration.get().getWaApiConfig().getInstanceId());
 
             if("success".equalsIgnoreCase(meResponse.getStatus())
                     && "success".equalsIgnoreCase(meResponse.getMe().getStatus())){
-                restaurantConfiguration.get().getWaApiConfig().setInstanceId(meResponse.getMe().getInstanceId());
-                restaurantConfiguration.get().getWaApiConfig().setFormattedNumber(meResponse.getMe().getData().getFormattedNumber());
-                restaurantConfiguration.get().getWaApiConfig().setDisplayName(meResponse.getMe().getData().getDisplayName());
-                restaurantConfiguration.get().getWaApiConfig().setProfilePicUrl(meResponse.getMe().getData().getProfilePicUrl());
-                restaurantConfiguration.get().getWaApiConfig().setInstanceStatus(meResponse.getStatus());
-                restaurantConfiguration.get().getWaApiConfig().setExplanation("");
-                restaurantConfiguration.get().getWaApiConfig().setMessage("");
-                restaurantConfiguration.get().getWaApiConfig().setLastQrCode("");
-                restaurantConfiguration.get().getWaApiConfig().setUpdateDate(new Date());
+                branchConfiguration.get().getWaApiConfig().setInstanceId(meResponse.getMe().getInstanceId());
+                branchConfiguration.get().getWaApiConfig().setFormattedNumber(meResponse.getMe().getData().getFormattedNumber());
+                branchConfiguration.get().getWaApiConfig().setDisplayName(meResponse.getMe().getData().getDisplayName());
+                branchConfiguration.get().getWaApiConfig().setProfilePicUrl(meResponse.getMe().getData().getProfilePicUrl());
+                branchConfiguration.get().getWaApiConfig().setInstanceStatus(meResponse.getStatus());
+                branchConfiguration.get().getWaApiConfig().setExplanation("");
+                branchConfiguration.get().getWaApiConfig().setMessage("");
+                branchConfiguration.get().getWaApiConfig().setLastQrCode("");
+                branchConfiguration.get().getWaApiConfig().setUpdateDate(new Date());
             }else if("success".equalsIgnoreCase(meResponse.getStatus())
                     && "error".equalsIgnoreCase(meResponse.getMe().getStatus())){
 
@@ -209,90 +209,90 @@ public class BookingService {
                 waApiService.rebootInstance(meResponse.getMe().getInstanceId());
                 haveSomeTimeToSleep(2000);
 
-                restaurantConfiguration.get().getWaApiConfig().setInstanceStatus(meResponse.getMe().getStatus());
-                restaurantConfiguration.get().getWaApiConfig().setExplanation(meResponse.getMe().getExplanation());
-                restaurantConfiguration.get().getWaApiConfig().setMessage(meResponse.getMe().getMessage());
-                restaurantConfiguration.get().getWaApiConfig().setLastQrCode("");
-                restaurantConfiguration.get().getWaApiConfig().setUpdateDate(new Date());
+                branchConfiguration.get().getWaApiConfig().setInstanceStatus(meResponse.getMe().getStatus());
+                branchConfiguration.get().getWaApiConfig().setExplanation(meResponse.getMe().getExplanation());
+                branchConfiguration.get().getWaApiConfig().setMessage(meResponse.getMe().getMessage());
+                branchConfiguration.get().getWaApiConfig().setLastQrCode("");
+                branchConfiguration.get().getWaApiConfig().setUpdateDate(new Date());
 
                 //TODO: manage status qr or booting after reboot
             }
 
-            return RestaurantConfigurationDTO.fromEntity(restaurantConfiguration.get());
+            return BranchConfigurationDTO.fromEntity(branchConfiguration.get());
         }
         return null;
     }
 
     @Transactional
-    public RestaurantConfigurationDTO reboot(String branchCode) {
+    public BranchConfigurationDTO reboot(String branchCode) {
         log.info("Reboot waapi configuration for branch with code {}" , branchCode);
 
-        Optional<RestaurantConfiguration> restaurantConfiguration = restaurantConfigurationRepository.findByBranchCode(branchCode);
+        Optional<BranchConfiguration> branchConfiguration = branchConfigurationRepository.findByBranchCode(branchCode);
 
-        if(restaurantConfiguration.isPresent()) {
+        if(branchConfiguration.isPresent()) {
 
-            waApiService.rebootInstance(restaurantConfiguration.get().getWaApiConfig().getInstanceId());
+            waApiService.rebootInstance(branchConfiguration.get().getWaApiConfig().getInstanceId());
             haveSomeTimeToSleep(4000);
 
-            MeResponse meResponse = waApiService.retrieveClientInfo(restaurantConfiguration.get().getWaApiConfig().getInstanceId());
+            MeResponse meResponse = waApiService.retrieveClientInfo(branchConfiguration.get().getWaApiConfig().getInstanceId());
 
             if("success".equalsIgnoreCase(meResponse.getStatus())
                     && "success".equalsIgnoreCase(meResponse.getMe().getStatus())){
-                restaurantConfiguration.get().getWaApiConfig().setInstanceId(meResponse.getMe().getInstanceId());
-                restaurantConfiguration.get().getWaApiConfig().setFormattedNumber(meResponse.getMe().getData().getFormattedNumber());
-                restaurantConfiguration.get().getWaApiConfig().setDisplayName(meResponse.getMe().getData().getDisplayName());
-                restaurantConfiguration.get().getWaApiConfig().setProfilePicUrl(meResponse.getMe().getData().getProfilePicUrl());
-                restaurantConfiguration.get().getWaApiConfig().setInstanceStatus(meResponse.getMe().getStatus());
-                restaurantConfiguration.get().getWaApiConfig().setExplanation("");
-                restaurantConfiguration.get().getWaApiConfig().setMessage("");
-                restaurantConfiguration.get().getWaApiConfig().setLastQrCode("");
-                restaurantConfiguration.get().getWaApiConfig().setUpdateDate(new Date());
+                branchConfiguration.get().getWaApiConfig().setInstanceId(meResponse.getMe().getInstanceId());
+                branchConfiguration.get().getWaApiConfig().setFormattedNumber(meResponse.getMe().getData().getFormattedNumber());
+                branchConfiguration.get().getWaApiConfig().setDisplayName(meResponse.getMe().getData().getDisplayName());
+                branchConfiguration.get().getWaApiConfig().setProfilePicUrl(meResponse.getMe().getData().getProfilePicUrl());
+                branchConfiguration.get().getWaApiConfig().setInstanceStatus(meResponse.getMe().getStatus());
+                branchConfiguration.get().getWaApiConfig().setExplanation("");
+                branchConfiguration.get().getWaApiConfig().setMessage("");
+                branchConfiguration.get().getWaApiConfig().setLastQrCode("");
+                branchConfiguration.get().getWaApiConfig().setUpdateDate(new Date());
             }
 
-            return RestaurantConfigurationDTO.fromEntity(restaurantConfiguration.get());
+            return BranchConfigurationDTO.fromEntity(branchConfiguration.get());
         }
         return null;
     }
 
 
     @Transactional
-    public RestaurantConfigurationDTO updateTimeRangeConfiguration(UpdateRestaurantConfigurationRequest updateRestaurantConfigurationRequest) {
-        log.info("Updating restaurant configuration for branch with code {}, Booking Ids to update {}, Times Slot {} ",
-                updateRestaurantConfigurationRequest.getBranchCode(),
-                updateRestaurantConfigurationRequest.getListConfIds(),
-                updateRestaurantConfigurationRequest.getTimeRanges().toString());
+    public BranchConfigurationDTO updateTimeRangeConfiguration(UpdateBranchConfigurationRequest updateBranchConfigurationRequest) {
+        log.info("Updating branch configuration for branch with code {}, Booking Ids to update {}, Times Slot {} ",
+                updateBranchConfigurationRequest.getBranchCode(),
+                updateBranchConfigurationRequest.getListConfIds(),
+                updateBranchConfigurationRequest.getTimeRanges().toString());
 
-        Optional<List<BranchTimeRange>> byRestaurantConfIdIn
-                = branchTimeRangeRepository.findByBranchTimeRangeId(updateRestaurantConfigurationRequest.getListConfIds());
+        Optional<List<BranchTimeRange>> byBranchTimeRangeId
+                = branchTimeRangeRepository.findByBranchTimeRangeId(updateBranchConfigurationRequest.getListConfIds());
 
-        if(byRestaurantConfIdIn.isPresent()){
+        if(byBranchTimeRangeId.isPresent()){
 
-            for(BranchTimeRange branchTimeRange : byRestaurantConfIdIn.get()) {
+            for(BranchTimeRange branchTimeRange : byBranchTimeRangeId.get()) {
                 branchTimeRange.getTimeRanges().clear();
-                branchTimeRange.getTimeRanges().addAll(TimeRangeUpdateRequest.convertTimeRange(updateRestaurantConfigurationRequest.getTimeRanges()));
+                branchTimeRange.getTimeRanges().addAll(TimeRangeUpdateRequest.convertTimeRange(updateBranchConfigurationRequest.getTimeRanges()));
             }
         }else{
             throw new MethodNotFoundException("Method not implemented yet");
         }
 
-        Optional<RestaurantConfiguration> restaurantConfiguration = restaurantConfigurationRepository.findByBranchCode(updateRestaurantConfigurationRequest.getBranchCode());
+        Optional<BranchConfiguration> branchConfiguration = branchConfigurationRepository.findByBranchCode(updateBranchConfigurationRequest.getBranchCode());
 
-        return RestaurantConfigurationDTO.fromEntity(restaurantConfiguration.get());
+        return BranchConfigurationDTO.fromEntity(branchConfiguration.get());
 
     }
 
 
     @Transactional
-    public RestaurantConfigurationDTO deleteTimeRange(long timeRangeId) {
+    public BranchConfigurationDTO deleteTimeRange(long timeRangeId) {
         //TODO to implement
         return null;
     }
 
     @Transactional
-    public RestaurantConfigurationDTO updateConfiguration(BranchOpeningEditConfigurationRequest branchOpeningEditConfigurationRequest) {
+    public BranchConfigurationDTO updateConfiguration(BranchOpeningEditConfigurationRequest branchOpeningEditConfigurationRequest) {
 
         log.info("Updating reservation configuration for branch with code {} ", branchOpeningEditConfigurationRequest.getBranchCode());
-        Optional<RestaurantConfiguration> byBranchCode = restaurantConfigurationRepository.findByBranchCode(branchOpeningEditConfigurationRequest.getBranchCode());
+        Optional<BranchConfiguration> byBranchCode = branchConfigurationRepository.findByBranchCode(branchOpeningEditConfigurationRequest.getBranchCode());
 
         if(byBranchCode.isPresent()){
 
@@ -302,7 +302,7 @@ public class BookingService {
             byBranchCode.get().setGuestReceivingAuthConfirm(branchOpeningEditConfigurationRequest.getGuestReceivingAuthConfirm());
             byBranchCode.get().setMinBeforeSendConfirmMessage(branchOpeningEditConfigurationRequest.getMinBeforeSendConfirmMessage());
 
-            return RestaurantConfigurationDTO.fromEntity(byBranchCode.get());
+            return BranchConfigurationDTO.fromEntity(byBranchCode.get());
         }else{
             return null;
         }

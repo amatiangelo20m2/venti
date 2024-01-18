@@ -1,4 +1,4 @@
-package com.venticonsulting.waapi.entity;
+package com.venticonsulting.waapi.entity.booking;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

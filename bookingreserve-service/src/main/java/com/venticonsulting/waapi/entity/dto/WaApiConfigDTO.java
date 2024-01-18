@@ -1,6 +1,6 @@
 package com.venticonsulting.waapi.entity.dto;
 
-import com.venticonsulting.waapi.entity.WaApiConfigEntity;
+import com.venticonsulting.waapi.entity.configuration.WaApiConfigEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

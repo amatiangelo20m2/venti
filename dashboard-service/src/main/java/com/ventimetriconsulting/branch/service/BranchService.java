@@ -5,7 +5,7 @@ import com.ventimetriconsulting.branch.entity.dto.BranchCreationEntity;
 import com.ventimetriconsulting.branch.entity.dto.BranchResponseEntity;
 import com.ventimetriconsulting.branch.repository.BranchRepository;
 import com.ventimetriconsulting.branch.repository.BranchUserRepository;
-import com.ventimetriconsulting.exception.BranchNotFoundException;
+import com.ventimetriconsulting.branch.exception.BranchNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

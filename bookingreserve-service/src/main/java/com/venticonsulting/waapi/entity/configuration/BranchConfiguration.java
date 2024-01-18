@@ -1,4 +1,4 @@
-package com.venticonsulting.waapi.entity;
+package com.venticonsulting.waapi.entity.configuration;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -6,32 +6,32 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-@Entity
-@Table(name = "restaurant_configuration",
+@Entity(name = "BranchConfiguration")
+@Table(name = "branch_configuration",
         uniqueConstraints=
-        @UniqueConstraint(columnNames={"restaurant_conf_id", "branch_code"}))
+        @UniqueConstraint(columnNames={"branch_conf_id", "branch_code"}))
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
 @ToString
-public class RestaurantConfiguration implements Serializable {
+public class BranchConfiguration implements Serializable {
 
     @Id
     @SequenceGenerator(
-            name = "restaurant_conf_id",
-            sequenceName = "restaurant_conf_id",
+            name = "branch_conf_id",
+            sequenceName = "branch_conf_id",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "restaurant_conf_id"
+            generator = "branch_conf_id"
     )
     @Column(
-            name = "restaurant_conf_id",
+            name = "branch_conf_id",
             updatable = false
     )
-    private Long restaurantConfId;
+    private Long branchConfId;
 
     @Column(
             name = "branch_code",
@@ -55,10 +55,10 @@ public class RestaurantConfiguration implements Serializable {
     @Column(name = "min_before_send_confirm_message")
     private int minBeforeSendConfirmMessage = 0;
 
-    @OneToMany(mappedBy = "restaurantConfiguration", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "branchConfiguration", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<BranchTimeRange> branchTimeRanges;
 
-    @OneToOne(mappedBy = "restaurantConfiguration", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "branchConfiguration", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private WaApiConfigEntity waApiConfig;
 
     private Date creationDate;

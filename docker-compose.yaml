@@ -74,22 +74,22 @@ services:
       - "5433:5433"
     command: -p 5433
     restart: always
-  db20m2booking:
-    container_name: db20m2booking
-    image: postgres:alpine
-    environment:
-      POSTGRES_DB: db20m2booking
-      POSTGRES_USER: zLw473vAW8ELDkV
-      POSTGRES_PASSWORD: QyuhTTLOCOWfdFu
-      PGDATA: /data/postgres
-    volumes:
-      - ./db20m2databooking:/data/postgres
-    expose:
-      - "5434"
-    ports:
-      - "5434:5434"
-    command: -p 5434
-    restart: always
+#  db20m2booking:
+#    container_name: db20m2booking
+#    image: postgres:alpine
+#    environment:
+#      POSTGRES_DB: db20m2booking
+#      POSTGRES_USER: zLw473vAW8ELDkV
+#      POSTGRES_PASSWORD: QyuhTTLOCOWfdFu
+#      PGDATA: /data/postgres
+#    volumes:
+#      - ./db20m2databooking:/data/postgres
+#    expose:
+#      - "5434"
+#    ports:
+#      - "5434:5434"
+#    command: -p 5434
+#    restart: always
   pgadmin20m2:
     container_name: pgadmin20m2
     image: dpage/pgadmin4
@@ -99,29 +99,29 @@ services:
       PGADMIN_DEFAULT_PASSWORD: EM6MbK55bpHUtgVN
     depends_on:
       - db20m2
-      - db20m2booking
+#      - db20m2booking
     ports:
       - "5050:80"
-  dbmongo20m2:
-    image: mongo:latest
-    container_name: customer-mongo
-    restart: always
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: booking20m2
-      MONGO_INITDB_ROOT_PASSWORD: booking20m2
+#  dbmongo20m2:
+#    image: mongo:latest
+#    container_name: customer-mongo
+#    restart: always
+#    ports:
+#      - "27017:27017"
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: booking20m2
+#      MONGO_INITDB_ROOT_PASSWORD: booking20m2
 
-  mongo-express:
-    image: mongo-express:latest
-    container_name: 20m2-mongo-express
-    restart: always
-    ports:
-      - 8081:8081
-    environment:
-      ME_CONFIG_MONGODB_SERVER: mongo
-      ME_CONFIG_MONGODB_ADMINUSERNAME: booking20m2
-      ME_CONFIG_MONGODB_ADMINPASSWORD: booking20m2
+#  mongo-express:
+#    image: mongo-express:latest
+#    container_name: 20m2-mongo-express
+#    restart: always
+#    ports:
+#      - 8081:8081
+#    environment:
+#      ME_CONFIG_MONGODB_SERVER: mongo
+#      ME_CONFIG_MONGODB_ADMINUSERNAME: booking20m2
+#      ME_CONFIG_MONGODB_ADMINPASSWORD: booking20m2
 
 #  discovery-server:
 #    image: amatiangelo1990/20m2:discovery-server

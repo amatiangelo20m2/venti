@@ -1,4 +1,4 @@
-package com.venticonsulting.waapi.entity;
+package com.venticonsulting.waapi.entity.configuration;
 
 import com.venticonsulting.waapi.entity.utils.WeekDayItalian;
 import jakarta.persistence.*;
@@ -34,7 +34,7 @@ public class BranchTimeRange implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_conf_id", nullable = false)
-    private RestaurantConfiguration restaurantConfiguration;
+    private BranchConfiguration branchConfiguration;
 
     @Column(name = "day_of_week", nullable = false)
     @Enumerated(EnumType.STRING)

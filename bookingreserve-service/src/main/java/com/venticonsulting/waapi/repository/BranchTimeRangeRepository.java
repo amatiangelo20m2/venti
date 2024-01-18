@@ -1,7 +1,6 @@
 package com.venticonsulting.waapi.repository;
 
-import com.venticonsulting.waapi.entity.BranchTimeRange;
-import com.venticonsulting.waapi.entity.RestaurantConfiguration;
+import com.venticonsulting.waapi.entity.configuration.BranchTimeRange;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

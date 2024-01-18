@@ -1,7 +1,11 @@
-package com.venticonsulting.waapi.entity;
+package com.venticonsulting.waapi.entity.booking;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "booking",
@@ -37,7 +41,14 @@ public class Booking {
     )
     private String branchCode;
 
+    @Column(name = "booking_date")
+    private LocalDate date;
 
+    @Column(name = "booking_time")
+    private LocalTime time;
+
+    @Column(name = "insert_booking_time")
+    private Date insertBookingTime;
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)

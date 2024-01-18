@@ -1,6 +1,6 @@
 package com.venticonsulting.waapi.entity.dto;
 
-import com.venticonsulting.waapi.entity.TimeRange;
+import com.venticonsulting.waapi.entity.configuration.TimeRange;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

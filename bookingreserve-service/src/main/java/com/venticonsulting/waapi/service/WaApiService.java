@@ -22,6 +22,8 @@ public class WaApiService {
     }
 
     public CreateUpdateResponse createInstance(){
+
+
         log.info("Calling /api/v1/instances method to create a waapi instance..");
 
         return waapiWebClientBean.post()
@@ -152,4 +154,39 @@ public class WaApiService {
             log.warn("Sleep time between creation instance on waapi server not working. Nothing bad actually, the process can be go on");
         }
     }
+
+    //TODO : same than the method that call it - chatId format wrong (check this part for future integration of massive sending message)
+//    public void sendMessageWithImage(String instanceId, List<String> numbers, String urlMedia, String imageName, String message){
+//
+//        String body = String.format("{\"chatId\":\"%s\",\"mediaUrl\":\"%s\",\"mediaCaption\":\"%s\",\"mediaName\":\"%s\"}",
+//                numbers.get(0),
+//                urlMedia,
+//                message,
+//                imageName);
+//
+//        log.info("Send message : {}", body);
+//
+//        waapiWebClientBean.post()
+//                .uri("/api/v1/instances/" + instanceId + "/client/action/send-media")
+//                .body(Mono.just("{\n" +
+//                        "    \"mediaUrl\": \"http://20m2official.it/wp-content/uploads/2024/01/WhatsApp-Image-2024-01-16-at-17.01.42.jpeg\",\n" +
+//                        "    \"chatId\": \"393454937047@c.us\",\n" +
+//                        "    \"mediaCaption\": \"Giovedì sera si accendono le luci a Monopoli!  \uD83C\uDFB8\uD83C\uDFA4\\nPreparati a vivere l'emozione del rock puro con la cover band più esplosiva dei Guns N' Rose. Rivivi i classici che hanno fatto la storia del rock in una serata indimenticabile. \\n\\n \uD83D\uDD25 Lasciati travolgere da hit come \\\" Sweet Child O ' Mine\\\" e \\\"November Rain\\\" in una location mozzafiato!  \\n\uD83D\uDCCD Dove? Monopoli, il cuore pulsante del rock. \\n\\n⏰ Quando? Giovedì sera - L' esperienza rock inizia quando cala il sole!La Cover Band dei Guns n’ Roses ti aspetta per una notte di pura adrenalina rock!\\n\\nPRENOTA IL TUO TAVOLO: https: //20m2official.it/bookingmonopoli\",\n" +
+//                        "    \"mediaName\": \"AG31194-scaled.jpg\"\n" +
+//                        "}"), String.class)
+//                .retrieve()
+//                .onStatus(
+//                        HttpStatusCode::is4xxClientError,
+//                        clientResponse -> Mono.error(new Exception("Client Error"))
+//                )
+//                .onStatus(
+//                        HttpStatusCode::is5xxServerError,
+//                        clientResponse -> Mono.error(new Exception("Server Error"))
+//                )
+//                .bodyToMono(String.class)
+//                .subscribe(responseBody -> {
+//                    log.info("Method send message failed for instance with id {}. Response: {}", instanceId, responseBody);
+//                });
+//    }
+
 }

@@ -1,4 +1,4 @@
-package com.venticonsulting.waapi.entity;
+package com.venticonsulting.waapi.entity.configuration;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -47,6 +47,6 @@ public class WaApiConfigEntity implements Serializable {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_conf_id")
-    private RestaurantConfiguration restaurantConfiguration;
+    private BranchConfiguration branchConfiguration;
 
 }

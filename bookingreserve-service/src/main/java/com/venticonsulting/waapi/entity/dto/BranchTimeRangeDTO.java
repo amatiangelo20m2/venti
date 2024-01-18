@@ -1,11 +1,10 @@
 package com.venticonsulting.waapi.entity.dto;
 
-import com.venticonsulting.waapi.entity.BranchTimeRange;
-import com.venticonsulting.waapi.entity.TimeRange;
+import com.venticonsulting.waapi.entity.configuration.BranchTimeRange;
+import com.venticonsulting.waapi.entity.configuration.TimeRange;
 import com.venticonsulting.waapi.entity.utils.WeekDayItalian;
 import lombok.*;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;

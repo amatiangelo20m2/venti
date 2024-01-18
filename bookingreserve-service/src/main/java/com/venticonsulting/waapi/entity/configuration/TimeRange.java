@@ -1,4 +1,4 @@
-package com.venticonsulting.waapi.entity;
+package com.venticonsulting.waapi.entity.configuration;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

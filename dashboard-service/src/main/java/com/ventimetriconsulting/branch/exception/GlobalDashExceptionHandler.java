@@ -1,4 +1,4 @@
-package com.ventimetriconsulting.exception;
+package com.ventimetriconsulting.branch.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
