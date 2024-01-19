@@ -3,6 +3,7 @@ package com.venticonsulting.branchconf.bookingconf.service;
 import com.venticonsulting.branchconf.bookingconf.entity.configuration.BookingForm;
 import com.venticonsulting.branchconf.bookingconf.entity.configuration.BranchConfiguration;
 import com.venticonsulting.branchconf.bookingconf.entity.configuration.BranchTimeRange;
+import com.venticonsulting.branchconf.bookingconf.entity.configuration.FormType;
 import com.venticonsulting.branchconf.bookingconf.entity.dto.*;
 import com.venticonsulting.branchconf.bookingconf.entity.utils.WeekDayItalian;
 import com.venticonsulting.branchconf.bookingconf.repository.BookingFormRespository;
@@ -154,9 +155,11 @@ public class BookingService {
 
         BookingForm bookingForm = bookingFormRespository.save(
                 BookingForm.builder()
-                        .bookingFormId(0L)
+                        .formId(0L)
                         .isDefaultForm(true)
-                        .formName("Form Prenotazione Default")
+                        .formType(FormType.BOOKING_FORM)
+                        .redirectPage("")
+                        .formName("Form Default")
                         .branchConfiguration(branchConfiguration)
                         .creationDate(new Date())
                         .build());

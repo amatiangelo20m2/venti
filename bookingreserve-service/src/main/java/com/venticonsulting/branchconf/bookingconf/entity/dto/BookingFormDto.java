@@ -1,6 +1,8 @@
 package com.venticonsulting.branchconf.bookingconf.entity.dto;
 
 import com.venticonsulting.branchconf.bookingconf.entity.configuration.BookingForm;
+import com.venticonsulting.branchconf.bookingconf.entity.configuration.FormType;
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +18,11 @@ import java.util.stream.Collectors;
 public class BookingFormDto {
     private String formCode;
     private String formName;
+
     private boolean isDefaultForm;
+    private FormType formType;
+    private String redirectPage;
+
     private List<BranchTimeRangeDTO> branchTimeRanges;
 
     public static BookingFormDto fromEntity(BookingForm bookingForm){
@@ -24,6 +30,8 @@ public class BookingFormDto {
                 .formCode(bookingForm.getFormCode())
                 .formName(bookingForm.getFormName())
                 .isDefaultForm(bookingForm.isDefaultForm())
+                .formType(bookingForm.getFormType())
+                .redirectPage(bookingForm.getRedirectPage())
                 .branchTimeRanges(BranchTimeRangeDTO.convertList(bookingForm.getBranchTimeRanges()))
                 .build();
     }

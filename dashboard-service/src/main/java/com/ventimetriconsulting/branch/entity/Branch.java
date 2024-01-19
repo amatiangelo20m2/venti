@@ -50,6 +50,8 @@ public class Branch {
     private String vat = "";
     @Enumerated
     private BranchType type;
+    @Lob
+    private byte[] logoImage;
 
     @PrePersist
     public void generateUniqueCode() {

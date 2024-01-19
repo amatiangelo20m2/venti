@@ -18,4 +18,5 @@ public class BranchCreationEntity {
     private String vat;
     private BranchType type;
     private String userCode;
+    private byte[] logoImage;
 }

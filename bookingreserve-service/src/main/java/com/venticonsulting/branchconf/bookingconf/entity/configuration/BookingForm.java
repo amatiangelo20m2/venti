@@ -7,10 +7,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-@Entity(name = "BookingForm")
-@Table(name = "booking_form",
+@Entity(name = "Form")
+@Table(name = "form",
         uniqueConstraints=
-        @UniqueConstraint(columnNames={"booking_form_id"}))
+        @UniqueConstraint(columnNames={"form_id"}))
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -20,19 +20,19 @@ public class BookingForm {
 
     @Id
     @SequenceGenerator(
-            name = "booking_form_id",
-            sequenceName = "booking_form_id",
+            name = "form_id",
+            sequenceName = "form_id",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "booking_form_id"
+            generator = "form_id"
     )
     @Column(
-            name = "booking_form_id",
+            name = "form_id",
             updatable = false
     )
-    private Long bookingFormId;
+    private Long formId;
 
     @Column(
             name = "form_code",
@@ -41,9 +41,15 @@ public class BookingForm {
     private String formCode;
 
     private String formName;
-
     private boolean isDefaultForm;
 
+    @Column(name = "form_type")
+    private FormType formType;
+
+    @Column(name = "redirect_page")
+    private String redirectPage;
+
+    @Column(name = "creation_date")
     private Date creationDate;
 
     @ManyToOne(fetch = FetchType.LAZY)

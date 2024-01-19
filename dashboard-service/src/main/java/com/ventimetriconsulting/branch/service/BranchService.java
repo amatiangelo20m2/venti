@@ -25,8 +25,6 @@ public class BranchService {
 
     private BranchUserRepository branchUserRepository;
 
-    private final WebClient.Builder webClientBuilder;
-
     @Transactional
     public BranchResponseEntity createBranch(BranchCreationEntity branchCreationEntity) {
 
@@ -46,6 +44,7 @@ public class BranchService {
                         .email(branchCreationEntity.getEmail())
                         .phoneNumber(branchCreationEntity.getPhone())
                         .type(branchCreationEntity.getType())
+                        .logoImage(branchCreationEntity.getLogoImage())
                         .build());
 
         branchUserRepository.save(BranchUser.builder()
@@ -64,6 +63,7 @@ public class BranchService {
                 .type(savedBranch.getType())
                 .name(savedBranch.getName())
                 .role(Role.PROPRIETARIO)
+                .logoImage(savedBranch.getLogoImage())
                 .build();
     }
 
@@ -91,6 +91,7 @@ public class BranchService {
                 .vat(branchUser.getBranch().getVat())
                 .type(branchUser.getBranch().getType())
                 .branchCode(branchUser.getBranch().getBranchCode())
+                .logoImage(branchUser.getBranch().getLogoImage())
                 .role(branchUser.getRole())
                 .build();
     }
