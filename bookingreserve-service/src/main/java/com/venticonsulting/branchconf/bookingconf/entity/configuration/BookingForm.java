@@ -52,6 +52,9 @@ public class BookingForm {
     @Column(name = "creation_date")
     private Date creationDate;
 
+    @Column(name = "tag_list")
+    private String tagList;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "branch_conf_id", nullable = false)
     private BranchConfiguration branchConfiguration;
@@ -67,6 +70,10 @@ public class BookingForm {
     private String generateUniqueHexCode() {
         String uuid = UUID.randomUUID().toString().replace("-", "");
         return "F" + uuid;
+    }
+
+    public enum FormType {
+        BOOKING_FORM, REDIRECT_FORM, EVENT
     }
 
 }

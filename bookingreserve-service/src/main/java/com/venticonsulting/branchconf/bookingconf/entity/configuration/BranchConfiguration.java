@@ -3,6 +3,7 @@ package com.venticonsulting.branchconf.bookingconf.entity.configuration;
 import com.venticonsulting.branchconf.waapiconf.entity.WaApiConfigEntity;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -56,13 +57,21 @@ public class BranchConfiguration implements Serializable {
     @Column(name = "min_before_send_confirm_message")
     private int minBeforeSendConfirmMessage = 0;
 
+    @Column(name = "max_table_number")
+    private int maxTableNumber = 0;
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "branch_conf_id")
+    private List<FormTag> tags;
 
     @OneToMany(mappedBy = "branchConfiguration", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<BookingForm> bookingForms;
 
     @OneToOne(mappedBy = "branchConfiguration", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private WaApiConfigEntity waApiConfig;
+
+    @Column(name = "last_wa_api_check")
+    private Date lastWaApiConfCheck;
 
     private Date creationDate;
 

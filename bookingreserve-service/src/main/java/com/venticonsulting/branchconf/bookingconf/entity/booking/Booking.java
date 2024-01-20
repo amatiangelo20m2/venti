@@ -47,6 +47,12 @@ public class Booking {
     @Column(name = "booking_time")
     private LocalTime time;
 
+    @Column
+    private int guest;
+
+    @Column
+    private String requests;
+
     @Column(name = "insert_booking_time")
     private Date insertBookingTime;
 

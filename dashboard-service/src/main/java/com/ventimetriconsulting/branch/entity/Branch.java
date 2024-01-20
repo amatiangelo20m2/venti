@@ -48,8 +48,10 @@ public class Branch {
             unique = true)
     private String phoneNumber;
     private String vat = "";
+
     @Enumerated
     private BranchType type;
+
     @Lob
     private byte[] logoImage;
 

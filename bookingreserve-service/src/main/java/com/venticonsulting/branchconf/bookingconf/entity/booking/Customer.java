@@ -54,7 +54,7 @@ public class Customer implements Serializable {
     private boolean treatmentPersonalData;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
     private List<Booking> bookings;
 
 }

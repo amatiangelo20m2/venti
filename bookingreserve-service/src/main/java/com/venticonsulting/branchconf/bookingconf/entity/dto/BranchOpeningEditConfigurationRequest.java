@@ -13,5 +13,6 @@ public class BranchOpeningEditConfigurationRequest {
     private int bookingSlotInMinutes;
     private boolean isReservationConfirmedManually;
     private int guestReceivingAuthConfirm;
+    private int maxTableNumber;
     private int minBeforeSendConfirmMessage;
 }

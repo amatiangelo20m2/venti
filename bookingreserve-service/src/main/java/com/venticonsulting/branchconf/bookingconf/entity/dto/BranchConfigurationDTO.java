@@ -1,7 +1,7 @@
 package com.venticonsulting.branchconf.bookingconf.entity.dto;
 
-import com.venticonsulting.branchconf.bookingconf.entity.configuration.BookingForm;
 import com.venticonsulting.branchconf.bookingconf.entity.configuration.BranchConfiguration;
+import com.venticonsulting.branchconf.bookingconf.entity.configuration.FormTag;
 import com.venticonsulting.branchconf.waapiconf.dto.WaApiConfigDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +22,8 @@ public class BranchConfigurationDTO {
     private boolean isReservationConfirmedManually;
     private int guestReceivingAuthConfirm;
     private int minBeforeSendConfirmMessage;
+    private int maxTableNumber;
+    private List<FormTag> tags;
     private WaApiConfigDTO waApiConfigDTO;
     private List<BookingFormDto> bookingFormList;
 
@@ -37,7 +39,8 @@ public class BranchConfigurationDTO {
                 .minBeforeSendConfirmMessage(branchConfiguration.getMinBeforeSendConfirmMessage())
                 .waApiConfigDTO(WaApiConfigDTO.fromEntity(branchConfiguration.getWaApiConfig()))
                 .bookingFormList(BookingFormDto.convertList(branchConfiguration.getBookingForms()))
+                .tags(branchConfiguration.getTags())
+                .maxTableNumber(branchConfiguration.getMaxTableNumber())
                 .build();
     }
-
 }
