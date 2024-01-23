@@ -35,9 +35,8 @@ public class BranchUser {
     @JoinColumn(name = "branch_code")
     private Branch branch;
 
-    @Column(
-            name = "user_code"
-    )
+    @Column(name = "user_code")
     private String userCode;
+
     private Role role;
 }

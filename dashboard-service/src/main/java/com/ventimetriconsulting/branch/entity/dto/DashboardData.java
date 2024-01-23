@@ -12,5 +12,6 @@ import java.util.List;
 @Builder
 @ToString
 public class DashboardData {
+
     List<BranchResponseEntity> branches;
 }

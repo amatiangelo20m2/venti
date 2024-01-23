@@ -55,12 +55,13 @@ public class BookingForm {
     @Column(name = "tag_list")
     private String tagList;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "branch_conf_id", nullable = false)
     private BranchConfiguration branchConfiguration;
 
-    @OneToMany(mappedBy = "bookingForm", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "bookingForm", fetch = FetchType.LAZY)
     private List<BranchTimeRange> branchTimeRanges;
+
 
     @PrePersist
     public void generateUniqueCode() {

@@ -2,12 +2,12 @@ package com.venticonsulting.branchconf.bookingconf.entity.dto;
 
 import com.venticonsulting.branchconf.bookingconf.entity.configuration.BranchConfiguration;
 import com.venticonsulting.branchconf.bookingconf.entity.configuration.FormTag;
-import com.venticonsulting.branchconf.waapiconf.dto.WaApiConfigDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -24,7 +24,19 @@ public class BranchConfigurationDTO {
     private int minBeforeSendConfirmMessage;
     private int maxTableNumber;
     private List<FormTag> tags;
-    private WaApiConfigDTO waApiConfigDTO;
+    private String instanceId;
+    private String displayName;
+    private String formattedNumber;
+    private String profilePicUrl;
+    private String lastQrCode;
+    private String owner;
+    private Date instanceCreationDate;
+    private Date instanceUpdateDate;
+    private String instanceStatus;
+    private String message;
+    private String explanation;
+    private Date lastWaApiConfCheck;
+    private Date branchConfCreationDate;
     private List<BookingFormDto> bookingFormList;
 
 
@@ -37,9 +49,21 @@ public class BranchConfigurationDTO {
                 .isReservationConfirmedManually(branchConfiguration.isReservationConfirmedManually())
                 .guestReceivingAuthConfirm(branchConfiguration.getGuestReceivingAuthConfirm())
                 .minBeforeSendConfirmMessage(branchConfiguration.getMinBeforeSendConfirmMessage())
-                .waApiConfigDTO(WaApiConfigDTO.fromEntity(branchConfiguration.getWaApiConfig()))
-                .bookingFormList(BookingFormDto.convertList(branchConfiguration.getBookingForms()))
                 .tags(branchConfiguration.getTags())
+                .instanceId(branchConfiguration.getInstanceId())
+                .displayName(branchConfiguration.getDisplayName())
+                .formattedNumber(branchConfiguration.getFormattedNumber())
+                .profilePicUrl(branchConfiguration.getProfilePicUrl())
+                .lastQrCode(branchConfiguration.getLastQrCode())
+                .owner(branchConfiguration.getOwner())
+                .instanceCreationDate(branchConfiguration.getInstanceCreationDate())
+                .instanceUpdateDate(branchConfiguration.getInstanceUpdateDate())
+                .instanceStatus(branchConfiguration.getInstanceStatus())
+                .message(branchConfiguration.getMessage())
+                .explanation(branchConfiguration.getExplanation())
+                .lastWaApiConfCheck(branchConfiguration.getLastWaApiConfCheck())
+                .branchConfCreationDate(branchConfiguration.getBranchConfCreationDate())
+                .bookingFormList(BookingFormDto.convertList(branchConfiguration.getBookingForms()))
                 .maxTableNumber(branchConfiguration.getMaxTableNumber())
                 .build();
     }

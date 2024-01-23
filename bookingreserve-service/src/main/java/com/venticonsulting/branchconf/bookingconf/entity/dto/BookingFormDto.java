@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +37,7 @@ public class BookingFormDto {
     }
 
     public static List<BookingFormDto> convertList(List<BookingForm> bookingForms) {
+        if(bookingForms == null) return new ArrayList<>();
         return bookingForms.stream()
                 .map(BookingFormDto::fromEntity)
                 .collect(Collectors.toList());

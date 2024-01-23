@@ -71,7 +71,6 @@ public class WaApiService {
                 )
                 .bodyToMono(String.class)
                 .map(responseBody -> {
-
                     log.info("Response from [api/v1/instances/{}/client/me] wa api: {}", instanceCode, responseBody);
                     haveSomeTimeToSleep(500);
                     try {

@@ -52,7 +52,7 @@ public class Branch {
     @Enumerated
     private BranchType type;
 
-    @Lob
+    @Column(name = "logo_image", columnDefinition = "BLOB")
     private byte[] logoImage;
 
     @PrePersist

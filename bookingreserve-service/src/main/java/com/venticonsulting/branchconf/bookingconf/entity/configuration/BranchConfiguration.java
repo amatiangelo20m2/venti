@@ -1,8 +1,8 @@
 package com.venticonsulting.branchconf.bookingconf.entity.configuration;
 
-import com.venticonsulting.branchconf.waapiconf.entity.WaApiConfigEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -14,9 +14,12 @@ import java.util.List;
         @UniqueConstraint(columnNames={"branch_conf_id", "branch_code"}))
 @AllArgsConstructor
 @NoArgsConstructor
+@Setter
+@Getter
 @Data
 @Builder
 @ToString
+@Accessors(chain = true)
 public class BranchConfiguration implements Serializable {
 
     @Id
@@ -67,12 +70,23 @@ public class BranchConfiguration implements Serializable {
     @OneToMany(mappedBy = "branchConfiguration", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<BookingForm> bookingForms;
 
-    @OneToOne(mappedBy = "branchConfiguration", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private WaApiConfigEntity waApiConfig;
+    private String instanceId;
+    private String displayName;
+    private String formattedNumber;
+    private String profilePicUrl;
+
+    @Column(name = "last_qr_code", columnDefinition = "TEXT")
+    private String lastQrCode;
+    private String owner;
+    private Date instanceCreationDate;
+    private Date instanceUpdateDate;
+    private String instanceStatus;
+    private String message;
+    private String explanation;
 
     @Column(name = "last_wa_api_check")
     private Date lastWaApiConfCheck;
 
-    private Date creationDate;
+    private Date branchConfCreationDate;
 
 }

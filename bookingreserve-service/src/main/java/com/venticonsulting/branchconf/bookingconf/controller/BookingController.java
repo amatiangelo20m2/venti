@@ -20,7 +20,7 @@ public class BookingController {
 
     private final BookingService bookingService;
 
-    public BookingController(BookingService bookingService, WaApiService waApiService) {
+    public BookingController(BookingService bookingService) {
         this.bookingService = bookingService;
     }
 
@@ -73,7 +73,7 @@ public class BookingController {
         bookingService.deleteTag(tagName, branchCode);
     }
 
-    @PostMapping(path = "/retrieveform")
+    @GetMapping(path = "/retrieveform")
     @ResponseStatus(HttpStatus.OK)
     public CustomerFormData retrieveForm(@RequestParam String branchCode, @RequestParam String formCode){
         return bookingService.retrieveFormData(branchCode, formCode);

@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,12 +13,13 @@ import java.util.List;
 @Builder
 @ToString
 public class CustomerFormData implements Serializable {
+
     private String branchCode;
     private String formCode;
-    private byte[] logoImage;
-    private List<BranchTimeRange> branchTimeRanges;
+    private String logoImage;
+    private int guests;
     private int bookingSlotInMinutes;
-
-
-
+    private int maxTableNumber;
+    private List<BranchTimeRange> timeRange;
+    private Map<String, Integer> btime;
 }

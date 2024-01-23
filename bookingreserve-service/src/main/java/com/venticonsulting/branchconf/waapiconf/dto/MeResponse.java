@@ -7,6 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Getter
+@Setter
 @ToString
 @NoArgsConstructor
 public class MeResponse {

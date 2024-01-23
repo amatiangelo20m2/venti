@@ -59,4 +59,7 @@ public class Booking {
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
+
+    @Column(name = "time_range_id")
+    private String timeRangeId;
 }

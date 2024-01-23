@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -24,6 +25,7 @@ public class TimeRangeUpdateRequest implements Serializable {
 
     public static TimeRange convertTimeRange(TimeRangeUpdateRequest timeRangeUpdateRequest){
         return TimeRange.builder()
+                .id(UUID.randomUUID().toString())
                 .startTime(LocalTime.of(timeRangeUpdateRequest.startTimeHour, timeRangeUpdateRequest.startTimeMinutes, 0))
                 .endTime(LocalTime.of(timeRangeUpdateRequest.endTimeHour, timeRangeUpdateRequest.endTimeMinutes, 0))
                 .build();

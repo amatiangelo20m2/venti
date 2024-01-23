@@ -6,51 +6,43 @@ import com.venticonsulting.branchconf.bookingconf.entity.dto.*;
 import com.venticonsulting.branchconf.bookingconf.entity.utils.Utils;
 import com.venticonsulting.branchconf.bookingconf.entity.utils.WeekDayItalian;
 import com.venticonsulting.branchconf.bookingconf.repository.*;
-import com.venticonsulting.branchconf.waapiconf.entity.WaApiConfigEntity;
-import com.venticonsulting.branchconf.waapiconf.dto.WaApiConfigDTO;
 import com.venticonsulting.branchconf.waapiconf.dto.CreateUpdateResponse;
 import com.venticonsulting.branchconf.waapiconf.dto.MeResponse;
 import com.venticonsulting.branchconf.waapiconf.dto.QrCodeResponse;
-import com.venticonsulting.branchconf.waapiconf.repository.WaApiConfigRepository;
 import com.venticonsulting.branchconf.waapiconf.service.WaApiService;
-import com.venticonsulting.exception.BranchNotFoundException;
+import com.venticonsulting.exception.customException.BranchNotFoundException;
+import com.venticonsulting.exception.customException.FormNotFoundException;
 import jakarta.el.MethodNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class BookingService {
 
-    private final WaApiConfigRepository waApiConfigRepository;
     private final BranchConfigurationRepository branchConfigurationRepository;
     private final BookingFormRespository bookingFormRespository;
     private final WaApiService waApiService;
     private final BranchTimeRangeRepository branchTimeRangeRepository;
-    private final CustomerRepository customerRepository;
-
     private final BookingRepository bookingRepository;
 
 
 
-    public BookingService(WaApiConfigRepository waApiConfigRepository,
-                          BranchConfigurationRepository branchConfigurationRepository,
-                          BookingFormRespository bookingFormRespository, WaApiService waApiService,
-                          BranchTimeRangeRepository branchTimeRangeRepository, CustomerRepository customerRepository, BookingRepository bookingRepository) {
+    public BookingService(BranchConfigurationRepository branchConfigurationRepository,
+                          BookingFormRespository bookingFormRespository,
+                          WaApiService waApiService,
+                          BranchTimeRangeRepository branchTimeRangeRepository,
+                          CustomerRepository customerRepository,
+                          BookingRepository bookingRepository) {
 
-        this.waApiConfigRepository = waApiConfigRepository;
         this.branchConfigurationRepository = branchConfigurationRepository;
         this.bookingFormRespository = bookingFormRespository;
         this.waApiService = waApiService;
         this.branchTimeRangeRepository = branchTimeRangeRepository;
-        this.customerRepository = customerRepository;
         this.bookingRepository = bookingRepository;
     }
 
@@ -74,6 +66,7 @@ public class BookingService {
             MeResponse meResponse;
             int maxIterations = 10;
             int currentIteration = 0;
+
             do {
                 log.info("Retrieve a new created client info from waapi server untill it goes in 'qr' status. The qr code will be send to the client to configure the what'app app on a phone");
 
@@ -101,47 +94,30 @@ public class BookingService {
             Optional<BranchConfiguration> branchConfiguration = branchConfigurationRepository
                     .findByBranchCode(branchCode);
 
-            WaApiConfigEntity waConfig = waApiConfigRepository.save(WaApiConfigEntity.builder()
-                    .waapiConfId(0)
-                    .owner(createUpdateResponse.getInstance().getOwner())
-                    .displayName("")
-                    .formattedNumber("")
-                    .instanceStatus(meResponse.getMe().getInstanceStatus())
-                    .creationDate(new Date())
-                    .instanceId(createUpdateResponse.getInstance().getId())
-                    .lastQrCode(qrCodeResponse.getQrCode().getData().getQrCode())
-                    .profilePicUrl("")
-                    .message(meResponse.getMe().getMessage())
-                    .explanation(meResponse.getMe().getExplanation())
-                    .branchConfiguration(branchConfiguration.get())
-                    .build());
+            branchConfiguration.get()
+                    .setOwner(createUpdateResponse.getInstance().getOwner())
+                    .setOwner("")
+                    .setFormattedNumber("")
+                    .setInstanceStatus(meResponse.getMe().getInstanceStatus())
+                    .setInstanceCreationDate(new Date())
+                    .setInstanceId(createUpdateResponse.getInstance().getId())
+                    .setLastQrCode(qrCodeResponse.getQrCode().getData().getQrCode())
+                    .setProfilePicUrl("")
+                    .setMessage(meResponse.getMe().getMessage())
+                    .setExplanation(meResponse.getMe().getExplanation());
 
 
-            return BranchConfigurationDTO
-                    .builder()
-                    .isReservationConfirmedManually(branchConfiguration.get().isReservationConfirmedManually())
-                    .bookingSlotInMinutes(0)
-                    .guestReceivingAuthConfirm(branchConfiguration.get().getGuestReceivingAuthConfirm())
-                    .branchConfId(branchConfiguration.get().getBranchConfId())
-                    .minBeforeSendConfirmMessage(branchConfiguration.get().getMinBeforeSendConfirmMessage())
-                    .guests(branchConfiguration.get().getGuests())
-                    .branchCode(branchCode)
-                    .maxTableNumber(branchConfiguration.get().getMaxTableNumber())
-                    .waApiConfigDTO(WaApiConfigDTO.fromEntity(waConfig))
-                    .tags(branchConfiguration.get().getTags())
-
-//                    .branchTimeRanges(BranchTimeRangeDTO.convertList(branchConfiguration.get().getBranchTimeRanges()))
-                    .build();
+            return BranchConfigurationDTO.fromEntity(branchConfiguration.get());
         }else {
             // retrieve status and if is in qr code try to get the qr code
             log.info("Retrieve status of waapi instance and if is in qr code try to get a new qr code to configure branch with code {}", branchCode);
-            MeResponse meResponse = waApiService.retrieveClientInfo(branchConfByBranchCode.get().getWaApiConfig().getInstanceId());
+            MeResponse meResponse = waApiService.retrieveClientInfo(branchConfByBranchCode.get().getInstanceId());
 
             if("success".equalsIgnoreCase(meResponse.getStatus())
                     && "error".equalsIgnoreCase(meResponse.getMe().getStatus())){
-                QrCodeResponse qrCodeResponse = waApiService.retrieveQrCode(branchConfByBranchCode.get().getWaApiConfig().getInstanceId());
-                branchConfByBranchCode.get().getWaApiConfig().setLastQrCode(qrCodeResponse.getQrCode().getData().getQrCode());
-                branchConfByBranchCode.get().getWaApiConfig().setUpdateDate(new Date());
+                QrCodeResponse qrCodeResponse = waApiService.retrieveQrCode(branchConfByBranchCode.get().getInstanceId());
+                branchConfByBranchCode.get().setLastQrCode(qrCodeResponse.getQrCode().getData().getQrCode());
+                branchConfByBranchCode.get().setLastWaApiConfCheck(new Date());
             }
 
             return BranchConfigurationDTO.fromEntity(branchConfByBranchCode.get());
@@ -155,8 +131,8 @@ public class BookingService {
 
         return tags;
     }
-
-    private void createBranchConfiguration(String branchCode) {
+    @Transactional
+    public void createBranchConfiguration(String branchCode) {
 
         BranchConfiguration branchConfiguration = branchConfigurationRepository.save(
                 BranchConfiguration.builder()
@@ -169,8 +145,9 @@ public class BookingService {
                         .bookingSlotInMinutes(0)
                         .maxTableNumber(0)
                         .branchCode(branchCode)
+                        .lastWaApiConfCheck(new Date())
                         .tags(buildDefaultTagsList())
-                        .creationDate(new Date())
+                        .branchConfCreationDate(new Date())
                         .build());
 
         BookingForm bookingForm = bookingFormRespository.save(
@@ -202,15 +179,6 @@ public class BookingService {
         haveSomeTimeToSleep(500);
     }
 
-
-    private void haveSomeTimeToSleep(int sleep) {
-        try {
-            Thread.sleep(sleep);
-        } catch (InterruptedException e) {
-            log.warn("Sleep time between creation instance on waapi server not working. Nothing bad actually, the process can be go on");
-        }
-    }
-
     @Transactional
     public BranchConfigurationDTO checkWaApiStatus(String branchCode) {
 
@@ -220,22 +188,23 @@ public class BookingService {
 
         if(branchConfiguration.isPresent()) {
 
-            if(Utils.isThisDateGraterThanNOWOfGivingMinuteValue(branchConfiguration.get().getLastWaApiConfCheck(), 5)){
-                log.info("Passing more than 5 minutes from last update. Contact WaApi again and refresh configuration");
-                MeResponse meResponse = waApiService.retrieveClientInfo(branchConfiguration.get().getWaApiConfig().getInstanceId());
+            if(!Objects.equals(branchConfiguration.get().getInstanceStatus(), "success")
+                    ||  Utils.isThisDateGraterThanNOWOfGivingMinuteValue(branchConfiguration.get().getLastWaApiConfCheck(), 3)){
+                log.info("Passing more than 5 minutes from last update or intance status is not in success. Contact WaApi again and refresh configuration");
+                MeResponse meResponse = waApiService.retrieveClientInfo(branchConfiguration.get().getInstanceId());
 
                 if("success".equalsIgnoreCase(meResponse.getStatus())
                         && "success".equalsIgnoreCase(meResponse.getMe().getStatus())){
-                    branchConfiguration.get().getWaApiConfig().setInstanceId(meResponse.getMe().getInstanceId());
-                    branchConfiguration.get().getWaApiConfig().setFormattedNumber(meResponse.getMe().getData().getFormattedNumber());
-                    branchConfiguration.get().getWaApiConfig().setDisplayName(meResponse.getMe().getData().getDisplayName());
-                    branchConfiguration.get().getWaApiConfig().setProfilePicUrl(meResponse.getMe().getData().getProfilePicUrl());
-                    branchConfiguration.get().getWaApiConfig().setInstanceStatus(meResponse.getStatus());
-                    branchConfiguration.get().getWaApiConfig().setExplanation("");
-                    branchConfiguration.get().getWaApiConfig().setMessage("");
-                    branchConfiguration.get().getWaApiConfig().setLastQrCode("");
+                    branchConfiguration.get().setInstanceId(meResponse.getMe().getInstanceId());
+                    branchConfiguration.get().setFormattedNumber(meResponse.getMe().getData().getFormattedNumber());
+                    branchConfiguration.get().setDisplayName(meResponse.getMe().getData().getDisplayName());
+                    branchConfiguration.get().setProfilePicUrl(meResponse.getMe().getData().getProfilePicUrl());
+                    branchConfiguration.get().setInstanceStatus(meResponse.getStatus());
+                    branchConfiguration.get().setExplanation("");
+                    branchConfiguration.get().setMessage("");
+                    branchConfiguration.get().setLastQrCode("");
                     branchConfiguration.get().setLastWaApiConfCheck(new Date());
-                    branchConfiguration.get().getWaApiConfig().setUpdateDate(new Date());
+                    branchConfiguration.get().setInstanceUpdateDate(new Date());
 
                 }else if("success".equalsIgnoreCase(meResponse.getStatus())
                         && "error".equalsIgnoreCase(meResponse.getMe().getStatus())){
@@ -250,11 +219,11 @@ public class BookingService {
                     waApiService.rebootInstance(meResponse.getMe().getInstanceId());
                     haveSomeTimeToSleep(5000);
 
-                    branchConfiguration.get().getWaApiConfig().setInstanceStatus(meResponse.getMe().getStatus());
-                    branchConfiguration.get().getWaApiConfig().setExplanation(meResponse.getMe().getExplanation());
-                    branchConfiguration.get().getWaApiConfig().setMessage(meResponse.getMe().getMessage());
-                    branchConfiguration.get().getWaApiConfig().setLastQrCode("");
-                    branchConfiguration.get().getWaApiConfig().setUpdateDate(new Date());
+                    branchConfiguration.get().setInstanceStatus(meResponse.getMe().getStatus());
+                    branchConfiguration.get().setExplanation(meResponse.getMe().getExplanation());
+                    branchConfiguration.get().setMessage(meResponse.getMe().getMessage());
+                    branchConfiguration.get().setLastQrCode("");
+                    branchConfiguration.get().setInstanceUpdateDate(new Date());
 
                     //TODO: manage status qr or booting after reboot
                 }
@@ -275,22 +244,22 @@ public class BookingService {
 
         if(branchConfiguration.isPresent()) {
 
-            waApiService.rebootInstance(branchConfiguration.get().getWaApiConfig().getInstanceId());
+            waApiService.rebootInstance(branchConfiguration.get().getInstanceId());
             haveSomeTimeToSleep(4000);
 
-            MeResponse meResponse = waApiService.retrieveClientInfo(branchConfiguration.get().getWaApiConfig().getInstanceId());
+            MeResponse meResponse = waApiService.retrieveClientInfo(branchConfiguration.get().getInstanceId());
 
             if("success".equalsIgnoreCase(meResponse.getStatus())
                     && "success".equalsIgnoreCase(meResponse.getMe().getStatus())){
-                branchConfiguration.get().getWaApiConfig().setInstanceId(meResponse.getMe().getInstanceId());
-                branchConfiguration.get().getWaApiConfig().setFormattedNumber(meResponse.getMe().getData().getFormattedNumber());
-                branchConfiguration.get().getWaApiConfig().setDisplayName(meResponse.getMe().getData().getDisplayName());
-                branchConfiguration.get().getWaApiConfig().setProfilePicUrl(meResponse.getMe().getData().getProfilePicUrl());
-                branchConfiguration.get().getWaApiConfig().setInstanceStatus(meResponse.getMe().getStatus());
-                branchConfiguration.get().getWaApiConfig().setExplanation("");
-                branchConfiguration.get().getWaApiConfig().setMessage("");
-                branchConfiguration.get().getWaApiConfig().setLastQrCode("");
-                branchConfiguration.get().getWaApiConfig().setUpdateDate(new Date());
+                branchConfiguration.get().setInstanceId(meResponse.getMe().getInstanceId());
+                branchConfiguration.get().setFormattedNumber(meResponse.getMe().getData().getFormattedNumber());
+                branchConfiguration.get().setDisplayName(meResponse.getMe().getData().getDisplayName());
+                branchConfiguration.get().setProfilePicUrl(meResponse.getMe().getData().getProfilePicUrl());
+                branchConfiguration.get().setInstanceStatus(meResponse.getMe().getStatus());
+                branchConfiguration.get().setExplanation("");
+                branchConfiguration.get().setMessage("");
+                branchConfiguration.get().setLastQrCode("");
+                branchConfiguration.get().setInstanceUpdateDate(new Date());
             }
 
             return BranchConfigurationDTO.fromEntity(branchConfiguration.get());
@@ -378,37 +347,68 @@ public class BookingService {
     public CustomerFormData retrieveFormData(String branchCode,
                                              String formCode) {
 
+        List<String> timeRangeIds = new ArrayList<>();
+
+
         log.info("Retrieve form with default configuration for branch with code{}, " +
                 "form code {}", branchCode, formCode);
 
         Optional<BranchConfiguration> branchConf = branchConfigurationRepository.findByBranchCode(branchCode);
 
         if(branchConf.isPresent()){
+
             Optional<BookingForm> form = branchConf.get().getBookingForms().stream()
                     .filter(bookingForm -> formCode.equals(bookingForm.getFormCode()))
                     .findFirst();
 
             if(form.isPresent()){
-
-                List<Booking> bookingList = bookingRepository.findByBranchCode(branchCode);
-
-                log.info("Prepare data for the booking form with code {}", formCode);
-
-                form.get().getBranchTimeRanges();
-
-                return CustomerFormData.builder()
-                        .bookingSlotInMinutes(branchConf.get().getBookingSlotInMinutes())
-
-
-
-                        .branchTimeRanges(form.get().getBranchTimeRanges())
-                        .build();
+                for(BranchTimeRange branchTimeRange : form.get().getBranchTimeRanges()){
+                    timeRangeIds.addAll(branchTimeRange.getTimeRanges().stream().map(TimeRange::getId).toList());
+                }
             }else{
-
-                log.error("No form found with code " + formCode);
+                log.error("Form not found for code {}", formCode);
+                throw new FormNotFoundException("Form not found for code " + formCode);
             }
+
+            log.info("Retrieve configuration for time ranges ids {}", timeRangeIds);
+
+            return CustomerFormData.builder()
+                    .bookingSlotInMinutes(branchConf.get().getBookingSlotInMinutes())
+                    .guests(branchConf.get().getGuests())
+                    .logoImage("")
+                    .maxTableNumber(branchConf.get().getMaxTableNumber())
+                    .timeRange(form.get().getBranchTimeRanges())
+                    .btime(calculateWhenOpeningTimeAreBusy(timeRangeIds))
+                    .build();
+
         }else{
+            log.error("Branch not found for code {}", branchCode);
             throw new BranchNotFoundException("Branch not found for code " + branchCode);
         }
     }
+
+    private Map<String, Integer> calculateWhenOpeningTimeAreBusy(List<String> timeRangeIds) {
+
+        List<Booking> byTimeRangeIdIn = bookingRepository.findByTimeRangeIdIn(timeRangeIds);
+        if(byTimeRangeIdIn.isEmpty()){
+            return null;
+        }else{
+            Map<String, Integer> resultCountingPaxForEachTimeRange = byTimeRangeIdIn.stream()
+                    .collect(Collectors.groupingBy(Booking::getTimeRangeId,
+                            Collectors.summingInt(Booking::getGuest)));
+            log.info("ResultCountingPaxForEachTimeRange {}", resultCountingPaxForEachTimeRange);
+
+            return resultCountingPaxForEachTimeRange;
+        }
+    }
+
+    public static void haveSomeTimeToSleep(int sleep) {
+        try {
+            Thread.sleep(sleep);
+        } catch (InterruptedException e) {
+            log.warn("Sleep time between creation instance on waapi server not working. Nothing bad actually, the process can be go on");
+        }
+    }
+
+
 }

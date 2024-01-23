@@ -1,5 +1,7 @@
 package com.venticonsulting.branchconf.bookingconf.entity.configuration;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.venticonsulting.branchconf.bookingconf.entity.booking.Booking;
 import com.venticonsulting.branchconf.bookingconf.entity.utils.WeekDayItalian;
 import jakarta.persistence.*;
 import lombok.*;
@@ -53,6 +55,4 @@ public class BranchTimeRange implements Serializable {
     )
     @OrderColumn(name = "position")
     private List<TimeRange> timeRanges;
-
-
 }

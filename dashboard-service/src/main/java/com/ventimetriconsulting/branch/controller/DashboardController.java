@@ -36,7 +36,8 @@ public class DashboardController {
 
     @GetMapping(path = "/branch")
     @ResponseStatus(HttpStatus.OK)
-    public BranchResponseEntity getbranch(@RequestParam String userCode, @RequestParam String branchCode){
+    public BranchResponseEntity getbranch(@RequestParam String userCode,
+                                          @RequestParam String branchCode){
         return branchService.getBranch(userCode, branchCode);
     }
 
