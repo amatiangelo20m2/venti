@@ -14,7 +14,6 @@ import java.util.UUID;
 
 @Embeddable
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class TimeRange implements Serializable {

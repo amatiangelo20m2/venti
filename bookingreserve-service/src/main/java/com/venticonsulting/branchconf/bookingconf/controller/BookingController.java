@@ -61,17 +61,17 @@ public class BookingController {
         return bookingService.updateConfiguration(branchOpeningEditConfigurationRequest);
     }
 
-    @PostMapping(path = "/create/tag")
-    @ResponseStatus(HttpStatus.OK)
-    public FormTag createTag(@RequestParam String tagName, @RequestParam String branchCode){
-        return bookingService.createTag(tagName, branchCode);
-    }
+//    @PostMapping(path = "/create/tag")
+//    @ResponseStatus(HttpStatus.OK)
+//    public FormTag createTag(@RequestParam String tagName, @RequestParam String branchCode){
+//        return bookingService.createTag(tagName, branchCode);
+//    }
 
-    @PostMapping(path = "/delete/tag")
-    @ResponseStatus(HttpStatus.OK)
-    public void deleteTag(@RequestParam String tagName, @RequestParam String branchCode){
-        bookingService.deleteTag(tagName, branchCode);
-    }
+//    @PostMapping(path = "/delete/tag")
+//    @ResponseStatus(HttpStatus.OK)
+//    public void deleteTag(@RequestParam String tagName, @RequestParam String branchCode){
+//        bookingService.deleteTag(tagName, branchCode);
+//    }
 
     @GetMapping(path = "/retrieveform")
     @ResponseStatus(HttpStatus.OK)

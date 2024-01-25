@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -16,9 +17,9 @@ import java.util.List;
 @NoArgsConstructor
 @Setter
 @Getter
-@Data
 @Builder
-@ToString
+//@Data
+//@ToString
 @Accessors(chain = true)
 public class BranchConfiguration implements Serializable {
 
@@ -63,12 +64,15 @@ public class BranchConfiguration implements Serializable {
     @Column(name = "max_table_number")
     private int maxTableNumber = 0;
 
+    @Column(name = "contact_id")
+    private String contactId = "";
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "branch_conf_id")
-    private List<FormTag> tags;
+    @JoinColumn(name = "form_tag_id")
+    private List<FormTag> tags = new ArrayList<>();
 
     @OneToMany(mappedBy = "branchConfiguration", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<BookingForm> bookingForms;
+    private List<BookingForm> bookingForms = new ArrayList<>();
 
     private String instanceId;
     private String displayName;

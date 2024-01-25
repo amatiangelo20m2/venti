@@ -55,13 +55,14 @@ public class BookingService {
 
         if(branchConfByBranchCode.isEmpty()){
 
-            log.info("There no configuration found for branch with code {}, let's create a brand new one.." , branchCode);
+            log.info("There is no configuration found for branch with code {}, let's create a brand new one.." , branchCode);
             //configuro qui i giorni di apertura per il branch appena configurato
 
             createBranchConfiguration(branchCode);
 
             CreateUpdateResponse createUpdateResponse = waApiService.createInstance();
             haveSomeTimeToSleep(2000);
+
 
             MeResponse meResponse;
             int maxIterations = 10;
@@ -91,12 +92,10 @@ public class BookingService {
 
             QrCodeResponse qrCodeResponse = waApiService.retrieveQrCode(createUpdateResponse.getInstance().getId());
 
-            Optional<BranchConfiguration> branchConfiguration = branchConfigurationRepository
-                    .findByBranchCode(branchCode);
+            Optional<BranchConfiguration> branchConfiguration = branchConfigurationRepository.findByBranchCode(branchCode);
 
             branchConfiguration.get()
                     .setOwner(createUpdateResponse.getInstance().getOwner())
-                    .setOwner("")
                     .setFormattedNumber("")
                     .setInstanceStatus(meResponse.getMe().getInstanceStatus())
                     .setInstanceCreationDate(new Date())
@@ -126,57 +125,63 @@ public class BookingService {
 
     private List<FormTag> buildDefaultTagsList() {
         List<FormTag> tags = new ArrayList<>();
-        tags.add(FormTag.builder().id(0L).title("Cena").build());
-        tags.add(FormTag.builder().id(0L).title("Pranzo").build());
+        FormTag formTag = new FormTag();
+        formTag.setTitle("Cena");
+        formTag.setActive(false);
+        FormTag formTag1 = new FormTag();
+        formTag1.setTitle("Pranzo");
+        formTag1.setActive(false);
+        tags.add(formTag);
+        tags.add(formTag1);
 
         return tags;
     }
     @Transactional
     public void createBranchConfiguration(String branchCode) {
+        BranchConfiguration branchConfiguration = BranchConfiguration.builder()
+                .isReservationConfirmedManually(false)
+                .minBeforeSendConfirmMessage(0)
+                .guestReceivingAuthConfirm(0)
+                .guests(0)
+                .displayName("")
+                .contactId("")
+                .bookingSlotInMinutes(0)
+                .maxTableNumber(0)
+                .branchCode(branchCode)
+                .lastWaApiConfCheck(new Date())
+                .tags(buildDefaultTagsList()) // Uncomment if buildDefaultTagsList() is available
+                .branchConfCreationDate(new Date())
+                .bookingForms(new ArrayList<>())
+                .build();
 
-        BranchConfiguration branchConfiguration = branchConfigurationRepository.save(
-                BranchConfiguration.builder()
-                        .branchConfId(0L)
-                        .isReservationConfirmedManually(false)
-                        .minBeforeSendConfirmMessage(0)
-                        .guestReceivingAuthConfirm(0)
-                        .guests(0)
-                        .bookingSlotInMinutes(0)
-                        .bookingSlotInMinutes(0)
-                        .maxTableNumber(0)
-                        .branchCode(branchCode)
-                        .lastWaApiConfCheck(new Date())
-                        .tags(buildDefaultTagsList())
-                        .branchConfCreationDate(new Date())
-                        .build());
-
-        BookingForm bookingForm = bookingFormRespository.save(
-                BookingForm.builder()
-                        .formId(0L)
-                        .isDefaultForm(true)
-                        .formType(BookingForm.FormType.BOOKING_FORM)
-                        .redirectPage("")
-                        .formName("Form Default")
-                        .branchConfiguration(branchConfiguration)
-                        .creationDate(new Date())
-                        .build());
-
-        List<BranchTimeRange> defaultTimeRanges = new ArrayList<>();
+        BookingForm bookingForm = BookingForm.builder()
+                .isDefaultForm(true)
+                .formType(BookingForm.FormType.BOOKING_FORM)
+                .redirectPage("")
+                .formName("Form Default")
+                .branchConfiguration(branchConfiguration)
+                .creationDate(new Date())
+                .branchTimeRanges(new ArrayList<>())
+                .build();
 
         for (WeekDayItalian dayOfWeek : WeekDayItalian.values()) {
-            if(!WeekDayItalian.FESTIVO.equals(dayOfWeek)){
+            if (!WeekDayItalian.FESTIVO.equals(dayOfWeek)) {
                 BranchTimeRange timeRange = BranchTimeRange.builder()
                         .bookingForm(bookingForm)
                         .dayOfWeek(dayOfWeek)
                         .isClosed(true)
                         .timeRanges(new ArrayList<>())
                         .build();
-                defaultTimeRanges.add(timeRange);
+                bookingForm.getBranchTimeRanges().add(timeRange);
             }
         }
 
-        branchTimeRangeRepository.saveAll(defaultTimeRanges);
+        branchConfiguration.getBookingForms().add(bookingForm);
+
+        branchConfigurationRepository.save(branchConfiguration);
+
         haveSomeTimeToSleep(500);
+
     }
 
     @Transactional
@@ -190,19 +195,24 @@ public class BookingService {
 
             if(!Objects.equals(branchConfiguration.get().getInstanceStatus(), "success")
                     ||  Utils.isThisDateGraterThanNOWOfGivingMinuteValue(branchConfiguration.get().getLastWaApiConfCheck(), 3)){
-                log.info("Passing more than 5 minutes from last update or intance status is not in success. Contact WaApi again and refresh configuration");
+                log.info("The configuration is not in 'success' instance status or are passed more than 5 minutes from last update or intance status is not in success. Contact WaApi again and refresh configuration");
                 MeResponse meResponse = waApiService.retrieveClientInfo(branchConfiguration.get().getInstanceId());
 
                 if("success".equalsIgnoreCase(meResponse.getStatus())
                         && "success".equalsIgnoreCase(meResponse.getMe().getStatus())){
+
                     branchConfiguration.get().setInstanceId(meResponse.getMe().getInstanceId());
                     branchConfiguration.get().setFormattedNumber(meResponse.getMe().getData().getFormattedNumber());
                     branchConfiguration.get().setDisplayName(meResponse.getMe().getData().getDisplayName());
+                    branchConfiguration.get().setContactId(meResponse.getMe().getData().getContactId());
+                    branchConfiguration.get().setFormattedNumber(meResponse.getMe().getData().getFormattedNumber());
+
                     branchConfiguration.get().setProfilePicUrl(meResponse.getMe().getData().getProfilePicUrl());
                     branchConfiguration.get().setInstanceStatus(meResponse.getStatus());
                     branchConfiguration.get().setExplanation("");
                     branchConfiguration.get().setMessage("");
-                    branchConfiguration.get().setLastQrCode("");
+//                    branchConfiguration.get().setLastQrCode("");
+
                     branchConfiguration.get().setLastWaApiConfCheck(new Date());
                     branchConfiguration.get().setInstanceUpdateDate(new Date());
 
@@ -322,27 +332,31 @@ public class BookingService {
         }
     }
 
-    @Transactional
-    public FormTag createTag(String tagName, String branchCode) {
-
-        log.info("Create tag with name {} for branch with code {}", tagName, branchCode);
-        Optional<BranchConfiguration> byBranchCode = branchConfigurationRepository.findByBranchCode(branchCode);
-        byBranchCode.ifPresent(branchConfiguration -> branchConfiguration.getTags().add(FormTag.builder().title(tagName).build()));
-
-        return byBranchCode.get().getTags().stream()
-                .filter(formTag -> formTag.getTitle().equals(tagName))
-                .findFirst().get();
-    }
-
-    @Transactional
-    public void deleteTag(String tagName, String branchCode) {
-
-        log.info("Delete tag with name {} for branch with code {}", tagName, branchCode);
-
-        branchConfigurationRepository
-                .findByBranchCode(branchCode)
-                    .flatMap(branchConfiguration -> Optional.ofNullable(branchConfiguration.getTags())).ifPresent(tags -> tags.removeIf(formTag -> formTag.getTitle().equals(tagName)));
-    }
+//    @Transactional
+//    public FormTag createTag(String tagName, String branchCode) {
+//
+//        log.info("Create tag with name {} for branch with code {}", tagName, branchCode);
+//        FormTag formTagCreate = new FormTag();
+//        formTagCreate.setTitle(tagName);
+//        Optional<BranchConfiguration> byBranchCode = branchConfigurationRepository.findByBranchCode(branchCode);
+//        byBranchCode.ifPresent(branchConfiguration
+//                ->
+//                branchConfiguration.getTags().add(formTagCreate));
+//
+//        return byBranchCode.get().getTags().stream()
+//                .filter(formTag -> formTag.getTitle().equals(tagName))
+//                .findFirst().get();
+//    }
+//
+//    @Transactional
+//    public void deleteTag(String tagName, String branchCode) {
+//
+//        log.info("Delete tag with name {} for branch with code {}", tagName, branchCode);
+//
+//        branchConfigurationRepository
+//                .findByBranchCode(branchCode)
+//                .flatMap(branchConfiguration -> Optional.ofNullable(branchConfiguration.getTags())).ifPresent(tags -> tags.removeIf(formTag -> formTag.getTitle().equals(tagName)));
+//    }
 
     public CustomerFormData retrieveFormData(String branchCode,
                                              String formCode) {

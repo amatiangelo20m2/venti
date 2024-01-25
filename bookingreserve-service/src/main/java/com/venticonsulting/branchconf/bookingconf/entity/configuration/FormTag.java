@@ -10,7 +10,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,4 +20,6 @@ public class FormTag {
     private Long id;
 
     private String title;
+
+    private boolean active;
 }

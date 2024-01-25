@@ -13,9 +13,11 @@ import java.util.UUID;
         @UniqueConstraint(columnNames={"form_id"}))
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Setter
+@Getter
 @Builder
-@ToString
+//@Data
+//@ToString
 public class BookingForm {
 
     @Id
@@ -55,13 +57,12 @@ public class BookingForm {
     @Column(name = "tag_list")
     private String tagList;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "branch_conf_id", nullable = false)
     private BranchConfiguration branchConfiguration;
 
-    @OneToMany(mappedBy = "bookingForm", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "bookingForm", cascade = CascadeType.ALL)
     private List<BranchTimeRange> branchTimeRanges;
-
 
     @PrePersist
     public void generateUniqueCode() {

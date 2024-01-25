@@ -24,11 +24,11 @@ public class TimeRangeUpdateRequest implements Serializable {
     private int endTimeMinutes;
 
     public static TimeRange convertTimeRange(TimeRangeUpdateRequest timeRangeUpdateRequest){
-        return TimeRange.builder()
-                .id(UUID.randomUUID().toString())
-                .startTime(LocalTime.of(timeRangeUpdateRequest.startTimeHour, timeRangeUpdateRequest.startTimeMinutes, 0))
-                .endTime(LocalTime.of(timeRangeUpdateRequest.endTimeHour, timeRangeUpdateRequest.endTimeMinutes, 0))
-                .build();
+        TimeRange timeRange = new TimeRange();
+        timeRange.setStartTime(LocalTime.of(timeRangeUpdateRequest.startTimeHour, timeRangeUpdateRequest.startTimeMinutes, 0));
+        timeRange.setEndTime(LocalTime.of(timeRangeUpdateRequest.endTimeHour, timeRangeUpdateRequest.endTimeMinutes, 0));
+
+        return timeRange;
     }
 
     public static List<TimeRange> convertTimeRange(List<TimeRangeUpdateRequest> timeRangeUpdateRequestList){

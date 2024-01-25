@@ -51,13 +51,15 @@ public class BranchTimeRangeDTO {
     }
 
     public static BranchTimeRange convertToEntity(BranchTimeRangeDTO branchTimeRangeDTO) {
-        return BranchTimeRange.builder()
-                .branchTimeRangeId(branchTimeRangeDTO.getId())
-                .isClosed(branchTimeRangeDTO.isClosed())
-                .dayOfWeek(branchTimeRangeDTO.getDayOfWeek())
-                .timeRanges(branchTimeRangeDTO.getTimeRanges())
-                .particularDate(branchTimeRangeDTO.getParticularDate())
-                .build();
+        BranchTimeRange branchTimeRange = new BranchTimeRange();
+
+        branchTimeRange.setBranchTimeRangeId(branchTimeRangeDTO.getId());
+        branchTimeRange.setClosed(branchTimeRangeDTO.isClosed());
+        branchTimeRange.setDayOfWeek(branchTimeRangeDTO.getDayOfWeek());
+        branchTimeRange.setTimeRanges(branchTimeRangeDTO.getTimeRanges());
+        branchTimeRange.setParticularDate(branchTimeRangeDTO.getParticularDate());
+
+        return branchTimeRange;
     }
 
 }

@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 @Builder
-@ToString
+//@ToString
 public class BranchTimeRange implements Serializable {
     @Id
     @SequenceGenerator(
@@ -34,7 +34,7 @@ public class BranchTimeRange implements Serializable {
     )
     private Long branchTimeRangeId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "booking_form_id", nullable = false)
     private BookingForm bookingForm;
 

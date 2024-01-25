@@ -4,10 +4,12 @@ import com.venticonsulting.BookingReserveServiceApplication;
 import com.venticonsulting.branchconf.bookingconf.controller.BookingController;
 import com.venticonsulting.branchconf.bookingconf.entity.configuration.BookingForm;
 import com.venticonsulting.branchconf.bookingconf.entity.configuration.BranchConfiguration;
+import com.venticonsulting.branchconf.bookingconf.entity.configuration.FormTag;
 import com.venticonsulting.branchconf.bookingconf.entity.dto.BranchConfigurationDTO;
 import com.venticonsulting.branchconf.bookingconf.repository.*;
 import com.venticonsulting.branchconf.bookingconf.service.BookingService;
 import com.venticonsulting.branchconf.waapiconf.service.WaApiService;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -17,14 +19,18 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
+import static com.venticonsulting.branchconf.bookingconf.entity.configuration.BookingForm.FormType.BOOKING_FORM;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
+//@SpringBootTest
 @ContextConfiguration(classes = BookingReserveServiceApplication.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Slf4j
 public class TestSuiteBookingService {
 
     @Autowired
@@ -48,7 +54,7 @@ public class TestSuiteBookingService {
     private WaApiService waApiServiceMock;
 
     @BeforeEach
-    private void init(){
+    public void init(){
 
         BookingService bookingService = new BookingService(
                 branchConfigurationRepository,
@@ -72,39 +78,44 @@ public class TestSuiteBookingService {
         Mockito.when(waApiServiceMock.createInstance()).thenReturn(TestUtils.convertJsonToCreateUpdateResponse(getCreateInstanceResponseOK));
         Mockito.when(waApiServiceMock.retrieveClientInfo(INSTANCE_CODE)).thenReturn(TestUtils.convertMeResponse(getRetrieveBasicClientInfoErrorQrCodeStatus));
 
-        Mockito.when(waApiServiceMock.retrieveQrCode(INSTANCE_CODE)).thenReturn(TestUtils.convertQrResponse(retrieveQrCodeRespose));
+        Mockito.when(waApiServiceMock.retrieveQrCode(INSTANCE_CODE)).thenReturn(TestUtils.convertQrResponse(retrieveQrCodeResponse));
 
         BranchConfigurationDTO branchConfigurationDTO = bookingController.configureNumberForWhatsAppMessaging(
                 branchCode
         );
 
-        assertEquals(2, branchConfigurationDTO.getTags().size());
+//        assertEquals(2, branchConfigurationDTO.getTags().size());
         assertEquals(branchCode, branchConfigurationDTO.getBranchCode());
 
-        BranchConfigurationDTO branchConfigurationDTO1 = bookingController.checkWaApiStatus(branchCode);
 
-        assertEquals(2, branchConfigurationDTO1.getTags().size());
-        assertEquals(branchCode, branchConfigurationDTO1.getBranchCode());
-        assertEquals("instance has to be in ready status to perform this request", branchConfigurationDTO1.getExplanation());
-        assertEquals("error", branchConfigurationDTO1.getInstanceStatus());
+//        assertEquals(2, branchConfigurationDTO1.getTags().size());
+        assertEquals(branchCode, branchConfigurationDTO.getBranchCode());
+        assertEquals("instance has to be in ready status to perform this request", branchConfigurationDTO.getExplanation());
+        assertEquals("qr", branchConfigurationDTO.getInstanceStatus());
+        assertEquals("amati.angelo90@gmail.com", branchConfigurationDTO.getOwner());
+        assertEquals("", branchConfigurationDTO.getContactId());
+        assertEquals("", branchConfigurationDTO.getDisplayName());
+        assertEquals("amati.angelo90@gmail.com", branchConfigurationDTO.getOwner());
 
+        assertEquals(7, branchConfigurationDTO.getBookingFormList().get(0).getBranchTimeRanges().size());
+        assertEquals(2, branchConfigurationDTO.getTags().size());
 
+        //simuliamo scan qr code from whats'app
         Mockito.when(waApiServiceMock.retrieveClientInfo(INSTANCE_CODE)).thenReturn(TestUtils.convertMeResponse(getGetRetrieveBasicClientInfoAfterQrScan));
 
         BranchConfigurationDTO branchConfigurationDTOAfterScanQR = bookingController.checkWaApiStatus(branchCode);
 
-        assertEquals(2, branchConfigurationDTOAfterScanQR.getTags().size());
         assertEquals(branchCode, branchConfigurationDTOAfterScanQR.getBranchCode());
         assertEquals("", branchConfigurationDTOAfterScanQR.getExplanation());
         assertEquals("success", branchConfigurationDTOAfterScanQR.getInstanceStatus());
-
-
-        List<BookingForm> bookingForms = bookingFormRespository.findAll();
-        assertEquals(1, bookingForms.size());
         assertEquals(1, branchConfigurationDTOAfterScanQR.getBookingFormList().size());
-
-
-
+        assertEquals("amati.angelo90@gmail.com", branchConfigurationDTOAfterScanQR.getOwner());
+        assertEquals("393454937047@c.us", branchConfigurationDTOAfterScanQR.getContactId());
+        assertEquals("+39 345 493 7047", branchConfigurationDTOAfterScanQR.getFormattedNumber());
+        assertEquals("Angelo Amati", branchConfigurationDTOAfterScanQR.getDisplayName());
+        assertEquals(BOOKING_FORM, branchConfigurationDTOAfterScanQR.getBookingFormList().get(0).getFormType());
+        assertEquals(7, branchConfigurationDTOAfterScanQR.getBookingFormList().get(0).getBranchTimeRanges().size());
+        assertEquals(2, branchConfigurationDTOAfterScanQR.getTags().size());
 
 
     }
@@ -133,12 +144,12 @@ public class TestSuiteBookingService {
             "    \"instanceStatus\": \"qr\"\n" +
             "  },\n" +
             "  \"links\": {\n" +
-            "    \"self\": \"https://waapi.app/api/v1/instances/4861/client/me\"\n" +
+            "    \"self\": \"https://waapi.app/api/v1/instances/" + INSTANCE_CODE + "/client/me\"\n" +
             "  },\n" +
             "  \"status\": \"success\"\n" +
             "}";
 
-    String retrieveQrCodeRespose = "{\n" +
+    String retrieveQrCodeResponse = "{\n" +
             "  \"qrCode\": {\n" +
             "    \"status\": \"success\",\n" +
             "    \"instanceId\": \""+ INSTANCE_CODE+"\",\n" +
@@ -168,4 +179,52 @@ public class TestSuiteBookingService {
             "  },\n" +
             "  \"status\": \"success\"\n" +
             "}";
+
+    @Test
+    public void testsssss() {
+
+        BranchConfiguration branchConfiguration = new BranchConfiguration();
+        branchConfiguration.setReservationConfirmedManually(false);
+        branchConfiguration.setMinBeforeSendConfirmMessage(0);
+        branchConfiguration.setGuestReceivingAuthConfirm(0);
+        branchConfiguration.setGuests(0);
+        branchConfiguration.setBookingSlotInMinutes(0);
+        branchConfiguration.setBookingSlotInMinutes(0);
+        branchConfiguration.setMaxTableNumber(0);
+        branchConfiguration.setBranchCode(TestUtils.generateUniqueHexCode());
+        branchConfiguration.setLastWaApiConfCheck(new Date());
+        // branchConfiguration.setTags(buildDefaultTagsList()); // Uncomment if buildDefaultTagsList() is available
+        branchConfiguration.setBranchConfCreationDate(new Date());
+        branchConfiguration.setBookingForms(new ArrayList<>());
+
+        BookingForm bookingForm = new BookingForm();
+        bookingForm.setDefaultForm(true);
+        bookingForm.setFormType(BOOKING_FORM);
+        bookingForm.setRedirectPage("");
+        bookingForm.setFormName("Form Default");
+        bookingForm.setBranchConfiguration(branchConfiguration);
+        bookingForm.setCreationDate(new Date());
+
+        branchConfiguration.getBookingForms().add(bookingForm);
+
+        branchConfigurationRepository.save(branchConfiguration);
+
+        List<BookingForm> bookingForms = bookingFormRespository.findAll();
+        List<BranchConfiguration> branchConf = branchConfigurationRepository.findAll();
+        log.info("Test: Conf form list : " + branchConf.get(0).getBookingForms().size());
+        log.info("Test: Booking form list : " + bookingForms);
+    }
+
+
+    private List<FormTag> buildDefaultTagsList() {
+        List<FormTag> tags = new ArrayList<>();
+        FormTag formTag = new FormTag();
+        formTag.setTitle("Cena");
+        FormTag formTag1 = new FormTag();
+        formTag1.setTitle("Pranzo");
+        tags.add(formTag);
+        tags.add(formTag1);
+        return tags;
+    }
+
 }

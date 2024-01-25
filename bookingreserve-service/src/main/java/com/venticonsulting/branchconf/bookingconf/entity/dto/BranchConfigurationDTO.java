@@ -26,6 +26,7 @@ public class BranchConfigurationDTO {
     private List<FormTag> tags;
     private String instanceId;
     private String displayName;
+    private String contactId;
     private String formattedNumber;
     private String profilePicUrl;
     private String lastQrCode;
@@ -52,7 +53,9 @@ public class BranchConfigurationDTO {
                 .tags(branchConfiguration.getTags())
                 .instanceId(branchConfiguration.getInstanceId())
                 .displayName(branchConfiguration.getDisplayName())
+                .contactId(branchConfiguration.getContactId())
                 .formattedNumber(branchConfiguration.getFormattedNumber())
+                .owner(branchConfiguration.getOwner())
                 .profilePicUrl(branchConfiguration.getProfilePicUrl())
                 .lastQrCode(branchConfiguration.getLastQrCode())
                 .owner(branchConfiguration.getOwner())
