@@ -7,7 +7,7 @@ import lombok.*;
 @Data
 @Builder
 @ToString
-public class BranchOpeningEditConfigurationRequest {
+public class BranchGeneralConfigurationEditRequest {
     private String branchCode;
     private int guests;
     private int bookingSlotInMinutes;

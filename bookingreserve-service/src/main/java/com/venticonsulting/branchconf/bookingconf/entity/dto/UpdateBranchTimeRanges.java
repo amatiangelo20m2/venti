@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UpdateBranchConfigurationRequest implements Serializable {
+public class UpdateBranchTimeRanges implements Serializable {
     private String branchCode;
     private List<Long> listConfIds;
     private List<TimeRangeUpdateRequest> timeRanges;

@@ -22,6 +22,7 @@ public class BookingFormDto {
     private boolean isDefaultForm;
     private BookingForm.FormType formType;
     private String redirectPage;
+    private String description;
 
     private List<BranchTimeRangeDTO> branchTimeRanges;
 
@@ -31,6 +32,7 @@ public class BookingFormDto {
                 .formName(bookingForm.getFormName())
                 .isDefaultForm(bookingForm.isDefaultForm())
                 .formType(bookingForm.getFormType())
+                .description(bookingForm.getDescription())
                 .redirectPage(bookingForm.getRedirectPage())
                 .branchTimeRanges(BranchTimeRangeDTO.convertList(bookingForm.getBranchTimeRanges()))
                 .build();

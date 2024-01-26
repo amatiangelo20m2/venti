@@ -43,7 +43,14 @@ public class BookingForm {
     private String formCode;
 
     private String formName;
+
     private boolean isDefaultForm;
+
+    private String address;
+
+    private String formLogo;
+
+    private String description;
 
     @Column(name = "form_type")
     private FormType formType;

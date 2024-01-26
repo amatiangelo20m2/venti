@@ -18,9 +18,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class TimeRange implements Serializable {
 
-    @Column(name = "id", nullable = false, unique = true)
-    private String id = UUID.randomUUID().toString();
-
     @Column(name = "start_time", nullable = false)
     private LocalTime startTime;
 

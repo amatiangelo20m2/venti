@@ -1,12 +1,8 @@
 package com.venticonsulting.branchconf.bookingconf.entity.dto;
 
-import com.venticonsulting.branchconf.bookingconf.entity.configuration.BranchTimeRange;
 import lombok.*;
-
 import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-
+import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -16,10 +12,11 @@ public class CustomerFormData implements Serializable {
 
     private String branchCode;
     private String formCode;
-    private String logoImage;
-    private int guests;
+    private String formLogo;
     private int bookingSlotInMinutes;
     private int maxTableNumber;
-    private List<BranchTimeRange> timeRange;
-    private Map<String, Integer> btime;
+    private String address;
+
+//    Map<LocalDate, List<TimeRangeWithAvailableGuests>> localDateListMap;
+
 }

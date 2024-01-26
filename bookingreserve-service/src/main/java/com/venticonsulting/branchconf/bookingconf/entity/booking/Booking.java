@@ -36,7 +36,6 @@ public class Booking {
 
     @Column(
             name = "branch_code",
-            unique = true,
             length = 10
     )
     private String branchCode;
@@ -53,6 +52,9 @@ public class Booking {
     @Column
     private String requests;
 
+    @Column
+    private String formCodeFrom;
+
     @Column(name = "insert_booking_time")
     private Date insertBookingTime;
 
@@ -60,6 +62,5 @@ public class Booking {
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
-    @Column(name = "time_range_id")
-    private String timeRangeId;
+
 }

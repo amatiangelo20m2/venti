@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Entity(name = "Customer")
@@ -50,11 +51,18 @@ public class Customer implements Serializable {
     )
     private String phone;
     private LocalDate dob;
-    private String registrationDate;
+    private Date registrationDate;
     private boolean treatmentPersonalData;
 
     @JsonIgnore
     @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
     private List<Booking> bookings;
+
+    @Column(
+            name = "branch_code",
+            length = 10
+    )
+    private String branchCode;
+
 
 }

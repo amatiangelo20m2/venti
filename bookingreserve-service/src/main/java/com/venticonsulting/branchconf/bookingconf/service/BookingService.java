@@ -1,6 +1,7 @@
 package com.venticonsulting.branchconf.bookingconf.service;
 
 import com.venticonsulting.branchconf.bookingconf.entity.booking.Booking;
+import com.venticonsulting.branchconf.bookingconf.entity.booking.Customer;
 import com.venticonsulting.branchconf.bookingconf.entity.configuration.*;
 import com.venticonsulting.branchconf.bookingconf.entity.dto.*;
 import com.venticonsulting.branchconf.bookingconf.entity.utils.Utils;
@@ -17,33 +18,34 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class BookingService {
 
     private final BranchConfigurationRepository branchConfigurationRepository;
-    private final BookingFormRespository bookingFormRespository;
+    private final BookingFormRepository bookingFormRepository;
     private final WaApiService waApiService;
     private final BranchTimeRangeRepository branchTimeRangeRepository;
     private final BookingRepository bookingRepository;
-
-
+    private final CustomerRepository customerRepository;
 
     public BookingService(BranchConfigurationRepository branchConfigurationRepository,
-                          BookingFormRespository bookingFormRespository,
+                          BookingFormRepository bookingFormRepository,
                           WaApiService waApiService,
                           BranchTimeRangeRepository branchTimeRangeRepository,
                           CustomerRepository customerRepository,
                           BookingRepository bookingRepository) {
 
         this.branchConfigurationRepository = branchConfigurationRepository;
-        this.bookingFormRespository = bookingFormRespository;
+        this.bookingFormRepository = bookingFormRepository;
         this.waApiService = waApiService;
         this.branchTimeRangeRepository = branchTimeRangeRepository;
         this.bookingRepository = bookingRepository;
+        this.customerRepository = customerRepository;
     }
 
     @Transactional
@@ -159,6 +161,9 @@ public class BookingService {
                 .formType(BookingForm.FormType.BOOKING_FORM)
                 .redirectPage("")
                 .formName("Form Default")
+                .address("")
+                .formLogo("")
+                .description("Form prenotazione di default")
                 .branchConfiguration(branchConfiguration)
                 .creationDate(new Date())
                 .branchTimeRanges(new ArrayList<>())
@@ -279,26 +284,26 @@ public class BookingService {
 
 
     @Transactional
-    public BranchConfigurationDTO updateTimeRangeConfiguration(UpdateBranchConfigurationRequest updateBranchConfigurationRequest) {
+    public BranchConfigurationDTO updateTimeRangeConfiguration(UpdateBranchTimeRanges updateBranchTimeRanges) {
         log.info("Updating branch configuration for branch with code {}, Booking Ids to update {}, Times Slot {} ",
-                updateBranchConfigurationRequest.getBranchCode(),
-                updateBranchConfigurationRequest.getListConfIds(),
-                updateBranchConfigurationRequest.getTimeRanges().toString());
+                updateBranchTimeRanges.getBranchCode(),
+                updateBranchTimeRanges.getListConfIds(),
+                updateBranchTimeRanges.getTimeRanges().toString());
 
         Optional<List<BranchTimeRange>> byBranchTimeRangeId
-                = branchTimeRangeRepository.findByBranchTimeRangeId(updateBranchConfigurationRequest.getListConfIds());
+                = branchTimeRangeRepository.findByBranchTimeRangeId(updateBranchTimeRanges.getListConfIds());
 
         if(byBranchTimeRangeId.isPresent()){
 
             for(BranchTimeRange branchTimeRange : byBranchTimeRangeId.get()) {
                 branchTimeRange.getTimeRanges().clear();
-                branchTimeRange.getTimeRanges().addAll(TimeRangeUpdateRequest.convertTimeRange(updateBranchConfigurationRequest.getTimeRanges()));
+                branchTimeRange.getTimeRanges().addAll(TimeRangeUpdateRequest.convertTimeRange(updateBranchTimeRanges.getTimeRanges()));
             }
         }else{
             throw new MethodNotFoundException("Method not implemented yet");
         }
 
-        Optional<BranchConfiguration> branchConfiguration = branchConfigurationRepository.findByBranchCode(updateBranchConfigurationRequest.getBranchCode());
+        Optional<BranchConfiguration> branchConfiguration = branchConfigurationRepository.findByBranchCode(updateBranchTimeRanges.getBranchCode());
 
         return BranchConfigurationDTO.fromEntity(branchConfiguration.get());
 
@@ -312,19 +317,19 @@ public class BookingService {
     }
 
     @Transactional
-    public BranchConfigurationDTO updateConfiguration(BranchOpeningEditConfigurationRequest branchOpeningEditConfigurationRequest) {
+    public BranchConfigurationDTO updateConfiguration(BranchGeneralConfigurationEditRequest branchGeneralConfigurationEditRequest) {
 
-        log.info("Updating reservation configuration for branch with code {} ", branchOpeningEditConfigurationRequest.getBranchCode());
-        Optional<BranchConfiguration> byBranchCode = branchConfigurationRepository.findByBranchCode(branchOpeningEditConfigurationRequest.getBranchCode());
+        log.info("Updating reservation configuration for branch with code {} ", branchGeneralConfigurationEditRequest.getBranchCode());
+        Optional<BranchConfiguration> byBranchCode = branchConfigurationRepository.findByBranchCode(branchGeneralConfigurationEditRequest.getBranchCode());
 
         if(byBranchCode.isPresent()){
 
-            byBranchCode.get().setGuests(branchOpeningEditConfigurationRequest.getGuests());
-            byBranchCode.get().setReservationConfirmedManually(branchOpeningEditConfigurationRequest.isReservationConfirmedManually());
-            byBranchCode.get().setBookingSlotInMinutes(branchOpeningEditConfigurationRequest.getBookingSlotInMinutes());
-            byBranchCode.get().setGuestReceivingAuthConfirm(branchOpeningEditConfigurationRequest.getGuestReceivingAuthConfirm());
-            byBranchCode.get().setMinBeforeSendConfirmMessage(branchOpeningEditConfigurationRequest.getMinBeforeSendConfirmMessage());
-            byBranchCode.get().setMaxTableNumber(branchOpeningEditConfigurationRequest.getMaxTableNumber());
+            byBranchCode.get().setGuests(branchGeneralConfigurationEditRequest.getGuests());
+            byBranchCode.get().setReservationConfirmedManually(branchGeneralConfigurationEditRequest.isReservationConfirmedManually());
+            byBranchCode.get().setBookingSlotInMinutes(branchGeneralConfigurationEditRequest.getBookingSlotInMinutes());
+            byBranchCode.get().setGuestReceivingAuthConfirm(branchGeneralConfigurationEditRequest.getGuestReceivingAuthConfirm());
+            byBranchCode.get().setMinBeforeSendConfirmMessage(branchGeneralConfigurationEditRequest.getMinBeforeSendConfirmMessage());
+            byBranchCode.get().setMaxTableNumber(branchGeneralConfigurationEditRequest.getMaxTableNumber());
 
             return BranchConfigurationDTO.fromEntity(byBranchCode.get());
         }else{
@@ -363,8 +368,7 @@ public class BookingService {
 
         List<String> timeRangeIds = new ArrayList<>();
 
-
-        log.info("Retrieve form with default configuration for branch with code{}, " +
+        log.info("Retrieve form with default configuration for branch with code {}, " +
                 "form code {}", branchCode, formCode);
 
         Optional<BranchConfiguration> branchConf = branchConfigurationRepository.findByBranchCode(branchCode);
@@ -376,9 +380,10 @@ public class BookingService {
                     .findFirst();
 
             if(form.isPresent()){
-                for(BranchTimeRange branchTimeRange : form.get().getBranchTimeRanges()){
-                    timeRangeIds.addAll(branchTimeRange.getTimeRanges().stream().map(TimeRange::getId).toList());
-                }
+
+                List<Object[]> reservations = bookingRepository.countGuestsByDateAndTime(branchCode, LocalDate.now());
+
+                log.info("");
             }else{
                 log.error("Form not found for code {}", formCode);
                 throw new FormNotFoundException("Form not found for code " + formCode);
@@ -386,33 +391,17 @@ public class BookingService {
 
             log.info("Retrieve configuration for time ranges ids {}", timeRangeIds);
 
+
             return CustomerFormData.builder()
                     .bookingSlotInMinutes(branchConf.get().getBookingSlotInMinutes())
-                    .guests(branchConf.get().getGuests())
-                    .logoImage("")
+                    .formLogo(form.get().getFormLogo())
+                    .address(form.get().getAddress())
                     .maxTableNumber(branchConf.get().getMaxTableNumber())
-                    .timeRange(form.get().getBranchTimeRanges())
-                    .btime(calculateWhenOpeningTimeAreBusy(timeRangeIds))
                     .build();
 
         }else{
             log.error("Branch not found for code {}", branchCode);
             throw new BranchNotFoundException("Branch not found for code " + branchCode);
-        }
-    }
-
-    private Map<String, Integer> calculateWhenOpeningTimeAreBusy(List<String> timeRangeIds) {
-
-        List<Booking> byTimeRangeIdIn = bookingRepository.findByTimeRangeIdIn(timeRangeIds);
-        if(byTimeRangeIdIn.isEmpty()){
-            return null;
-        }else{
-            Map<String, Integer> resultCountingPaxForEachTimeRange = byTimeRangeIdIn.stream()
-                    .collect(Collectors.groupingBy(Booking::getTimeRangeId,
-                            Collectors.summingInt(Booking::getGuest)));
-            log.info("ResultCountingPaxForEachTimeRange {}", resultCountingPaxForEachTimeRange);
-
-            return resultCountingPaxForEachTimeRange;
         }
     }
 
@@ -425,4 +414,54 @@ public class BookingService {
     }
 
 
+    public void createBooking(CreateBookingRequest createBookingRequest) {
+        log.info("Create booking with the following data {}", createBookingRequest);
+        Optional<Customer> byPhoneOrEmail = customerRepository
+                .findByPhoneOrEmail(
+                        createBookingRequest.getUserPhone(),
+                        createBookingRequest.getUserEmail());
+
+        if(byPhoneOrEmail.isPresent()){
+
+            bookingRepository.save(Booking.builder()
+                    .insertBookingTime(new Date())
+                    .guest(createBookingRequest.getGuests())
+                    .date(createBookingRequest.getDate())
+                    .time(createBookingRequest.getTime())
+                    .customer(byPhoneOrEmail.get())
+                    .formCodeFrom(createBookingRequest.getFormCode())
+                    .requests(createBookingRequest.getParticularRequests())
+                    .branchCode(createBookingRequest.getBranchCode())
+                    .build());
+        }else{
+
+            Customer customerSaved = customerRepository.save(Customer.builder()
+                    .customerId(0L)
+                    .dob(createBookingRequest.getUserDOB())
+                    .email(createBookingRequest.getUserEmail())
+                    .phone(createBookingRequest.getUserPhone())
+                    .name(createBookingRequest.getUserName())
+                    .lastname(createBookingRequest.getUserLastName())
+                    .branchCode(createBookingRequest.getBranchCode())
+                    .registrationDate(new Date())
+                    .treatmentPersonalData(createBookingRequest.isTreatmentPersonalData())
+                    .build());
+
+            Booking bookingSaved = bookingRepository.save(Booking.builder()
+                    .insertBookingTime(new Date())
+                    .guest(createBookingRequest.getGuests())
+                    .date(createBookingRequest.getDate())
+                    .time(createBookingRequest.getTime())
+                    .customer(customerSaved)
+                    .formCodeFrom(createBookingRequest.getFormCode())
+                    .requests(createBookingRequest.getParticularRequests())
+                    .branchCode(createBookingRequest.getBranchCode())
+                    .build());
+
+            //TODO: send message to admin
+
+
+        }
+
+    }
 }

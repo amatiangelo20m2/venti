@@ -2,10 +2,11 @@ package com.ventimetriconsulting;
 
 import com.venticonsulting.BookingReserveServiceApplication;
 import com.venticonsulting.branchconf.bookingconf.controller.BookingController;
+import com.venticonsulting.branchconf.bookingconf.entity.booking.Booking;
 import com.venticonsulting.branchconf.bookingconf.entity.configuration.BookingForm;
 import com.venticonsulting.branchconf.bookingconf.entity.configuration.BranchConfiguration;
 import com.venticonsulting.branchconf.bookingconf.entity.configuration.FormTag;
-import com.venticonsulting.branchconf.bookingconf.entity.dto.BranchConfigurationDTO;
+import com.venticonsulting.branchconf.bookingconf.entity.dto.*;
 import com.venticonsulting.branchconf.bookingconf.repository.*;
 import com.venticonsulting.branchconf.bookingconf.service.BookingService;
 import com.venticonsulting.branchconf.waapiconf.service.WaApiService;
@@ -19,25 +20,37 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import static com.venticonsulting.branchconf.bookingconf.entity.configuration.BookingForm.FormType.BOOKING_FORM;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 //@SpringBootTest
 @ContextConfiguration(classes = BookingReserveServiceApplication.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Slf4j
+//@WebMvcTest(BookingController.class)
 public class TestSuiteBookingService {
+
+    private static final Random RANDOM = new Random();
+
+    //    @Autowired
+//    private MockMvc mockMvc;
+    @MockBean
+    private WaApiService waApiServiceMock;
+
 
     @Autowired
     private BookingRepository bookingRepository;
 
     @Autowired
-    private BookingFormRespository bookingFormRespository;
+    private BookingFormRepository bookingFormRepository;
 
     @Autowired
     private BranchConfigurationRepository branchConfigurationRepository;
@@ -50,15 +63,12 @@ public class TestSuiteBookingService {
 
     private BookingController bookingController;
 
-    @MockBean
-    private WaApiService waApiServiceMock;
-
     @BeforeEach
     public void init(){
 
         BookingService bookingService = new BookingService(
                 branchConfigurationRepository,
-                bookingFormRespository,
+                bookingFormRepository,
                 waApiServiceMock,
                 branchTimeRangeRepository,
                 customerRepository,
@@ -120,6 +130,197 @@ public class TestSuiteBookingService {
 
     }
 
+
+    @Test
+    public void testCreateBranchConfAndStoreTimeRange(){
+
+        String branchCode = TestUtils.generateUniqueHexCode();
+
+        Mockito.when(waApiServiceMock.createInstance()).thenReturn(TestUtils.convertJsonToCreateUpdateResponse(getCreateInstanceResponseOK));
+        Mockito.when(waApiServiceMock.retrieveClientInfo(INSTANCE_CODE)).thenReturn(TestUtils.convertMeResponse(getRetrieveBasicClientInfoErrorQrCodeStatus));
+
+        Mockito.when(waApiServiceMock.retrieveQrCode(INSTANCE_CODE)).thenReturn(TestUtils.convertQrResponse(retrieveQrCodeResponse));
+
+        BranchConfigurationDTO branchConfigurationDTO = bookingController.configureNumberForWhatsAppMessaging(
+                branchCode
+        );
+
+        assertEquals(branchCode, branchConfigurationDTO.getBranchCode());
+        assertEquals(branchCode, branchConfigurationDTO.getBranchCode());
+        assertEquals("instance has to be in ready status to perform this request", branchConfigurationDTO.getExplanation());
+        assertEquals("qr", branchConfigurationDTO.getInstanceStatus());
+        assertEquals("amati.angelo90@gmail.com", branchConfigurationDTO.getOwner());
+        assertEquals("", branchConfigurationDTO.getContactId());
+        assertEquals("", branchConfigurationDTO.getDisplayName());
+
+        assertEquals(7, branchConfigurationDTO.getBookingFormList().get(0).getBranchTimeRanges().size());
+        assertEquals(2, branchConfigurationDTO.getTags().size());
+
+        //simuliamo scan qr code from whats'app
+        Mockito.when(waApiServiceMock.retrieveClientInfo(INSTANCE_CODE)).thenReturn(TestUtils.convertMeResponse(getGetRetrieveBasicClientInfoAfterQrScan));
+
+        BranchConfigurationDTO branchConfigurationDTOAfterScanQR = bookingController.checkWaApiStatus(branchCode);
+
+        assertEquals(branchCode, branchConfigurationDTOAfterScanQR.getBranchCode());
+        assertEquals("", branchConfigurationDTOAfterScanQR.getExplanation());
+        assertEquals("success", branchConfigurationDTOAfterScanQR.getInstanceStatus());
+        assertFalse(branchConfigurationDTOAfterScanQR.isReservationConfirmedManually());
+        assertEquals(1, branchConfigurationDTOAfterScanQR.getBookingFormList().size());
+        assertEquals("amati.angelo90@gmail.com", branchConfigurationDTOAfterScanQR.getOwner());
+        assertEquals("393454937047@c.us", branchConfigurationDTOAfterScanQR.getContactId());
+        assertEquals("+39 345 493 7047", branchConfigurationDTOAfterScanQR.getFormattedNumber());
+        assertEquals("Angelo Amati", branchConfigurationDTOAfterScanQR.getDisplayName());
+        assertEquals(BOOKING_FORM, branchConfigurationDTOAfterScanQR.getBookingFormList().get(0).getFormType());
+        assertEquals(7, branchConfigurationDTOAfterScanQR.getBookingFormList().get(0).getBranchTimeRanges().size());
+        assertEquals(2, branchConfigurationDTOAfterScanQR.getTags().size());
+
+        List<Long> timeRangeIds = new ArrayList<>();
+
+        for(BranchTimeRangeDTO branchTimeRangeDTO : branchConfigurationDTOAfterScanQR.getBookingFormList().get(0).getBranchTimeRanges()){
+
+            timeRangeIds.add(branchTimeRangeDTO.getId());
+
+            assertEquals(0, branchTimeRangeDTO.getTimeRanges().size());
+            assertEquals(true, branchTimeRangeDTO.isClosed());
+
+        }
+
+        //now lets create a UpdateBranchConfigurationRequest
+
+        BranchConfigurationDTO branchConfigurationDTO1 = bookingController.updateTimeRange(UpdateBranchTimeRanges.builder()
+                .listConfIds(timeRangeIds)
+                .branchCode(branchCode)
+                .timeRanges(buildDefaultTimeRangeList())
+                .build());
+
+        log.info("Added time ranges");
+
+        assertEquals("Form Default", branchConfigurationDTO1.getBookingFormList().get(0).getFormName());
+        assertTrue(branchConfigurationDTO1.getBookingFormList().get(0).isDefaultForm());
+
+        for(BranchTimeRangeDTO branchTimeRangeDTO : branchConfigurationDTO1.getBookingFormList().get(0).getBranchTimeRanges()){
+            assertEquals(1, branchTimeRangeDTO.getTimeRanges().size());
+            assertEquals(LocalTime.of(8, 30), branchTimeRangeDTO.getTimeRanges().get(0).getStartTime());
+            assertEquals(LocalTime.of(12, 30), branchTimeRangeDTO.getTimeRanges().get(0).getEndTime());
+        }
+
+        BranchConfigurationDTO branchConfigurationAfterConfigureOpening = bookingController.updateConfiguration(BranchGeneralConfigurationEditRequest.builder()
+                .guests(13)
+                .bookingSlotInMinutes(30)
+                .maxTableNumber(30)
+                .isReservationConfirmedManually(true)
+                .branchCode(branchCode)
+                .guestReceivingAuthConfirm(20)
+                .minBeforeSendConfirmMessage(30)
+                .build());
+
+        assertEquals(branchCode, branchConfigurationAfterConfigureOpening.getBranchCode());
+        assertEquals("", branchConfigurationAfterConfigureOpening.getExplanation());
+        assertEquals("success", branchConfigurationAfterConfigureOpening.getInstanceStatus());
+        assertEquals(1, branchConfigurationAfterConfigureOpening.getBookingFormList().size());
+        assertEquals("amati.angelo90@gmail.com", branchConfigurationAfterConfigureOpening.getOwner());
+        assertEquals("393454937047@c.us", branchConfigurationAfterConfigureOpening.getContactId());
+        assertEquals("+39 345 493 7047", branchConfigurationAfterConfigureOpening.getFormattedNumber());
+        assertEquals("Angelo Amati", branchConfigurationAfterConfigureOpening.getDisplayName());
+        assertEquals(BOOKING_FORM, branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormType());
+        assertEquals(7, branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getBranchTimeRanges().size());
+        assertEquals(2, branchConfigurationAfterConfigureOpening.getTags().size());
+        assertEquals(13, branchConfigurationAfterConfigureOpening.getGuests());
+        assertEquals(20, branchConfigurationAfterConfigureOpening.getGuestReceivingAuthConfirm());
+        assertEquals(30, branchConfigurationAfterConfigureOpening.getMinBeforeSendConfirmMessage());
+        assertEquals(30, branchConfigurationAfterConfigureOpening.getMaxTableNumber());
+        assertTrue(branchConfigurationAfterConfigureOpening.isReservationConfirmedManually());
+
+        bookingController.createBooking(createRandomBookingRequest(branchCode,
+                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
+        bookingController.createBooking(createRandomBookingRequest(branchCode,
+                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
+        bookingController.createBooking(createRandomBookingRequest(branchCode,
+                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
+        bookingController.createBooking(createRandomBookingRequest(branchCode,
+                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
+        bookingController.createBooking(createRandomBookingRequest(branchCode,
+                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
+        bookingController.createBooking(createRandomBookingRequest(branchCode,
+                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
+        bookingController.createBooking(createRandomBookingRequest(branchCode,
+                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
+        bookingController.createBooking(createRandomBookingRequest(branchCode,
+                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
+        bookingController.createBooking(createRandomBookingRequest(branchCode,
+                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
+        bookingController.createBooking(createRandomBookingRequest(branchCode,
+                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
+        bookingController.createBooking(createRandomBookingRequest(branchCode,
+                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
+        bookingController.createBooking(createRandomBookingRequest(branchCode,
+                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
+        bookingController.createBooking(createRandomBookingRequest(branchCode,
+                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
+        bookingController.createBooking(createRandomBookingRequest(branchCode,
+                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
+        bookingController.createBooking(createRandomBookingRequest(branchCode,
+                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
+
+        CustomerFormData customerFormData = bookingController.retrieveFormData(branchCode,
+                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode());
+
+        log.info("");
+
+    }
+
+    public static CreateBookingRequest createRandomBookingRequest(String brancCode, String formCode) {
+        return CreateBookingRequest.builder()
+                .branchCode(brancCode)
+                .formCode(formCode)
+                .userEmail(generateRandomEmail())
+                .userPhone(generateRandomPhoneNumber())
+                .userName(generateRandomString(5))
+                .userLastName(generateRandomString(8))
+                .userDOB(generateRandomDateOfBirth())
+                .guests(RANDOM.nextInt(10) + 1) // Random number between 1 and 10
+                .particularRequests(generateRandomString(20))
+                .date(LocalDate.now().plusDays(RANDOM.nextInt(7))) // Random date within the next 7 days
+                .time(LocalTime.of(RANDOM.nextInt(24), 0)) // Random time
+                .treatmentPersonalData(RANDOM.nextBoolean())
+                .build();
+    }
+
+    private static String generateRandomString(int length) {
+        char[] chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".toCharArray();
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            char randomChar = chars[RANDOM.nextInt(chars.length)];
+            sb.append(randomChar);
+        }
+        return sb.toString();
+    }
+
+    private static String generateRandomEmail() {
+        return generateRandomString(8) + "@example.com";
+    }
+
+    private static String generateRandomPhoneNumber() {
+        return "+1-" + RANDOM.nextInt(1000) + "-" + RANDOM.nextInt(1000) + "-" + RANDOM.nextInt(10000);
+    }
+
+    private static LocalDate generateRandomDateOfBirth() {
+        return LocalDate.now().minusYears(RANDOM.nextInt(30) + 18); // Random date of birth for an adult
+    }
+
+
+
+    private List<TimeRangeUpdateRequest> buildDefaultTimeRangeList() {
+        List<TimeRangeUpdateRequest> timeRangeUpdateRequestList = new ArrayList<>();
+        timeRangeUpdateRequestList.add(TimeRangeUpdateRequest.builder()
+                .startTimeHour(8)
+                .startTimeMinutes(30)
+                .endTimeHour(12)
+                .endTimeMinutes(30).
+                build());
+
+        return timeRangeUpdateRequestList;
+    }
 
 
     String getCreateInstanceResponseOK = "{\n" +
@@ -209,7 +410,7 @@ public class TestSuiteBookingService {
 
         branchConfigurationRepository.save(branchConfiguration);
 
-        List<BookingForm> bookingForms = bookingFormRespository.findAll();
+        List<BookingForm> bookingForms = bookingFormRepository.findAll();
         List<BranchConfiguration> branchConf = branchConfigurationRepository.findAll();
         log.info("Test: Conf form list : " + branchConf.get(0).getBookingForms().size());
         log.info("Test: Booking form list : " + bookingForms);

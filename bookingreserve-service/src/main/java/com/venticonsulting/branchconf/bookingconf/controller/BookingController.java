@@ -1,18 +1,12 @@
 package com.venticonsulting.branchconf.bookingconf.controller;
 
-import com.venticonsulting.branchconf.bookingconf.entity.configuration.FormTag;
-import com.venticonsulting.branchconf.bookingconf.entity.dto.BranchOpeningEditConfigurationRequest;
-import com.venticonsulting.branchconf.bookingconf.entity.dto.BranchConfigurationDTO;
-import com.venticonsulting.branchconf.bookingconf.entity.dto.CustomerFormData;
-import com.venticonsulting.branchconf.bookingconf.entity.dto.UpdateBranchConfigurationRequest;
+import com.venticonsulting.branchconf.bookingconf.entity.dto.*;
 import com.venticonsulting.branchconf.bookingconf.service.BookingService;
-import com.venticonsulting.branchconf.waapiconf.service.WaApiService;
-import jakarta.ws.rs.QueryParam;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalTime;
 
 @RestController
 @RequestMapping(path = "/booking")
@@ -45,8 +39,8 @@ public class BookingController {
     @PostMapping(path = "/configuration/timerange/update")
     @ResponseStatus(HttpStatus.OK)
     public BranchConfigurationDTO updateTimeRange(
-            @RequestBody UpdateBranchConfigurationRequest updateBranchConfigurationRequest){
-        return bookingService.updateTimeRangeConfiguration(updateBranchConfigurationRequest);
+            @RequestBody UpdateBranchTimeRanges updateBranchTimeRanges){
+        return bookingService.updateTimeRangeConfiguration(updateBranchTimeRanges);
     }
 
     @DeleteMapping(path = "/deletetimerange")
@@ -57,8 +51,14 @@ public class BookingController {
 
     @PostMapping(path = "/updateconfiguration")
     @ResponseStatus(HttpStatus.OK)
-    public BranchConfigurationDTO updateConfiguration(@RequestBody BranchOpeningEditConfigurationRequest branchOpeningEditConfigurationRequest){
-        return bookingService.updateConfiguration(branchOpeningEditConfigurationRequest);
+    public BranchConfigurationDTO updateConfiguration(@RequestBody BranchGeneralConfigurationEditRequest branchGeneralConfigurationEditRequest){
+        return bookingService.updateConfiguration(branchGeneralConfigurationEditRequest);
+    }
+
+    @GetMapping(path = "/booking/create")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void createBooking(@RequestBody CreateBookingRequest createBookingRequest){
+        bookingService.createBooking(createBookingRequest);
     }
 
 //    @PostMapping(path = "/create/tag")
@@ -73,10 +73,13 @@ public class BookingController {
 //        bookingService.deleteTag(tagName, branchCode);
 //    }
 
-    @GetMapping(path = "/retrieveform")
+    @GetMapping(path = "/retrieveformdata")
     @ResponseStatus(HttpStatus.OK)
-    public CustomerFormData retrieveForm(@RequestParam String branchCode, @RequestParam String formCode){
+    public CustomerFormData retrieveFormData(@RequestParam String branchCode,
+                                         @RequestParam String formCode){
+
         return bookingService.retrieveFormData(branchCode, formCode);
+
     }
 
 
