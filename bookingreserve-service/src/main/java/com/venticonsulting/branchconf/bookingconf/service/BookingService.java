@@ -63,7 +63,7 @@ public class BookingService {
             createBranchConfiguration(branchCode);
 
             CreateUpdateResponse createUpdateResponse = waApiService.createInstance();
-            haveSomeTimeToSleep(2000);
+            haveSomeTimeToSleep(3000);
 
 
             MeResponse meResponse;
@@ -424,6 +424,7 @@ public class BookingService {
                         .formLogo(form.get().getFormLogo())
                         .address(form.get().getAddress())
                         .maxTableNumber(branchConf.get().getMaxTableNumber())
+                        .branchTimeRangeDTOS(BranchTimeRangeDTO.convertList(form.get().getBranchTimeRanges()))
                         .dateTimeRangeAvailableGuests(dateTimeRangeAvailableGuests)
                         .build();
             } else {
@@ -512,12 +513,11 @@ public class BookingService {
         }
     }
 
+    @Transactional
     public void switchIsClosedValueToBranchTimeRange(Long branchTimeRangeId){
 
         Optional<BranchTimeRange> branchTimeRangeRepositoryById = branchTimeRangeRepository.findById(branchTimeRangeId);
-        if(branchTimeRangeRepositoryById.isPresent()){
-            branchTimeRangeRepositoryById.get().setClosed(!branchTimeRangeRepositoryById.get().isClosed());
-        }
+        branchTimeRangeRepositoryById.ifPresent(branchTimeRange -> branchTimeRange.setClosed(!branchTimeRange.isClosed()));
     }
 
 }

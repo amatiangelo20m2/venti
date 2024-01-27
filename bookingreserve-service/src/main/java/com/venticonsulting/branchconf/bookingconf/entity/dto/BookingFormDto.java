@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 public class BookingFormDto {
     private String formCode;
     private String formName;
-
     private boolean isDefaultForm;
     private BookingForm.FormType formType;
     private String redirectPage;

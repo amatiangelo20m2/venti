@@ -18,6 +18,7 @@ public class CustomerFormData implements Serializable {
     private int maxTableNumber;
     private String address;
 
+    private List<BranchTimeRangeDTO> branchTimeRangeDTOS;
     private List<DateTimeRangeAvailableGuests> dateTimeRangeAvailableGuests;
 
 }

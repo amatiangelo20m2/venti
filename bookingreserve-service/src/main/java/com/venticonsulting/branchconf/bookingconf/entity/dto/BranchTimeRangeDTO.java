@@ -23,7 +23,7 @@ public class BranchTimeRangeDTO {
     private LocalDate particularDate;
 
     public static List<BranchTimeRangeDTO> convertList(List<BranchTimeRange> branchTimeRanges) {
-        if (branchTimeRanges == null) {
+        if (branchTimeRanges == null || branchTimeRanges.isEmpty()) {
             return Collections.emptyList();
         }
         return branchTimeRanges.stream()
