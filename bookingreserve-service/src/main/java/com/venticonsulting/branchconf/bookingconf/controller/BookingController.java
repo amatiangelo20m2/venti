@@ -83,6 +83,13 @@ public class BookingController {
     }
 
 
+    @GetMapping(path = "/switchisclosedbranchtime")
+    @ResponseStatus(HttpStatus.OK)
+    public void switchisclosedbranchtime(@RequestParam Long branchTimeRangeId){
+        bookingService.switchIsClosedValueToBranchTimeRange(branchTimeRangeId);
+    }
+
+
     //TODO: check this part for future integration of massive sending message.Righ now is not working while 'chatId' format wrong
 
 //    @GetMapping(path = "/sendmassivemessage")

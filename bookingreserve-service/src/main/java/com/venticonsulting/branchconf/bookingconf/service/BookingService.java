@@ -363,46 +363,97 @@ public class BookingService {
 //                .flatMap(branchConfiguration -> Optional.ofNullable(branchConfiguration.getTags())).ifPresent(tags -> tags.removeIf(formTag -> formTag.getTitle().equals(tagName)));
 //    }
 
-    public CustomerFormData retrieveFormData(String branchCode,
-                                             String formCode) {
-
-        List<String> timeRangeIds = new ArrayList<>();
-
-        log.info("Retrieve form with default configuration for branch with code {}, " +
-                "form code {}", branchCode, formCode);
+    public CustomerFormData retrieveFormData(String branchCode, String formCode) {
+        log.info("Retrieve form with default configuration for branch with code {}, form code {}", branchCode, formCode);
 
         Optional<BranchConfiguration> branchConf = branchConfigurationRepository.findByBranchCode(branchCode);
 
-        if(branchConf.isPresent()){
-
+        if (branchConf.isPresent()) {
             Optional<BookingForm> form = branchConf.get().getBookingForms().stream()
                     .filter(bookingForm -> formCode.equals(bookingForm.getFormCode()))
                     .findFirst();
 
-            if(form.isPresent()){
+            if (form.isPresent()) {
 
-                List<Object[]> reservations = bookingRepository.countGuestsByDateAndTime(branchCode, LocalDate.now());
+                List<Object[]> guestsByDateAndTime = bookingRepository.countGuestsByDateAndTime(branchCode, LocalDate.now());
 
-                log.info("");
-            }else{
+                Map<LocalDate, Map<LocalTime, Integer>> localDateMapMap = new HashMap<>();
+
+                for (Object[] row : guestsByDateAndTime) {
+
+                    LocalDate date = (LocalDate) row[0];
+                    LocalTime time = (LocalTime) row[1];
+
+                    int totalGuests = ((Number) row[2]).intValue();
+
+                    log.info("Date: " + date + ",WeekDay " + date.getDayOfWeek() +
+                            " ,Time: " + time + ", Total Guests: " + totalGuests);
+
+                    localDateMapMap.putIfAbsent(date, new HashMap<>());
+                    localDateMapMap.get(date).put(time, totalGuests);
+
+                }
+
+                List<DateTimeRangeAvailableGuests> dateTimeRangeAvailableGuests = new ArrayList<>();
+
+                for (BranchTimeRange branchTimeRange : form.get().getBranchTimeRanges()) {
+                    if (!branchTimeRange.isClosed()) {
+                        for (Map.Entry<LocalDate, Map<LocalTime, Integer>> dateEntry : localDateMapMap.entrySet()) {
+                            if(WeekDayItalian.fromEngDayOfWeek(dateEntry.getKey().getDayOfWeek()).equals(branchTimeRange.getDayOfWeek())){
+
+                                for(TimeRange timeRange : branchTimeRange.getTimeRanges()){
+                                    dateTimeRangeAvailableGuests.add(
+                                            DateTimeRangeAvailableGuests.builder()
+                                                    .date(dateEntry.getKey())
+                                                    .timeRange(timeRange)
+                                                    .guestsAvailable(calculateGuestsInTimeRange(timeRange, dateEntry.getValue(), branchConf.get().getGuests()))
+                                                    .build()
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+
+                return CustomerFormData.builder()
+                        .branchCode(branchCode)
+                        .formCode(formCode)
+                        .bookingSlotInMinutes(branchConf.get().getBookingSlotInMinutes())
+                        .formLogo(form.get().getFormLogo())
+                        .address(form.get().getAddress())
+                        .maxTableNumber(branchConf.get().getMaxTableNumber())
+                        .dateTimeRangeAvailableGuests(dateTimeRangeAvailableGuests)
+                        .build();
+            } else {
                 log.error("Form not found for code {}", formCode);
                 throw new FormNotFoundException("Form not found for code " + formCode);
             }
-
-            log.info("Retrieve configuration for time ranges ids {}", timeRangeIds);
-
-
-            return CustomerFormData.builder()
-                    .bookingSlotInMinutes(branchConf.get().getBookingSlotInMinutes())
-                    .formLogo(form.get().getFormLogo())
-                    .address(form.get().getAddress())
-                    .maxTableNumber(branchConf.get().getMaxTableNumber())
-                    .build();
-
-        }else{
+        } else {
             log.error("Branch not found for code {}", branchCode);
             throw new BranchNotFoundException("Branch not found for code " + branchCode);
         }
+    }
+
+    private int calculateGuestsInTimeRange(TimeRange timeRange, Map<LocalTime, Integer> timeGuestsMap, int maxGuests) {
+        int totalGuests = 0;
+
+        for (Map.Entry<LocalTime, Integer> entry : timeGuestsMap.entrySet()) {
+            LocalTime time = entry.getKey();
+            int guests = entry.getValue();
+
+            // Check if the time falls within the specified time range
+            if (isTimeInRange(time, timeRange)) {
+                totalGuests += guests;
+            }
+        }
+
+        return maxGuests - totalGuests;
+    }
+
+    private boolean isTimeInRange(LocalTime time, TimeRange timeRange) {
+        return !time.isBefore(timeRange.getStartTime()) && !time.isAfter(timeRange.getEndTime());
     }
 
     public static void haveSomeTimeToSleep(int sleep) {
@@ -412,7 +463,6 @@ public class BookingService {
             log.warn("Sleep time between creation instance on waapi server not working. Nothing bad actually, the process can be go on");
         }
     }
-
 
     public void createBooking(CreateBookingRequest createBookingRequest) {
         log.info("Create booking with the following data {}", createBookingRequest);
@@ -459,9 +509,15 @@ public class BookingService {
                     .build());
 
             //TODO: send message to admin
-
-
         }
-
     }
+
+    public void switchIsClosedValueToBranchTimeRange(Long branchTimeRangeId){
+
+        Optional<BranchTimeRange> branchTimeRangeRepositoryById = branchTimeRangeRepository.findById(branchTimeRangeId);
+        if(branchTimeRangeRepositoryById.isPresent()){
+            branchTimeRangeRepositoryById.get().setClosed(!branchTimeRangeRepositoryById.get().isClosed());
+        }
+    }
+
 }

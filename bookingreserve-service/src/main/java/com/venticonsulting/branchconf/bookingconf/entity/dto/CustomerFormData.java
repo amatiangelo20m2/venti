@@ -2,7 +2,8 @@ package com.venticonsulting.branchconf.bookingconf.entity.dto;
 
 import lombok.*;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -17,6 +18,6 @@ public class CustomerFormData implements Serializable {
     private int maxTableNumber;
     private String address;
 
-//    Map<LocalDate, List<TimeRangeWithAvailableGuests>> localDateListMap;
+    private List<DateTimeRangeAvailableGuests> dateTimeRangeAvailableGuests;
 
 }

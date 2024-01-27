@@ -200,8 +200,8 @@ public class TestSuiteBookingService {
 
         for(BranchTimeRangeDTO branchTimeRangeDTO : branchConfigurationDTO1.getBookingFormList().get(0).getBranchTimeRanges()){
             assertEquals(1, branchTimeRangeDTO.getTimeRanges().size());
-            assertEquals(LocalTime.of(8, 30), branchTimeRangeDTO.getTimeRanges().get(0).getStartTime());
-            assertEquals(LocalTime.of(12, 30), branchTimeRangeDTO.getTimeRanges().get(0).getEndTime());
+            assertEquals(LocalTime.of(2, 30), branchTimeRangeDTO.getTimeRanges().get(0).getStartTime());
+            assertEquals(LocalTime.of(23, 30), branchTimeRangeDTO.getTimeRanges().get(0).getEndTime());
         }
 
         BranchConfigurationDTO branchConfigurationAfterConfigureOpening = bookingController.updateConfiguration(BranchGeneralConfigurationEditRequest.builder()
@@ -224,6 +224,24 @@ public class TestSuiteBookingService {
         assertEquals("Angelo Amati", branchConfigurationAfterConfigureOpening.getDisplayName());
         assertEquals(BOOKING_FORM, branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormType());
         assertEquals(7, branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getBranchTimeRanges().size());
+
+        // prepare here a list of BranchTime entity, i will use to update to isClosed=false (in order to open it). After that i will check if is been opened
+
+        List<Long> branchTimeIds = new ArrayList<>();
+
+        for( BranchTimeRangeDTO branchTimeRangeDTO : branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getBranchTimeRanges()){
+            assertTrue(branchTimeRangeDTO.isClosed());
+            branchTimeIds.add(branchTimeRangeDTO.getId());
+            bookingController.switchisclosedbranchtime(branchTimeRangeDTO.getId());
+        }
+
+        branchConfigurationAfterConfigureOpening = bookingController.checkWaApiStatus(branchCode);
+
+        for( BranchTimeRangeDTO branchTimeRangeDTO : branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getBranchTimeRanges()){
+            assertFalse(branchTimeRangeDTO.isClosed());
+        }
+
+
         assertEquals(2, branchConfigurationAfterConfigureOpening.getTags().size());
         assertEquals(13, branchConfigurationAfterConfigureOpening.getGuests());
         assertEquals(20, branchConfigurationAfterConfigureOpening.getGuestReceivingAuthConfirm());
@@ -231,41 +249,14 @@ public class TestSuiteBookingService {
         assertEquals(30, branchConfigurationAfterConfigureOpening.getMaxTableNumber());
         assertTrue(branchConfigurationAfterConfigureOpening.isReservationConfirmedManually());
 
-        bookingController.createBooking(createRandomBookingRequest(branchCode,
-                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
-        bookingController.createBooking(createRandomBookingRequest(branchCode,
-                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
-        bookingController.createBooking(createRandomBookingRequest(branchCode,
-                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
-        bookingController.createBooking(createRandomBookingRequest(branchCode,
-                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
-        bookingController.createBooking(createRandomBookingRequest(branchCode,
-                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
-        bookingController.createBooking(createRandomBookingRequest(branchCode,
-                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
-        bookingController.createBooking(createRandomBookingRequest(branchCode,
-                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
-        bookingController.createBooking(createRandomBookingRequest(branchCode,
-                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
-        bookingController.createBooking(createRandomBookingRequest(branchCode,
-                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
-        bookingController.createBooking(createRandomBookingRequest(branchCode,
-                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
-        bookingController.createBooking(createRandomBookingRequest(branchCode,
-                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
-        bookingController.createBooking(createRandomBookingRequest(branchCode,
-                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
-        bookingController.createBooking(createRandomBookingRequest(branchCode,
-                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
-        bookingController.createBooking(createRandomBookingRequest(branchCode,
-                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
-        bookingController.createBooking(createRandomBookingRequest(branchCode,
-                branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode()));
+
+
+
 
         CustomerFormData customerFormData = bookingController.retrieveFormData(branchCode,
                 branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode());
 
-        log.info("");
+        log.info("Customer Form data {}", customerFormData );
 
     }
 
@@ -313,9 +304,9 @@ public class TestSuiteBookingService {
     private List<TimeRangeUpdateRequest> buildDefaultTimeRangeList() {
         List<TimeRangeUpdateRequest> timeRangeUpdateRequestList = new ArrayList<>();
         timeRangeUpdateRequestList.add(TimeRangeUpdateRequest.builder()
-                .startTimeHour(8)
+                .startTimeHour(2)
                 .startTimeMinutes(30)
-                .endTimeHour(12)
+                .endTimeHour(23)
                 .endTimeMinutes(30).
                 build());
 
