@@ -2,10 +2,9 @@ package com.ventimetriconsulting;
 
 import com.venticonsulting.BookingReserveServiceApplication;
 import com.venticonsulting.branchconf.bookingconf.controller.BookingController;
-import com.venticonsulting.branchconf.bookingconf.entity.booking.Booking;
-import com.venticonsulting.branchconf.bookingconf.entity.configuration.BookingForm;
-import com.venticonsulting.branchconf.bookingconf.entity.configuration.BranchConfiguration;
-import com.venticonsulting.branchconf.bookingconf.entity.configuration.FormTag;
+import com.venticonsulting.branchconf.bookingconf.entity.BookingForm;
+import com.venticonsulting.branchconf.bookingconf.entity.BranchConfiguration;
+import com.venticonsulting.branchconf.bookingconf.entity.FormTag;
 import com.venticonsulting.branchconf.bookingconf.entity.dto.*;
 import com.venticonsulting.branchconf.bookingconf.repository.*;
 import com.venticonsulting.branchconf.bookingconf.service.BookingService;
@@ -19,6 +18,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -27,7 +27,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-import static com.venticonsulting.branchconf.bookingconf.entity.configuration.BookingForm.FormType.BOOKING_FORM;
+import static com.venticonsulting.branchconf.bookingconf.entity.BookingForm.FormType.BOOKING_FORM;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -45,6 +45,8 @@ public class TestSuiteBookingService {
     @MockBean
     private WaApiService waApiServiceMock;
 
+    @MockBean
+    private WebClient webClient;
 
     @Autowired
     private BookingRepository bookingRepository;
@@ -68,11 +70,11 @@ public class TestSuiteBookingService {
 
         BookingService bookingService = new BookingService(
                 branchConfigurationRepository,
-                bookingFormRepository,
                 waApiServiceMock,
                 branchTimeRangeRepository,
+                bookingRepository,
                 customerRepository,
-                bookingRepository);
+                webClient);
 
 
         bookingController = new BookingController(bookingService);

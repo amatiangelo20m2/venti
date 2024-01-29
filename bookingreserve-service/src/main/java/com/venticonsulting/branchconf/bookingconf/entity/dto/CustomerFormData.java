@@ -12,12 +12,14 @@ import java.util.List;
 public class CustomerFormData implements Serializable {
 
     private String branchCode;
+    private String branchName;
+    private String email;
+    private String phone;
     private String formCode;
     private String formLogo;
     private int bookingSlotInMinutes;
     private int maxTableNumber;
     private String address;
-
     private List<BranchTimeRangeDTO> branchTimeRangeDTOS;
     private List<DateTimeRangeAvailableGuests> dateTimeRangeAvailableGuests;
 

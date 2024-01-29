@@ -1,7 +1,5 @@
-package com.venticonsulting.branchconf.bookingconf.entity.configuration;
+package com.venticonsulting.branchconf.bookingconf.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.venticonsulting.branchconf.bookingconf.entity.booking.Booking;
 import com.venticonsulting.branchconf.bookingconf.entity.utils.WeekDayItalian;
 import jakarta.persistence.*;
 import lombok.*;

@@ -1,5 +1,6 @@
 package com.venticonsulting.branchconf.bookingconf.controller;
 
+import com.venticonsulting.branchconf.bookingconf.entity.booking.Customer;
 import com.venticonsulting.branchconf.bookingconf.entity.dto.*;
 import com.venticonsulting.branchconf.bookingconf.service.BookingService;
 import org.springframework.http.HttpStatus;
@@ -89,6 +90,21 @@ public class BookingController {
         bookingService.switchIsClosedValueToBranchTimeRange(branchTimeRangeId);
     }
 
+    @GetMapping(path = "/retrievecustomerbyphoneoremail")
+    @ResponseStatus(HttpStatus.OK)
+    public Customer retrievecustomerbyphoneoremail(@RequestParam String phone, @RequestParam String email){
+        return bookingService.retrievecustomerbyphoneoremail(phone, email);
+
+    }
+
+    @GetMapping(path = "/sendopt")
+    @ResponseStatus(HttpStatus.OK)
+    public String sendOtp(@RequestParam String phone,
+                          @RequestParam String prefix,
+                          @RequestParam String branchCode){
+        return bookingService.sendOtp(phone, prefix, branchCode);
+
+    }
 
     //TODO: check this part for future integration of massive sending message.Righ now is not working while 'chatId' format wrong
 

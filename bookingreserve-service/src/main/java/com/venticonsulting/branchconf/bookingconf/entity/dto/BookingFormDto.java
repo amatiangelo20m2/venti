@@ -1,7 +1,6 @@
 package com.venticonsulting.branchconf.bookingconf.entity.dto;
 
-import com.venticonsulting.branchconf.bookingconf.entity.configuration.BookingForm;
-import jakarta.persistence.Column;
+import com.venticonsulting.branchconf.bookingconf.entity.BookingForm;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

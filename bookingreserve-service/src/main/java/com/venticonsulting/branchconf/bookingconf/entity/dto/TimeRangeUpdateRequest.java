@@ -1,6 +1,6 @@
 package com.venticonsulting.branchconf.bookingconf.entity.dto;
 
-import com.venticonsulting.branchconf.bookingconf.entity.configuration.TimeRange;
+import com.venticonsulting.branchconf.bookingconf.entity.TimeRange;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Data
 @Builder

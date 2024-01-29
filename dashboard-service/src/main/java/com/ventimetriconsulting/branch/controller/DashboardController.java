@@ -41,4 +41,11 @@ public class DashboardController {
         return branchService.getBranch(userCode, branchCode);
     }
 
+    @GetMapping(path = "/getbranchdata")
+    @ResponseStatus(HttpStatus.OK)
+    public BranchResponseEntity getBranchData(@RequestParam String branchCode){
+        return branchService.getBranchData(branchCode);
+    }
+
+
 }

@@ -108,4 +108,21 @@ public class BranchService {
         }
         throw new BranchNotFoundException("Branch not found for user with code [" + userCode + "] and branch with code [" + branchCode + "] ");
     }
+
+    public BranchResponseEntity getBranchData(String branchCode) {
+        log.info("Retrieve branch info by code {}", branchCode);
+        Optional<Branch> byBranchCode = branchRepository.findByBranchCode(branchCode);
+        if(byBranchCode.isPresent()){
+            return BranchResponseEntity.builder()
+                    .name(byBranchCode.get().getName())
+                    .branchCode(byBranchCode.get().getBranchCode())
+                    .logoImage(byBranchCode.get().getLogoImage())
+                    .phone(byBranchCode.get().getPhoneNumber())
+                    .email(byBranchCode.get().getEmail())
+                    .build();
+        }else{
+            log.error("getBranchData method give error. No branch found with branch code " + branchCode);
+            throw new BranchNotFoundException("No branch found with branch code " + branchCode);
+        }
+    }
 }

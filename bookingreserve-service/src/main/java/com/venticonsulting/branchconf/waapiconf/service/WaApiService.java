@@ -148,6 +148,33 @@ public class WaApiService {
                 });
     }
 
+    public void sendMessage(String instanceId, String phone, String prefix, String messageToSend){
+        // https://waapi.app/api/v1/instances/{id}/client/action/send-message
+
+        String body = "{\"chatId\":\"PREFIXPHONE@c.us\",\"message\":\"MESSAGE_PLACEHOLDER\"}";
+
+        log.info("Send message {} to number {} by intace id {}", messageToSend, phone, instanceId );
+
+        waapiWebClient.post()
+                .uri("/api/v1/instances/" + instanceId + "/client/action/send-message")
+                .body(Mono.just(body.replace("PREFIX", prefix).replace("PHONE", phone).replace("MESSAGE_PLACEHOLDER", messageToSend)), String.class)
+                .retrieve()
+                .onStatus(
+                        HttpStatusCode::is4xxClientError,
+                        clientResponse -> Mono.error(new Exception("Client Error"))
+                )
+                .onStatus(
+                        HttpStatusCode::is5xxServerError,
+                        clientResponse -> Mono.error(new Exception("Server Error"))
+                )
+                .bodyToMono(String.class)
+                .subscribe(responseBody -> {
+                    log.info("Message sent successfully to {} by instance with id {}. Response: {}", phone, instanceId, responseBody);
+                });
+
+    }
+
+
     private void haveSomeTimeToSleep(int sleep) {
         try {
             Thread.sleep(sleep);

@@ -50,12 +50,15 @@ public class Customer implements Serializable {
             nullable = false
     )
     private String phone;
+
+    private String prefix;
+
     private LocalDate dob;
     private Date registrationDate;
     private boolean treatmentPersonalData;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     private List<Booking> bookings;
 
     @Column(

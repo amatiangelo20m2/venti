@@ -1,8 +1,8 @@
 package com.venticonsulting.branchconf.bookingconf.service;
 
+import com.venticonsulting.branchconf.bookingconf.entity.*;
 import com.venticonsulting.branchconf.bookingconf.entity.booking.Booking;
 import com.venticonsulting.branchconf.bookingconf.entity.booking.Customer;
-import com.venticonsulting.branchconf.bookingconf.entity.configuration.*;
 import com.venticonsulting.branchconf.bookingconf.entity.dto.*;
 import com.venticonsulting.branchconf.bookingconf.entity.utils.Utils;
 import com.venticonsulting.branchconf.bookingconf.entity.utils.WeekDayItalian;
@@ -12,41 +12,33 @@ import com.venticonsulting.branchconf.waapiconf.dto.MeResponse;
 import com.venticonsulting.branchconf.waapiconf.dto.QrCodeResponse;
 import com.venticonsulting.branchconf.waapiconf.service.WaApiService;
 import com.venticonsulting.exception.customException.BranchNotFoundException;
+import com.venticonsulting.exception.customException.CustomerNotFoundException;
 import com.venticonsulting.exception.customException.FormNotFoundException;
+import com.venticonsulting.exception.customException.MessageNotFoundException;
 import jakarta.el.MethodNotFoundException;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
+import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class BookingService {
 
     private final BranchConfigurationRepository branchConfigurationRepository;
-    private final BookingFormRepository bookingFormRepository;
     private final WaApiService waApiService;
     private final BranchTimeRangeRepository branchTimeRangeRepository;
     private final BookingRepository bookingRepository;
     private final CustomerRepository customerRepository;
 
-    public BookingService(BranchConfigurationRepository branchConfigurationRepository,
-                          BookingFormRepository bookingFormRepository,
-                          WaApiService waApiService,
-                          BranchTimeRangeRepository branchTimeRangeRepository,
-                          CustomerRepository customerRepository,
-                          BookingRepository bookingRepository) {
-
-        this.branchConfigurationRepository = branchConfigurationRepository;
-        this.bookingFormRepository = bookingFormRepository;
-        this.waApiService = waApiService;
-        this.branchTimeRangeRepository = branchTimeRangeRepository;
-        this.bookingRepository = bookingRepository;
-        this.customerRepository = customerRepository;
-    }
+    private final WebClient loadBalancedRestClientBuilder;
 
     @Transactional
     public BranchConfigurationDTO configureNumberForWhatsAppMessaging(String branchCode) {
@@ -364,6 +356,19 @@ public class BookingService {
 //    }
 
     public CustomerFormData retrieveFormData(String branchCode, String formCode) {
+
+
+        log.info("Retrieve branch configuration data from code {}", branchCode);
+
+        BranchResponseEntity branchResponseEntity = loadBalancedRestClientBuilder
+                .get()
+                .uri("http://dashboard-service/ventimetridashboard/api/dashboard/getbranchdata",
+                        uriBuilder -> uriBuilder.queryParam("branchCode", branchCode).build())
+                .retrieve()
+                .bodyToMono(BranchResponseEntity.class)
+                .block();
+
+        log.info("Retrieved data : {}", branchResponseEntity);
         log.info("Retrieve form with default configuration for branch with code {}, form code {}", branchCode, formCode);
 
         Optional<BranchConfiguration> branchConf = branchConfigurationRepository.findByBranchCode(branchCode);
@@ -415,14 +420,15 @@ public class BookingService {
                     }
                 }
 
-
-
                 return CustomerFormData.builder()
                         .branchCode(branchCode)
+                        .branchName(branchResponseEntity.getName())
+                        .email(branchResponseEntity.getEmail())
+                        .phone(branchResponseEntity.getPhone())
                         .formCode(formCode)
                         .bookingSlotInMinutes(branchConf.get().getBookingSlotInMinutes())
                         .formLogo(form.get().getFormLogo())
-                        .address(form.get().getAddress())
+                        .address(branchResponseEntity.getAddress())
                         .maxTableNumber(branchConf.get().getMaxTableNumber())
                         .branchTimeRangeDTOS(BranchTimeRangeDTO.convertList(form.get().getBranchTimeRanges()))
                         .dateTimeRangeAvailableGuests(dateTimeRangeAvailableGuests)
@@ -519,5 +525,56 @@ public class BookingService {
         Optional<BranchTimeRange> branchTimeRangeRepositoryById = branchTimeRangeRepository.findById(branchTimeRangeId);
         branchTimeRangeRepositoryById.ifPresent(branchTimeRange -> branchTimeRange.setClosed(!branchTimeRange.isClosed()));
     }
+
+    public Customer retrievecustomerbyphoneoremail(String phone, String email) {
+        log.info("Retrieve customer data by email {} and phone {}", email, phone);
+        Optional<Customer> byPhoneOrEmail = customerRepository.findByPhoneOrEmail(phone, email);
+        if(byPhoneOrEmail.isPresent()){
+
+            return byPhoneOrEmail.get();
+        }else{
+            String errorMessage = "Customer with email " + email + " or phone " + phone + " not found";
+            log.error(errorMessage);
+            throw new CustomerNotFoundException(errorMessage);
+        }
+    }
+
+    public String sendOtp(String phone, String prefix, String branchCode) {
+        log.info("Send Otp code to the following number {}, prefix {} from branch with code {}", phone, prefix, branchCode);
+        String opt = generateNumericCode();
+        Optional<BranchConfiguration> branchConfOpt = branchConfigurationRepository.findByBranchCode(branchCode);
+        if(branchConfOpt.isPresent()){
+            if("success".equalsIgnoreCase(branchConfOpt.get().getInstanceStatus())){
+                String instanceId = branchConfOpt.get().getInstanceId();
+
+                waApiService.sendMessage(instanceId, phone, prefix, opt);
+                return opt;
+            }else{
+                //TODO: manage not success status
+            }
+        }else{
+            throw new BranchNotFoundException("Branch not found with code " + branchCode);
+        }
+
+        throw new MessageNotFoundException("Cannot send message to number  " + phone + " (prefix: " + prefix + ")");
+    }
+
+    private static final String DIGITS = "0123456789";
+    private static final int CODE_LENGTH = 4;
+
+    public static String generateNumericCode() {
+        SecureRandom random = new SecureRandom();
+        StringBuilder code = new StringBuilder();
+
+        for (int i = 0; i < CODE_LENGTH; i++) {
+            int randomIndex = random.nextInt(DIGITS.length());
+            char randomDigit = DIGITS.charAt(randomIndex);
+            code.append(randomDigit);
+        }
+
+        return code.toString();
+    }
+
+
 
 }

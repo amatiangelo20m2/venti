@@ -1,4 +1,4 @@
-package com.venticonsulting.branchconf.bookingconf.entity.configuration;
+package com.venticonsulting.branchconf.bookingconf.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

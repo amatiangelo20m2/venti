@@ -1,6 +1,6 @@
 package com.venticonsulting.branchconf.bookingconf.entity.dto;
 
-import com.venticonsulting.branchconf.bookingconf.entity.configuration.TimeRange;
+import com.venticonsulting.branchconf.bookingconf.entity.TimeRange;
 import lombok.*;
 
 import java.time.LocalDate;

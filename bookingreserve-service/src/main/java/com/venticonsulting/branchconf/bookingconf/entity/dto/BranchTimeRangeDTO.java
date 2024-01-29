@@ -1,12 +1,14 @@
 package com.venticonsulting.branchconf.bookingconf.entity.dto;
 
-import com.venticonsulting.branchconf.bookingconf.entity.configuration.BranchTimeRange;
-import com.venticonsulting.branchconf.bookingconf.entity.configuration.TimeRange;
+import com.venticonsulting.branchconf.bookingconf.entity.BranchTimeRange;
+import com.venticonsulting.branchconf.bookingconf.entity.TimeRange;
 import com.venticonsulting.branchconf.bookingconf.entity.utils.WeekDayItalian;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,9 +28,15 @@ public class BranchTimeRangeDTO {
         if (branchTimeRanges == null || branchTimeRanges.isEmpty()) {
             return Collections.emptyList();
         }
-        return branchTimeRanges.stream()
+
+        // keep days oderd from LUNEDI to DOMENICA
+        List<BranchTimeRangeDTO> sortedDTOList = branchTimeRanges.stream()
                 .map(BranchTimeRangeDTO::convert)
+                .sorted(Comparator.comparingInt(btrDTO ->
+                        Arrays.asList(WeekDayItalian.values()).indexOf(btrDTO.getDayOfWeek())))
                 .collect(Collectors.toList());
+
+        return sortedDTOList;
     }
 
     public static BranchTimeRangeDTO convert(BranchTimeRange branchTimeRange) {
