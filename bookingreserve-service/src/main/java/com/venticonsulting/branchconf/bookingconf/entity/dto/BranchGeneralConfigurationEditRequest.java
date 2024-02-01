@@ -15,4 +15,5 @@ public class BranchGeneralConfigurationEditRequest {
     private int guestReceivingAuthConfirm;
     private int maxTableNumber;
     private int minBeforeSendConfirmMessage;
+    private int dogsAllowed;
 }

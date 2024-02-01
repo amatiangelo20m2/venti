@@ -39,6 +39,7 @@ public class BranchConfigurationDTO {
     private Date lastWaApiConfCheck;
     private Date branchConfCreationDate;
     private List<BookingFormDto> bookingFormList;
+    private int dogsAllowed;
 
 
     public static BranchConfigurationDTO fromEntity(BranchConfiguration branchConfiguration) {
@@ -68,6 +69,7 @@ public class BranchConfigurationDTO {
                 .branchConfCreationDate(branchConfiguration.getBranchConfCreationDate())
                 .bookingFormList(BookingFormDto.convertList(branchConfiguration.getBookingForms()))
                 .maxTableNumber(branchConfiguration.getMaxTableNumber())
+                .dogsAllowed(branchConfiguration.getDogsAllowed())
                 .build();
     }
 }

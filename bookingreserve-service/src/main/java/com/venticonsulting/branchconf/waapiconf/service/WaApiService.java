@@ -4,9 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.venticonsulting.branchconf.waapiconf.dto.CreateUpdateResponse;
 import com.venticonsulting.branchconf.waapiconf.dto.MeResponse;
+import com.venticonsulting.branchconf.waapiconf.dto.ProfilePicResponse;
 import com.venticonsulting.branchconf.waapiconf.dto.QrCodeResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -148,16 +150,18 @@ public class WaApiService {
                 });
     }
 
-    public void sendMessage(String instanceId, String phone, String prefix, String messageToSend){
+    public void sendMessage(String instanceId, String phone, String messageToSend) {
         // https://waapi.app/api/v1/instances/{id}/client/action/send-message
 
-        String body = "{\"chatId\":\"PREFIXPHONE@c.us\",\"message\":\"MESSAGE_PLACEHOLDER\"}";
+        String body = "{\"chatId\":\"PHONE@c.us\",\"message\":\"MESSAGE_PLACEHOLDER\"}";
 
-        log.info("Send message {} to number {} by intace id {}", messageToSend, phone, instanceId );
+        String refactoredJsonBody = body.replace("PHONE", phone).replace("MESSAGE_PLACEHOLDER", messageToSend);
+        log.info("Send message {} to number {} by intace id {} - Body {}", messageToSend, phone, instanceId, refactoredJsonBody );
 
         waapiWebClient.post()
                 .uri("/api/v1/instances/" + instanceId + "/client/action/send-message")
-                .body(Mono.just(body.replace("PREFIX", prefix).replace("PHONE", phone).replace("MESSAGE_PLACEHOLDER", messageToSend)), String.class)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(refactoredJsonBody), refactoredJsonBody.getClass())
                 .retrieve()
                 .onStatus(
                         HttpStatusCode::is4xxClientError,
@@ -168,12 +172,43 @@ public class WaApiService {
                         clientResponse -> Mono.error(new Exception("Server Error"))
                 )
                 .bodyToMono(String.class)
+                .log("waapiWebClient.post")
                 .subscribe(responseBody -> {
                     log.info("Message sent successfully to {} by instance with id {}. Response: {}", phone, instanceId, responseBody);
                 });
 
     }
 
+    public String retrievePhoto(String instanceId, String phone) {
+        String body = "{\"contactId\":\"PHONE@c.us\"}";
+        String refactoredJsonBody = body.replace("PHONE", phone);
+        log.info("Retrieve image for number {} by instance id {}", phone, instanceId);
+
+        return waapiWebClient.post()
+                .uri("/api/v1/instances/" + instanceId + "/client/action/get-profile-pic-url")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(refactoredJsonBody), refactoredJsonBody.getClass())
+                .retrieve()
+                .onStatus(
+                        HttpStatusCode::is4xxClientError,
+                        clientResponse -> Mono.error(new Exception("Client Error"))
+                )
+                .onStatus(
+                        HttpStatusCode::is5xxServerError,
+                        clientResponse -> Mono.error(new Exception("Server Error"))
+                )
+                .bodyToMono(String.class)
+                .log("waapiWebClient.post")
+                .map(responseBody -> {
+                    log.info("Image retrieved successfully for number {} by instance with id {}. Response: {}", phone, instanceId, responseBody);
+                    try {
+                        ProfilePicResponse profilePicResponse = objectMapper.readValue(responseBody, ProfilePicResponse.class);
+                        return profilePicResponse.getData().getProfileData().getProfilePicUrl();
+                    } catch (JsonProcessingException e) {
+                        return "Unable to get image";
+                    }
+                }).block();
+    }
 
     private void haveSomeTimeToSleep(int sleep) {
         try {
@@ -183,7 +218,7 @@ public class WaApiService {
         }
     }
 
-    //TODO : same than the method that call it - chatId format wrong (check this part for future integration of massive sending message)
+    //TODO : same than the method that call it - chatId format wrong (check this part for future integration of massive sending message) - see sendMessage method to fix it
 //    public void sendMessageWithImage(String instanceId, List<String> numbers, String urlMedia, String imageName, String message){
 //
 //        String body = String.format("{\"chatId\":\"%s\",\"mediaUrl\":\"%s\",\"mediaCaption\":\"%s\",\"mediaName\":\"%s\"}",

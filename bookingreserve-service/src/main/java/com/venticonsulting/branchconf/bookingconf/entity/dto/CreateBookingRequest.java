@@ -1,5 +1,6 @@
 package com.venticonsulting.branchconf.bookingconf.entity.dto;
 
+import com.venticonsulting.branchconf.bookingconf.entity.booking.Customer;
 import lombok.*;
 
 import java.io.Serializable;
@@ -14,14 +15,13 @@ import java.time.LocalTime;
 public class CreateBookingRequest implements Serializable {
     String branchCode;
     String formCode;
-    String userEmail;
-    String userPhone;
-    String userName;
-    String userLastName;
-    LocalDate userDOB;
     int guests;
+    int child;
+    int dogsAllowed;
     String particularRequests;
-    LocalDate date;
-    LocalTime time;
-    private boolean treatmentPersonalData;
+    String date;
+    String time;
+    long customerId;
+    String branchName;
+    String branchAddress;
 }

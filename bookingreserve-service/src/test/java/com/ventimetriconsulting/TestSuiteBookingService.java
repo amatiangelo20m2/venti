@@ -234,7 +234,7 @@ public class TestSuiteBookingService {
         for( BranchTimeRangeDTO branchTimeRangeDTO : branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getBranchTimeRanges()){
             assertTrue(branchTimeRangeDTO.isClosed());
             branchTimeIds.add(branchTimeRangeDTO.getId());
-            bookingController.switchisclosedbranchtime(branchTimeRangeDTO.getId());
+            bookingController.switchIsClosedBranchTime(branchTimeRangeDTO.getId());
         }
 
         branchConfigurationAfterConfigureOpening = bookingController.checkWaApiStatus(branchCode);
@@ -262,22 +262,22 @@ public class TestSuiteBookingService {
 
     }
 
-    public static CreateBookingRequest createRandomBookingRequest(String brancCode, String formCode) {
-        return CreateBookingRequest.builder()
-                .branchCode(brancCode)
-                .formCode(formCode)
-                .userEmail(generateRandomEmail())
-                .userPhone(generateRandomPhoneNumber())
-                .userName(generateRandomString(5))
-                .userLastName(generateRandomString(8))
-                .userDOB(generateRandomDateOfBirth())
-                .guests(RANDOM.nextInt(10) + 1) // Random number between 1 and 10
-                .particularRequests(generateRandomString(20))
-                .date(LocalDate.now().plusDays(RANDOM.nextInt(7))) // Random date within the next 7 days
-                .time(LocalTime.of(RANDOM.nextInt(24), 0)) // Random time
-                .treatmentPersonalData(RANDOM.nextBoolean())
-                .build();
-    }
+//    public static CreateBookingRequest createRandomBookingRequest(String brancCode, String formCode) {
+//        return CreateBookingRequest.builder()
+//                .branchCode(brancCode)
+//                .formCode(formCode)
+//                .userEmail(generateRandomEmail())
+//                .userPhone(generateRandomPhoneNumber())
+//                .userName(generateRandomString(5))
+//                .userLastName(generateRandomString(8))
+//                .userDOB(generateRandomDateOfBirth())
+//                .guests(RANDOM.nextInt(10) + 1) // Random number between 1 and 10
+//                .particularRequests(generateRandomString(20))
+//                .date(LocalDate.now().plusDays(RANDOM.nextInt(7))) // Random date within the next 7 days
+//                .time(LocalTime.of(RANDOM.nextInt(24), 0)) // Random time
+//                .treatmentPersonalData(RANDOM.nextBoolean())
+//                .build();
+//    }
 
     private static String generateRandomString(int length) {
         char[] chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".toCharArray();

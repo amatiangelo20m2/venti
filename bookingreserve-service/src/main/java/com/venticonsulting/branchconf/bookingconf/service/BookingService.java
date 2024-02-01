@@ -14,7 +14,7 @@ import com.venticonsulting.branchconf.waapiconf.service.WaApiService;
 import com.venticonsulting.exception.customException.BranchNotFoundException;
 import com.venticonsulting.exception.customException.CustomerNotFoundException;
 import com.venticonsulting.exception.customException.FormNotFoundException;
-import com.venticonsulting.exception.customException.MessageNotFoundException;
+import com.venticonsulting.exception.customException.MessageNotSentException;
 import jakarta.el.MethodNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +38,7 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final CustomerRepository customerRepository;
 
-    private final WebClient loadBalancedRestClientBuilder;
+    private final WebClient dashboardServiceWebClient;
 
     @Transactional
     public BranchConfigurationDTO configureNumberForWhatsAppMessaging(String branchCode) {
@@ -146,6 +146,7 @@ public class BookingService {
                 .tags(buildDefaultTagsList()) // Uncomment if buildDefaultTagsList() is available
                 .branchConfCreationDate(new Date())
                 .bookingForms(new ArrayList<>())
+                .dogsAllowed(0)
                 .build();
 
         BookingForm bookingForm = BookingForm.builder()
@@ -322,6 +323,7 @@ public class BookingService {
             byBranchCode.get().setGuestReceivingAuthConfirm(branchGeneralConfigurationEditRequest.getGuestReceivingAuthConfirm());
             byBranchCode.get().setMinBeforeSendConfirmMessage(branchGeneralConfigurationEditRequest.getMinBeforeSendConfirmMessage());
             byBranchCode.get().setMaxTableNumber(branchGeneralConfigurationEditRequest.getMaxTableNumber());
+            byBranchCode.get().setDogsAllowed(branchGeneralConfigurationEditRequest.getDogsAllowed());
 
             return BranchConfigurationDTO.fromEntity(byBranchCode.get());
         }else{
@@ -360,9 +362,9 @@ public class BookingService {
 
         log.info("Retrieve branch configuration data from code {}", branchCode);
 
-        BranchResponseEntity branchResponseEntity = loadBalancedRestClientBuilder
+        BranchResponseEntity branchResponseEntity = dashboardServiceWebClient
                 .get()
-                .uri("http://dashboard-service/ventimetridashboard/api/dashboard/getbranchdata",
+                .uri("/ventimetridashboard/api/dashboard/getbranchdata",
                         uriBuilder -> uriBuilder.queryParam("branchCode", branchCode).build())
                 .retrieve()
                 .bodyToMono(BranchResponseEntity.class)
@@ -422,10 +424,12 @@ public class BookingService {
 
                 return CustomerFormData.builder()
                         .branchCode(branchCode)
-                        .branchName(branchResponseEntity.getName())
+                        .branchName(Objects.requireNonNull(branchResponseEntity).getName())
                         .email(branchResponseEntity.getEmail())
                         .phone(branchResponseEntity.getPhone())
                         .formCode(formCode)
+                        .dogsAllowed(branchConf.get().getDogsAllowed())
+                        .guests(branchConf.get().getGuests())
                         .bookingSlotInMinutes(branchConf.get().getBookingSlotInMinutes())
                         .formLogo(form.get().getFormLogo())
                         .address(branchResponseEntity.getAddress())
@@ -471,52 +475,52 @@ public class BookingService {
         }
     }
 
+    @Transactional
     public void createBooking(CreateBookingRequest createBookingRequest) {
+        log.info("Retrieve instance code for branch with code {}", createBookingRequest.getBranchCode());
+
+        String instanceCode = branchConfigurationRepository.findInstanceCodeByBranchCode(createBookingRequest.getBranchCode());
+
         log.info("Create booking with the following data {}", createBookingRequest);
-        Optional<Customer> byPhoneOrEmail = customerRepository
-                .findByPhoneOrEmail(
-                        createBookingRequest.getUserPhone(),
-                        createBookingRequest.getUserEmail());
+
+        Optional<Customer> byPhoneOrEmail = customerRepository.findById(createBookingRequest.getCustomerId());
 
         if(byPhoneOrEmail.isPresent()){
 
-            bookingRepository.save(Booking.builder()
+            Booking savedBooking = bookingRepository.save(Booking.builder()
                     .insertBookingTime(new Date())
                     .guest(createBookingRequest.getGuests())
-                    .date(createBookingRequest.getDate())
-                    .time(createBookingRequest.getTime())
+                    .date(LocalDate.of(
+                            Integer.parseInt(createBookingRequest.getDate().substring(0, 4)),
+                            Integer.parseInt(createBookingRequest.getDate().substring(4, 6)),
+                            Integer.parseInt(createBookingRequest.getDate().substring(6, 8))))
+                    .time(LocalTime.of(Integer.parseInt(createBookingRequest.getTime().substring(0, 2)), Integer.parseInt(createBookingRequest.getTime().substring(3, 5)), 0, 0))
                     .customer(byPhoneOrEmail.get())
+                    .child(createBookingRequest.getChild())
+                    .allowedDogs(createBookingRequest.getDogsAllowed())
                     .formCodeFrom(createBookingRequest.getFormCode())
                     .requests(createBookingRequest.getParticularRequests())
                     .branchCode(createBookingRequest.getBranchCode())
                     .build());
-        }else{
 
-            Customer customerSaved = customerRepository.save(Customer.builder()
-                    .customerId(0L)
-                    .dob(createBookingRequest.getUserDOB())
-                    .email(createBookingRequest.getUserEmail())
-                    .phone(createBookingRequest.getUserPhone())
-                    .name(createBookingRequest.getUserName())
-                    .lastname(createBookingRequest.getUserLastName())
-                    .branchCode(createBookingRequest.getBranchCode())
-                    .registrationDate(new Date())
-                    .treatmentPersonalData(createBookingRequest.isTreatmentPersonalData())
-                    .build());
-
-            Booking bookingSaved = bookingRepository.save(Booking.builder()
-                    .insertBookingTime(new Date())
-                    .guest(createBookingRequest.getGuests())
-                    .date(createBookingRequest.getDate())
-                    .time(createBookingRequest.getTime())
-                    .customer(customerSaved)
-                    .formCodeFrom(createBookingRequest.getFormCode())
-                    .requests(createBookingRequest.getParticularRequests())
-                    .branchCode(createBookingRequest.getBranchCode())
-                    .build());
 
             //TODO: send message to admin
+            //TODO: send whatsapp message to client
+
+            waApiService.sendMessage(
+                    instanceCode,
+                    byPhoneOrEmail.get().getPrefix() + byPhoneOrEmail.get().getPhone(),
+                    buildBookingMessage(savedBooking, createBookingRequest));
+        }else {
+            throw new CustomerNotFoundException("~Error - No customer found with id " + createBookingRequest.getCustomerId());
         }
+    }
+
+    private String buildBookingMessage(Booking savedBooking, CreateBookingRequest createBookingRequest) {
+        return "Grazie per aver prenotato presso " + createBookingRequest.getBranchName()
+                + "\uD83D\uDE0E.\n\n \uD83D\uDCCD " + createBookingRequest.getBranchAddress() + "\n" +
+                "\uD83D\uDC65 " + createBookingRequest.getGuests() + ""
+                ;
     }
 
     @Transactional
@@ -526,38 +530,49 @@ public class BookingService {
         branchTimeRangeRepositoryById.ifPresent(branchTimeRange -> branchTimeRange.setClosed(!branchTimeRange.isClosed()));
     }
 
-    public Customer retrievecustomerbyphoneoremail(String phone, String email) {
+
+    @Transactional
+    public CustomerResult retrieveCustomerByPhoneOrEmailAndSendOtp(String branchCode, String phone, String email) {
         log.info("Retrieve customer data by email {} and phone {}", email, phone);
         Optional<Customer> byPhoneOrEmail = customerRepository.findByPhoneOrEmail(phone, email);
-        if(byPhoneOrEmail.isPresent()){
 
-            return byPhoneOrEmail.get();
-        }else{
-            String errorMessage = "Customer with email " + email + " or phone " + phone + " not found";
-            log.error(errorMessage);
-            throw new CustomerNotFoundException(errorMessage);
-        }
-    }
-
-    public String sendOtp(String phone, String prefix, String branchCode) {
-        log.info("Send Otp code to the following number {}, prefix {} from branch with code {}", phone, prefix, branchCode);
         String opt = generateNumericCode();
         Optional<BranchConfiguration> branchConfOpt = branchConfigurationRepository.findByBranchCode(branchCode);
-        if(branchConfOpt.isPresent()){
-            if("success".equalsIgnoreCase(branchConfOpt.get().getInstanceStatus())){
-                String instanceId = branchConfOpt.get().getInstanceId();
 
-                waApiService.sendMessage(instanceId, phone, prefix, opt);
-                return opt;
-            }else{
-                //TODO: manage not success status
+        if (branchConfOpt.isPresent() && "success".equalsIgnoreCase(branchConfOpt.get().getInstanceStatus())) {
+            String instanceId = branchConfOpt.get().getInstanceId();
+
+            waApiService.sendMessage(instanceId, phone, opt);
+
+            String photoUrl = waApiService.retrievePhoto(instanceId, phone);
+
+            if (byPhoneOrEmail.isPresent()) {
+                return CustomerResult.builder()
+                        .customer(byPhoneOrEmail.get())
+                        .isCustomerFound(true)
+                        .profilePhoto(photoUrl)
+                        .opt(opt)
+                        .build();
+            } else {
+                String errorMessage = "Customer with email " + email + " or phone " + phone + " not found";
+                log.warn(errorMessage);
+
+                return CustomerResult.builder()
+                        .customer(null)
+                        .profilePhoto(photoUrl)
+                        .isCustomerFound(false)
+                        .opt(opt)
+                        .build();
             }
-        }else{
-            throw new BranchNotFoundException("Branch not found with code " + branchCode);
+        } else {
+            if (branchConfOpt.isEmpty()) {
+                throw new BranchNotFoundException("Branch not found with code " + branchCode);
+            } else {
+                throw new MessageNotSentException("Cannot send message to number " + phone);
+            }
         }
-
-        throw new MessageNotFoundException("Cannot send message to number  " + phone + " (prefix: " + prefix + ")");
     }
+
 
     private static final String DIGITS = "0123456789";
     private static final int CODE_LENGTH = 4;
@@ -576,5 +591,39 @@ public class BookingService {
     }
 
 
+    @Transactional
+    public Customer registerCustomer(String branchCode,
+                                     String name,
+                                     String lastname,
+                                     String email,
+                                     String prefix,
+                                     String phone,
+                                     LocalDate dob,
+                                     boolean treatmentPersonalData,
+                                     String photoUrl) {
+        log.info("Register customer. " +
+                "Name: {}, " +
+                "Lastname: {}, " +
+                "Email: {}," +
+                "Phone: {}," +
+                "Prefix: {}, " +
+                "Date of birth: {}, " +
+                "Tratment personal data: {} ", name, lastname, email, phone, prefix, dob, treatmentPersonalData);
 
+
+        return customerRepository.save(Customer.builder()
+                .customerId(0L)
+                .isNumberVerified(true)
+                .name(name)
+                .lastname(lastname)
+                .email(email)
+                .prefix(prefix)
+                .phone(phone)
+                .dob(dob)
+                .imageProfile(photoUrl)
+                .branchCode(branchCode)
+                .registrationDate(new Date())
+                .treatmentPersonalData(treatmentPersonalData)
+                .build());
+    }
 }

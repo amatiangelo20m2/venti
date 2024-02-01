@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 @RestController
 @RequestMapping(path = "/booking")
@@ -56,10 +55,35 @@ public class BookingController {
         return bookingService.updateConfiguration(branchGeneralConfigurationEditRequest);
     }
 
-    @GetMapping(path = "/booking/create")
+    @PostMapping(path = "/create")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void createBooking(@RequestBody CreateBookingRequest createBookingRequest){
         bookingService.createBooking(createBookingRequest);
+    }
+
+    @GetMapping(path = "/register/customer")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Customer registerCustomer(@RequestParam String brancCode,
+                                     @RequestParam String name,
+                                     @RequestParam String lastname,
+                                     @RequestParam String email,
+                                     @RequestParam String prefix,
+                                     @RequestParam String phone,
+                                     @RequestParam LocalDate dob,
+                                     @RequestParam boolean treatmentPersonalData,
+                                     @RequestParam String photoUrl){
+
+        return bookingService.registerCustomer(
+                brancCode,
+                name,
+                lastname,
+                email,
+                prefix,
+                phone,
+                dob,
+                treatmentPersonalData,
+                photoUrl);
+
     }
 
 //    @PostMapping(path = "/create/tag")
@@ -77,7 +101,7 @@ public class BookingController {
     @GetMapping(path = "/retrieveformdata")
     @ResponseStatus(HttpStatus.OK)
     public CustomerFormData retrieveFormData(@RequestParam String branchCode,
-                                         @RequestParam String formCode){
+                                             @RequestParam String formCode){
 
         return bookingService.retrieveFormData(branchCode, formCode);
 
@@ -86,27 +110,28 @@ public class BookingController {
 
     @GetMapping(path = "/switchisclosedbranchtime")
     @ResponseStatus(HttpStatus.OK)
-    public void switchisclosedbranchtime(@RequestParam Long branchTimeRangeId){
+    public void switchIsClosedBranchTime(@RequestParam Long branchTimeRangeId){
         bookingService.switchIsClosedValueToBranchTimeRange(branchTimeRangeId);
     }
 
     @GetMapping(path = "/retrievecustomerbyphoneoremail")
     @ResponseStatus(HttpStatus.OK)
-    public Customer retrievecustomerbyphoneoremail(@RequestParam String phone, @RequestParam String email){
-        return bookingService.retrievecustomerbyphoneoremail(phone, email);
-
+    public CustomerResult retrieveCustomerAndSendOtp(@RequestParam String branchCode,
+                                                     @RequestParam(required = false, defaultValue = "") String phone,
+                                                     @RequestParam(required = false, defaultValue = "") String email){
+        return bookingService.retrieveCustomerByPhoneOrEmailAndSendOtp(branchCode, phone, email);
     }
 
-    @GetMapping(path = "/sendopt")
-    @ResponseStatus(HttpStatus.OK)
-    public String sendOtp(@RequestParam String phone,
-                          @RequestParam String prefix,
-                          @RequestParam String branchCode){
-        return bookingService.sendOtp(phone, prefix, branchCode);
+//    @GetMapping(path = "/sendopt")
+//    @ResponseStatus(HttpStatus.OK)
+//    public String sendOtp(@RequestParam String phone,
+//                          @RequestParam String branchCode){
+//
+//        return bookingService.sendOtp(phone, branchCode);
+//
+//    }
 
-    }
-
-    //TODO: check this part for future integration of massive sending message.Righ now is not working while 'chatId' format wrong
+    //TODO: check this part for future integration of massive sending message. Righ now is not working while 'chatId' format wrong
 
 //    @GetMapping(path = "/sendmassivemessage")
 //    @ResponseStatus(HttpStatus.OK)

@@ -116,6 +116,7 @@ public class BranchService {
             return BranchResponseEntity.builder()
                     .name(byBranchCode.get().getName())
                     .branchCode(byBranchCode.get().getBranchCode())
+                    .address(byBranchCode.get().getAddress())
                     .logoImage(byBranchCode.get().getLogoImage())
                     .phone(byBranchCode.get().getPhoneNumber())
                     .email(byBranchCode.get().getEmail())

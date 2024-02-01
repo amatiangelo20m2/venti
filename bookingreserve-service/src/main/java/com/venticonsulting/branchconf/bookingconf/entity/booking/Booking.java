@@ -50,6 +50,12 @@ public class Booking {
     private int guest;
 
     @Column
+    private int child;
+
+    @Column
+    private int allowedDogs;
+
+    @Column
     private String requests;
 
     @Column
@@ -58,7 +64,7 @@ public class Booking {
     @Column(name = "insert_booking_time")
     private Date insertBookingTime;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 

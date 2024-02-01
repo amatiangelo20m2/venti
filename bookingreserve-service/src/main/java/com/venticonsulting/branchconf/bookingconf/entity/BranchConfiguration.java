@@ -92,5 +92,7 @@ public class BranchConfiguration implements Serializable {
     private Date lastWaApiConfCheck;
 
     private Date branchConfCreationDate;
+    @Column(name = "dogs_allowed")
+    private int dogsAllowed;
 
 }

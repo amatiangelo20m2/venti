@@ -12,7 +12,7 @@ import java.util.List;
 @Entity(name = "Customer")
 @Table(name = "CUSTOMER",
         uniqueConstraints=
-        @UniqueConstraint(columnNames={"customer_id", "email"}))
+        @UniqueConstraint(columnNames={"customer_id", "email", "phone"}))
 @Data
 @Builder
 @NoArgsConstructor
@@ -39,10 +39,11 @@ public class Customer implements Serializable {
     private String lastname;
     @Column(
             name = "email",
-            unique = true,
-            nullable = false
+            unique = true
     )
     private String email;
+
+    private String prefix;
 
     @Column(
             name = "phone",
@@ -51,7 +52,10 @@ public class Customer implements Serializable {
     )
     private String phone;
 
-    private String prefix;
+    @Column(length = 600)
+    private String imageProfile;
+
+    private boolean isNumberVerified;
 
     private LocalDate dob;
     private Date registrationDate;
@@ -66,6 +70,5 @@ public class Customer implements Serializable {
             length = 10
     )
     private String branchCode;
-
 
 }

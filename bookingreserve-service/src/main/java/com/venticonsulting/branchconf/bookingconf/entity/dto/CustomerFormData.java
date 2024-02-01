@@ -17,9 +17,11 @@ public class CustomerFormData implements Serializable {
     private String phone;
     private String formCode;
     private String formLogo;
+    private int guests;
     private int bookingSlotInMinutes;
     private int maxTableNumber;
     private String address;
+    private int dogsAllowed;
     private List<BranchTimeRangeDTO> branchTimeRangeDTOS;
     private List<DateTimeRangeAvailableGuests> dateTimeRangeAvailableGuests;
 
