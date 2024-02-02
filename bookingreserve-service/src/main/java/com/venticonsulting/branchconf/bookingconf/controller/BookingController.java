@@ -114,12 +114,13 @@ public class BookingController {
         bookingService.switchIsClosedValueToBranchTimeRange(branchTimeRangeId);
     }
 
-    @GetMapping(path = "/retrievecustomerbyphoneoremail")
+    @GetMapping(path = "/retrievecustomerandsendotp")
     @ResponseStatus(HttpStatus.OK)
     public CustomerResult retrieveCustomerAndSendOtp(@RequestParam String branchCode,
-                                                     @RequestParam(required = false, defaultValue = "") String phone,
-                                                     @RequestParam(required = false, defaultValue = "") String email){
-        return bookingService.retrieveCustomerByPhoneOrEmailAndSendOtp(branchCode, phone, email);
+                                                     @RequestParam String prefix,
+                                                     @RequestParam String phone) {
+
+        return bookingService.retrieveCustomerByPrefixPhoneAndSendOtp(branchCode, prefix, phone);
     }
 
 //    @GetMapping(path = "/sendopt")

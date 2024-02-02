@@ -70,5 +70,4 @@ public class Customer implements Serializable {
             length = 10
     )
     private String branchCode;
-
 }

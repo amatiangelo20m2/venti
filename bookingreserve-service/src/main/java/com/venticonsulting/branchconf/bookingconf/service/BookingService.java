@@ -33,12 +33,13 @@ import java.util.*;
 public class BookingService {
 
     private final BranchConfigurationRepository branchConfigurationRepository;
-    private final WaApiService waApiService;
     private final BranchTimeRangeRepository branchTimeRangeRepository;
     private final BookingRepository bookingRepository;
     private final CustomerRepository customerRepository;
 
-    private final WebClient dashboardServiceWebClient;
+    private final WaApiService waApiService;
+    private final DashboardService dashboardService;
+
 
     @Transactional
     public BranchConfigurationDTO configureNumberForWhatsAppMessaging(String branchCode) {
@@ -357,18 +358,11 @@ public class BookingService {
 //                .flatMap(branchConfiguration -> Optional.ofNullable(branchConfiguration.getTags())).ifPresent(tags -> tags.removeIf(formTag -> formTag.getTitle().equals(tagName)));
 //    }
 
+    @Transactional
     public CustomerFormData retrieveFormData(String branchCode, String formCode) {
 
 
-        log.info("Retrieve branch configuration data from code {}", branchCode);
-
-        BranchResponseEntity branchResponseEntity = dashboardServiceWebClient
-                .get()
-                .uri("/ventimetridashboard/api/dashboard/getbranchdata",
-                        uriBuilder -> uriBuilder.queryParam("branchCode", branchCode).build())
-                .retrieve()
-                .bodyToMono(BranchResponseEntity.class)
-                .block();
+        BranchResponseEntity branchResponseEntity = dashboardService.retrieveBranchResponseEntity(branchCode);
 
         log.info("Retrieved data : {}", branchResponseEntity);
         log.info("Retrieve form with default configuration for branch with code {}, form code {}", branchCode, formCode);
@@ -424,7 +418,7 @@ public class BookingService {
 
                 return CustomerFormData.builder()
                         .branchCode(branchCode)
-                        .branchName(Objects.requireNonNull(branchResponseEntity).getName())
+                        .branchName(branchResponseEntity.getName())
                         .email(branchResponseEntity.getEmail())
                         .phone(branchResponseEntity.getPhone())
                         .formCode(formCode)
@@ -532,9 +526,13 @@ public class BookingService {
 
 
     @Transactional
-    public CustomerResult retrieveCustomerByPhoneOrEmailAndSendOtp(String branchCode, String phone, String email) {
-        log.info("Retrieve customer data by email {} and phone {}", email, phone);
-        Optional<Customer> byPhoneOrEmail = customerRepository.findByPhoneOrEmail(phone, email);
+    public CustomerResult retrieveCustomerByPrefixPhoneAndSendOtp(String branchCode,
+                                                                   String prefix,
+                                                                   String phone) {
+
+        log.info("Retrieve customer data by email {} and phone {}", prefix, phone);
+        Optional<Customer> byPrefixAndPhone = customerRepository.findByPrefixAndPhone(prefix, phone);
+
 
         String opt = generateNumericCode();
         Optional<BranchConfiguration> branchConfOpt = branchConfigurationRepository.findByBranchCode(branchCode);
@@ -542,19 +540,22 @@ public class BookingService {
         if (branchConfOpt.isPresent() && "success".equalsIgnoreCase(branchConfOpt.get().getInstanceStatus())) {
             String instanceId = branchConfOpt.get().getInstanceId();
 
-            waApiService.sendMessage(instanceId, phone, opt);
+            waApiService.sendMessage(instanceId, prefix + phone, opt);
 
-            String photoUrl = waApiService.retrievePhoto(instanceId, phone);
+            String photoUrl = waApiService.retrievePhoto(instanceId, prefix + phone);
 
-            if (byPhoneOrEmail.isPresent()) {
+            if (byPrefixAndPhone.isPresent()) {
+
+                byPrefixAndPhone.get().setImageProfile(photoUrl);
+
                 return CustomerResult.builder()
-                        .customer(byPhoneOrEmail.get())
+                        .customer(byPrefixAndPhone.get())
                         .isCustomerFound(true)
                         .profilePhoto(photoUrl)
                         .opt(opt)
                         .build();
             } else {
-                String errorMessage = "Customer with email " + email + " or phone " + phone + " not found";
+                String errorMessage = "Customer with prefix " + prefix + " and phone " + phone + " not found";
                 log.warn(errorMessage);
 
                 return CustomerResult.builder()

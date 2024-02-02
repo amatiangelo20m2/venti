@@ -5,14 +5,15 @@ import com.venticonsulting.branchconf.bookingconf.controller.BookingController;
 import com.venticonsulting.branchconf.bookingconf.entity.BookingForm;
 import com.venticonsulting.branchconf.bookingconf.entity.BranchConfiguration;
 import com.venticonsulting.branchconf.bookingconf.entity.FormTag;
+import com.venticonsulting.branchconf.bookingconf.entity.booking.Customer;
 import com.venticonsulting.branchconf.bookingconf.entity.dto.*;
 import com.venticonsulting.branchconf.bookingconf.repository.*;
 import com.venticonsulting.branchconf.bookingconf.service.BookingService;
+import com.venticonsulting.branchconf.bookingconf.service.DashboardService;
 import com.venticonsulting.branchconf.waapiconf.service.WaApiService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -22,31 +23,25 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static com.venticonsulting.branchconf.bookingconf.entity.BookingForm.FormType.BOOKING_FORM;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @DataJpaTest
-//@SpringBootTest
 @ContextConfiguration(classes = BookingReserveServiceApplication.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Slf4j
-//@WebMvcTest(BookingController.class)
 public class TestSuiteBookingService {
 
     private static final Random RANDOM = new Random();
 
-    //    @Autowired
-//    private MockMvc mockMvc;
     @MockBean
     private WaApiService waApiServiceMock;
 
     @MockBean
-    private WebClient webClient;
+    private DashboardService dashboardService;
 
     @Autowired
     private BookingRepository bookingRepository;
@@ -70,11 +65,11 @@ public class TestSuiteBookingService {
 
         BookingService bookingService = new BookingService(
                 branchConfigurationRepository,
-                waApiServiceMock,
                 branchTimeRangeRepository,
                 bookingRepository,
                 customerRepository,
-                webClient);
+                waApiServiceMock,
+                dashboardService);
 
 
         bookingController = new BookingController(bookingService);
@@ -83,65 +78,14 @@ public class TestSuiteBookingService {
     private final String INSTANCE_CODE = "9999";
 
     @Test
-    public void testCreateBranchConf(){
+    public void testCreateBranchConfAndStoreTimeRange() throws InterruptedException {
 
         String branchCode = TestUtils.generateUniqueHexCode();
 
-        Mockito.when(waApiServiceMock.createInstance()).thenReturn(TestUtils.convertJsonToCreateUpdateResponse(getCreateInstanceResponseOK));
-        Mockito.when(waApiServiceMock.retrieveClientInfo(INSTANCE_CODE)).thenReturn(TestUtils.convertMeResponse(getRetrieveBasicClientInfoErrorQrCodeStatus));
+        when(waApiServiceMock.createInstance()).thenReturn(TestUtils.convertJsonToCreateUpdateResponse(getCreateInstanceResponseOK));
+        when(waApiServiceMock.retrieveClientInfo(INSTANCE_CODE)).thenReturn(TestUtils.convertMeResponse(getRetrieveBasicClientInfoErrorQrCodeStatus));
 
-        Mockito.when(waApiServiceMock.retrieveQrCode(INSTANCE_CODE)).thenReturn(TestUtils.convertQrResponse(retrieveQrCodeResponse));
-
-        BranchConfigurationDTO branchConfigurationDTO = bookingController.configureNumberForWhatsAppMessaging(
-                branchCode
-        );
-
-//        assertEquals(2, branchConfigurationDTO.getTags().size());
-        assertEquals(branchCode, branchConfigurationDTO.getBranchCode());
-
-
-//        assertEquals(2, branchConfigurationDTO1.getTags().size());
-        assertEquals(branchCode, branchConfigurationDTO.getBranchCode());
-        assertEquals("instance has to be in ready status to perform this request", branchConfigurationDTO.getExplanation());
-        assertEquals("qr", branchConfigurationDTO.getInstanceStatus());
-        assertEquals("amati.angelo90@gmail.com", branchConfigurationDTO.getOwner());
-        assertEquals("", branchConfigurationDTO.getContactId());
-        assertEquals("", branchConfigurationDTO.getDisplayName());
-        assertEquals("amati.angelo90@gmail.com", branchConfigurationDTO.getOwner());
-
-        assertEquals(7, branchConfigurationDTO.getBookingFormList().get(0).getBranchTimeRanges().size());
-        assertEquals(2, branchConfigurationDTO.getTags().size());
-
-        //simuliamo scan qr code from whats'app
-        Mockito.when(waApiServiceMock.retrieveClientInfo(INSTANCE_CODE)).thenReturn(TestUtils.convertMeResponse(getGetRetrieveBasicClientInfoAfterQrScan));
-
-        BranchConfigurationDTO branchConfigurationDTOAfterScanQR = bookingController.checkWaApiStatus(branchCode);
-
-        assertEquals(branchCode, branchConfigurationDTOAfterScanQR.getBranchCode());
-        assertEquals("", branchConfigurationDTOAfterScanQR.getExplanation());
-        assertEquals("success", branchConfigurationDTOAfterScanQR.getInstanceStatus());
-        assertEquals(1, branchConfigurationDTOAfterScanQR.getBookingFormList().size());
-        assertEquals("amati.angelo90@gmail.com", branchConfigurationDTOAfterScanQR.getOwner());
-        assertEquals("393454937047@c.us", branchConfigurationDTOAfterScanQR.getContactId());
-        assertEquals("+39 345 493 7047", branchConfigurationDTOAfterScanQR.getFormattedNumber());
-        assertEquals("Angelo Amati", branchConfigurationDTOAfterScanQR.getDisplayName());
-        assertEquals(BOOKING_FORM, branchConfigurationDTOAfterScanQR.getBookingFormList().get(0).getFormType());
-        assertEquals(7, branchConfigurationDTOAfterScanQR.getBookingFormList().get(0).getBranchTimeRanges().size());
-        assertEquals(2, branchConfigurationDTOAfterScanQR.getTags().size());
-
-
-    }
-
-
-    @Test
-    public void testCreateBranchConfAndStoreTimeRange(){
-
-        String branchCode = TestUtils.generateUniqueHexCode();
-
-        Mockito.when(waApiServiceMock.createInstance()).thenReturn(TestUtils.convertJsonToCreateUpdateResponse(getCreateInstanceResponseOK));
-        Mockito.when(waApiServiceMock.retrieveClientInfo(INSTANCE_CODE)).thenReturn(TestUtils.convertMeResponse(getRetrieveBasicClientInfoErrorQrCodeStatus));
-
-        Mockito.when(waApiServiceMock.retrieveQrCode(INSTANCE_CODE)).thenReturn(TestUtils.convertQrResponse(retrieveQrCodeResponse));
+        when(waApiServiceMock.retrieveQrCode(INSTANCE_CODE)).thenReturn(TestUtils.convertQrResponse(retrieveQrCodeResponse));
 
         BranchConfigurationDTO branchConfigurationDTO = bookingController.configureNumberForWhatsAppMessaging(
                 branchCode
@@ -159,7 +103,7 @@ public class TestSuiteBookingService {
         assertEquals(2, branchConfigurationDTO.getTags().size());
 
         //simuliamo scan qr code from whats'app
-        Mockito.when(waApiServiceMock.retrieveClientInfo(INSTANCE_CODE)).thenReturn(TestUtils.convertMeResponse(getGetRetrieveBasicClientInfoAfterQrScan));
+        when(waApiServiceMock.retrieveClientInfo(INSTANCE_CODE)).thenReturn(TestUtils.convertMeResponse(getGetRetrieveBasicClientInfoAfterQrScan));
 
         BranchConfigurationDTO branchConfigurationDTOAfterScanQR = bookingController.checkWaApiStatus(branchCode);
 
@@ -212,6 +156,7 @@ public class TestSuiteBookingService {
                 .maxTableNumber(30)
                 .isReservationConfirmedManually(true)
                 .branchCode(branchCode)
+                .dogsAllowed(15)
                 .guestReceivingAuthConfirm(20)
                 .minBeforeSendConfirmMessage(30)
                 .build());
@@ -223,6 +168,7 @@ public class TestSuiteBookingService {
         assertEquals("amati.angelo90@gmail.com", branchConfigurationAfterConfigureOpening.getOwner());
         assertEquals("393454937047@c.us", branchConfigurationAfterConfigureOpening.getContactId());
         assertEquals("+39 345 493 7047", branchConfigurationAfterConfigureOpening.getFormattedNumber());
+        assertEquals(15, branchConfigurationAfterConfigureOpening.getDogsAllowed());
         assertEquals("Angelo Amati", branchConfigurationAfterConfigureOpening.getDisplayName());
         assertEquals(BOOKING_FORM, branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormType());
         assertEquals(7, branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getBranchTimeRanges().size());
@@ -253,12 +199,47 @@ public class TestSuiteBookingService {
 
 
 
+        BranchResponseEntity mockResponse = BranchResponseEntity.builder()
+                .branchCode(branchCode)
+                .address("Via dal cazzo")
+                .name("Coglionazzo")
+                .email("amati.angelo90@gmail.com")
+                .phone("34532134234")
+                .logoImage(null)
+                .build();
 
+        when(dashboardService.retrieveBranchResponseEntity(branchCode)).thenReturn(mockResponse);
+
+
+        CustomerResult customerResult = bookingController.retrieveCustomerAndSendOtp(branchCode, "39", "3454937047");
+
+        assertFalse(customerResult.isCustomerFound());
+        assertEquals(4,customerResult.getOpt().length());
+        assertNull(customerResult.getCustomer());
+
+        bookingController.registerCustomer(branchCode, "Angelo", "Amati", "amati.angeloooo@gmail.com", "39", "3454937047", LocalDate.of(1990, 5, 19), true, "rewrewerwewewerwerwerwer");
+
+        CustomerResult newCustomerRes = bookingController.retrieveCustomerAndSendOtp(branchCode, "39", "3454937047");
+
+        assertTrue(newCustomerRes.isCustomerFound());
+        assertEquals("amati.angeloooo@gmail.com", newCustomerRes.getCustomer().getEmail());
+        assertEquals("Angelo", newCustomerRes.getCustomer().getEmail());
+        assertEquals("Amati", newCustomerRes.getCustomer().getLastname());
+        assertEquals("39", newCustomerRes.getCustomer().getPrefix());
+        assertEquals("3454937047", newCustomerRes.getCustomer().getPhone());
 
         CustomerFormData customerFormData = bookingController.retrieveFormData(branchCode,
                 branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode());
 
         log.info("Customer Form data {}", customerFormData );
+
+//
+//        webTestClient.get()
+//                .uri("/ventimetridashboard/api/dashboard/getbranchdata")  // Use the actual endpoint you are testing
+//                .exchange()
+//                .expectStatus().isOk()
+//                .expectBody(/* your expected response type */);
+
 
     }
 
