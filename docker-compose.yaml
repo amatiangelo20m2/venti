@@ -140,6 +140,7 @@ services:
     depends_on:
       - zipkin
       - discovery-server
+      - api-gw
   dashboard-service:
     image: amatiangelo1990/20m2:dashboard-service
     container_name: dashboard-service
@@ -149,6 +150,7 @@ services:
     depends_on:
       - zipkin
       - discovery-server
+      - api-gw
   bookingreserve-service:
     image: amatiangelo1990/20m2:bookingreserve-service
     container_name: bookingreserve-service
@@ -158,10 +160,10 @@ services:
     depends_on:
       - zipkin
       - discovery-server
-
+      - api-gw
 volumes:
   data: {}
   pg_data:
 
 networks:
-  mongodb_network:
+  db20m2:
