@@ -99,9 +99,14 @@
         <version>${jwt.token.version}</version>
         <scope>runtime</scope>
       </dependency>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <version>3.2.2</version>
+        <scope>test</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
-
 
   <build>
     <plugins>
