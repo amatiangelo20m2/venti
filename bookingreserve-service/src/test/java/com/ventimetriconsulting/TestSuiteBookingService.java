@@ -223,7 +223,7 @@ public class TestSuiteBookingService {
 
         assertTrue(newCustomerRes.isCustomerFound());
         assertEquals("amati.angeloooo@gmail.com", newCustomerRes.getCustomer().getEmail());
-        assertEquals("Angelo", newCustomerRes.getCustomer().getLastname());
+        assertEquals("Angelo", newCustomerRes.getCustomer().getName());
         assertEquals("Amati", newCustomerRes.getCustomer().getLastname());
         assertEquals("39", newCustomerRes.getCustomer().getPrefix());
         assertEquals("3454937047", newCustomerRes.getCustomer().getPhone());
