@@ -3,6 +3,8 @@ package com.venticonsulting.branchconf.bookingconf.service;
 import com.venticonsulting.branchconf.bookingconf.entity.*;
 import com.venticonsulting.branchconf.bookingconf.entity.booking.Booking;
 import com.venticonsulting.branchconf.bookingconf.entity.booking.Customer;
+import com.venticonsulting.branchconf.bookingconf.entity.booking.dto.BookingDTO;
+import com.venticonsulting.branchconf.bookingconf.entity.booking.dto.BookingStatus;
 import com.venticonsulting.branchconf.bookingconf.entity.dto.*;
 import com.venticonsulting.branchconf.bookingconf.entity.utils.Utils;
 import com.venticonsulting.branchconf.bookingconf.entity.utils.WeekDayItalian;
@@ -20,7 +22,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.security.SecureRandom;
 import java.time.LocalDate;
@@ -53,7 +54,7 @@ public class BookingService {
             log.info("There is no configuration found for branch with code {}, let's create a brand new one.." , branchCode);
             //configuro qui i giorni di apertura per il branch appena configurato
 
-            createBranchConfiguration(branchCode);
+            configureBranchWithDefaultOptions(branchCode);
 
             CreateUpdateResponse createUpdateResponse = waApiService.createInstance();
             haveSomeTimeToSleep(3000);
@@ -132,7 +133,8 @@ public class BookingService {
         return tags;
     }
     @Transactional
-    public void createBranchConfiguration(String branchCode) {
+    public BranchConfigurationDTO configureBranchWithDefaultOptions(String branchCode) {
+        log.info("Create branch configuration for branch with code {}", branchCode);
         BranchConfiguration branchConfiguration = BranchConfiguration.builder()
                 .isReservationConfirmedManually(false)
                 .minBeforeSendConfirmMessage(0)
@@ -177,9 +179,11 @@ public class BookingService {
 
         branchConfiguration.getBookingForms().add(bookingForm);
 
-        branchConfigurationRepository.save(branchConfiguration);
+        BranchConfiguration save = branchConfigurationRepository.save(branchConfiguration);
 
         haveSomeTimeToSleep(500);
+
+        return BranchConfigurationDTO.fromEntity(save);
 
     }
 
@@ -481,6 +485,7 @@ public class BookingService {
 
         if(byPhoneOrEmail.isPresent()){
 
+            log.info("Customer found with id {} : {}", createBookingRequest.getCustomerId(), byPhoneOrEmail.get());
             Booking savedBooking = bookingRepository.save(Booking.builder()
                     .insertBookingTime(new Date())
                     .guest(createBookingRequest.getGuests())
@@ -493,6 +498,7 @@ public class BookingService {
                     .child(createBookingRequest.getChild())
                     .allowedDogs(createBookingRequest.getDogsAllowed())
                     .formCodeFrom(createBookingRequest.getFormCode())
+                    .bookingStatus(BookingStatus.PENDING)
                     .requests(createBookingRequest.getParticularRequests())
                     .branchCode(createBookingRequest.getBranchCode())
                     .build());
@@ -511,10 +517,21 @@ public class BookingService {
     }
 
     private String buildBookingMessage(Booking savedBooking, CreateBookingRequest createBookingRequest) {
-        return "Grazie per aver prenotato presso " + createBookingRequest.getBranchName()
+
+        return "Grazie per aver prenotato presso \uD83D\uDCCD \uD83D\uDCCD " +
+                "" +
+                "" +
+                "" +
+                "" +
+                "" +
+                "" +
+                "" +
+                "" +
+                "" +
+                "\uD83D\uDE0E";
+        /*return "Grazie per aver prenotato presso " + createBookingRequest.getBranchName()
                 + "\uD83D\uDE0E.\n\n \uD83D\uDCCD " + createBookingRequest.getBranchAddress() + "\n" +
-                "\uD83D\uDC65 " + createBookingRequest.getGuests() + ""
-                ;
+                "\uD83D\uDC65 " + createBookingRequest.getGuests() + "";*/
     }
 
     @Transactional
@@ -526,11 +543,47 @@ public class BookingService {
 
 
     @Transactional
-    public CustomerResult retrieveCustomerByPrefixPhoneAndSendOtp(String branchCode,
-                                                                   String prefix,
-                                                                   String phone) {
+    public Customer registerCustomer(String branchCode,
+                                     String name,
+                                     String lastname,
+                                     String email,
+                                     String prefix,
+                                     String phone,
+                                     LocalDate dob,
+                                     boolean treatmentPersonalData,
+                                     String photoUrl) {
+        log.info("Register customer. " +
+                "Name: {}, " +
+                "Lastname: {}, " +
+                "Email: {}," +
+                "Phone: {}," +
+                "Prefix: {}, " +
+                "Date of birth: {}, " +
+                "Tratment personal data: {} ", name, lastname, email, phone, prefix, dob, treatmentPersonalData);
 
-        log.info("Retrieve customer data by email {} and phone {}", prefix, phone);
+
+        return customerRepository.save(Customer.builder()
+                .customerId(0L)
+                .isNumberVerified(true)
+                .name(name)
+                .lastname(lastname)
+                .email(email)
+                .prefix(prefix)
+                .phone(phone)
+                .dob(dob)
+                .imageProfile(photoUrl)
+                .branchCode(branchCode)
+                .registrationDate(new Date())
+                .treatmentPersonalData(treatmentPersonalData)
+                .build());
+    }
+
+    @Transactional
+    public CustomerResult retrieveCustomerByPrefixPhoneAndSendOtp(String branchCode,
+                                                                  String prefix,
+                                                                  String phone) {
+
+        log.info("Retrieve customer data by prefix {} and phone {}", prefix, phone);
         Optional<Customer> byPrefixAndPhone = customerRepository.findByPrefixAndPhone(prefix, phone);
 
 
@@ -574,8 +627,8 @@ public class BookingService {
         }
     }
 
-
     private static final String DIGITS = "0123456789";
+
     private static final int CODE_LENGTH = 4;
 
     public static String generateNumericCode() {
@@ -592,39 +645,48 @@ public class BookingService {
     }
 
 
-    @Transactional
-    public Customer registerCustomer(String branchCode,
-                                     String name,
-                                     String lastname,
-                                     String email,
-                                     String prefix,
-                                     String phone,
-                                     LocalDate dob,
-                                     boolean treatmentPersonalData,
-                                     String photoUrl) {
-        log.info("Register customer. " +
-                "Name: {}, " +
-                "Lastname: {}, " +
-                "Email: {}," +
-                "Phone: {}," +
-                "Prefix: {}, " +
-                "Date of birth: {}, " +
-                "Tratment personal data: {} ", name, lastname, email, phone, prefix, dob, treatmentPersonalData);
+    public CustomerResult retrieveCustomerByPrefixPhone(String prefix, String phone) {
+        log.info("Retrieve customer data by email {} and phone {}", prefix, phone);
+        Optional<Customer> byPrefixAndPhone = customerRepository.findByPrefixAndPhone(prefix, phone);
 
+        if (byPrefixAndPhone.isPresent()) {
+            return CustomerResult.builder()
+                    .customer(byPrefixAndPhone.get())
+                    .isCustomerFound(true)
+                    .profilePhoto(null)
+                    .opt(null)
+                    .build();
+        } else {
+            String errorMessage = "Customer with prefix " + prefix + " and phone " + phone + " not found";
+            log.warn(errorMessage);
 
-        return customerRepository.save(Customer.builder()
-                .customerId(0L)
-                .isNumberVerified(true)
-                .name(name)
-                .lastname(lastname)
-                .email(email)
-                .prefix(prefix)
-                .phone(phone)
-                .dob(dob)
-                .imageProfile(photoUrl)
-                .branchCode(branchCode)
-                .registrationDate(new Date())
-                .treatmentPersonalData(treatmentPersonalData)
-                .build());
+            return CustomerResult.builder()
+                    .customer(null)
+                    .profilePhoto(null)
+                    .isCustomerFound(false)
+                    .opt(null)
+                    .build();
+        }
+    }
+
+    public List<BookingDTO> retrieveBookingsByBranchCode(String branchCode, LocalDate startDate, LocalDate endDate) {
+        log.info("Retrieve booking list for branch with code {}", branchCode);
+
+        List<Booking> bookings;
+
+        if (branchCode != null && startDate != null && endDate != null) {
+            bookings = bookingRepository.findByBranchCodeAndDateBetween(branchCode, startDate, endDate);
+        } else if (branchCode != null) {
+            bookings = bookingRepository.findByBranchCode(branchCode);
+        } else {
+            bookings = bookingRepository.findAll();
+        }
+
+        if (bookings.isEmpty()) {
+            log.warn("No reservation found for branch with code {}", branchCode);
+        }
+
+        List<Booking> byBranchCode = bookingRepository.findByBranchCode(branchCode);
+        return BookingDTO.convertToList(byBranchCode);
     }
 }

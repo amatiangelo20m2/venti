@@ -1,11 +1,13 @@
 package com.venticonsulting.branchconf.bookingconf.entity.booking;
 
+import com.venticonsulting.branchconf.bookingconf.entity.booking.dto.BookingStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Date;
+import java.util.UUID;
 
 @Entity
 @Table(name = "booking",
@@ -15,7 +17,6 @@ import java.util.Date;
 @NoArgsConstructor
 @Data
 @Builder
-@ToString
 public class Booking {
 
     @Id
@@ -32,13 +33,19 @@ public class Booking {
             name = "booking_id",
             updatable = false
     )
-    private Long booking_id;
+    private Long bookingId;
 
     @Column(
             name = "branch_code",
             length = 10
     )
     private String branchCode;
+
+    @Column(
+            name = "booking_code",
+            length = 10
+    )
+    private String bookingcode;
 
     @Column(name = "booking_date")
     private LocalDate date;
@@ -68,5 +75,17 @@ public class Booking {
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
+    @Column(name = "booking_status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private BookingStatus bookingStatus;
 
+    @PrePersist
+    public void generateUniqueCode() {
+        this.bookingcode = generateUniqueHexCode();
+    }
+
+    private String generateUniqueHexCode() {
+        String uuid = UUID.randomUUID().toString().replace("-", "");
+        return uuid.substring(0, 10).toUpperCase();
+    }
 }

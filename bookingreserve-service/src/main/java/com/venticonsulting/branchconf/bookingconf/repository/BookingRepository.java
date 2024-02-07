@@ -20,4 +20,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Object[]> countGuestsByDateAndTime(@Param("branchCode")  String branchCode,
                                             @Param("today") LocalDate today);
 
+    List<Booking> findByBranchCode(String branchCode);
+
+    List<Booking> findByBranchCodeAndDateBetween(String branchCode, LocalDate startDate, LocalDate endDate);
 }

@@ -108,59 +108,59 @@ services:
 #      ME_CONFIG_MONGODB_ADMINUSERNAME: booking20m2
 #      ME_CONFIG_MONGODB_ADMINPASSWORD: booking20m2
 
-  discovery-server:
-    image: amatiangelo1990/20m2:discovery-server
-    container_name: discovery-server
-    ports:
-      - "8761:8761"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-    depends_on:
-      - zipkin
-  api-gw:
-    image: amatiangelo1990/20m2:api-gw
-    container_name: api-gw
-    ports:
-      - "8080:8080"
-    expose:
-      - "8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY= TRACE
-    depends_on:
-      - zipkin
-      - discovery-server
-#      - keycloak
-  auth-service:
-    image: amatiangelo1990/20m2:auth-service
-    container_name: auth-service
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY= TRACE
-    depends_on:
-      - zipkin
-      - discovery-server
-      - api-gw
-  dashboard-service:
-    image: amatiangelo1990/20m2:dashboard-service
-    container_name: dashboard-service
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY= TRACE
-    depends_on:
-      - zipkin
-      - discovery-server
-      - api-gw
-  bookingreserve-service:
-    image: amatiangelo1990/20m2:bookingreserve-service
-    container_name: bookingreserve-service
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY= TRACE
-    depends_on:
-      - zipkin
-      - discovery-server
-      - api-gw
+#  discovery-server:
+#    image: amatiangelo1990/20m2:discovery-server
+#    container_name: discovery-server
+#    ports:
+#      - "8761:8761"
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=docker
+#    depends_on:
+#      - zipkin
+#  api-gw:
+#    image: amatiangelo1990/20m2:api-gw
+#    container_name: api-gw
+#    ports:
+#      - "8080:8080"
+#    expose:
+#      - "8080"
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=docker
+#      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY= TRACE
+#    depends_on:
+#      - zipkin
+#      - discovery-server
+##      - keycloak
+#  auth-service:
+#    image: amatiangelo1990/20m2:auth-service
+#    container_name: auth-service
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=docker
+#      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY= TRACE
+#    depends_on:
+#      - zipkin
+#      - discovery-server
+#      - api-gw
+#  dashboard-service:
+#    image: amatiangelo1990/20m2:dashboard-service
+#    container_name: dashboard-service
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=docker
+#      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY= TRACE
+#    depends_on:
+#      - zipkin
+#      - discovery-server
+#      - api-gw
+#  bookingreserve-service:
+#    image: amatiangelo1990/20m2:bookingreserve-service
+#    container_name: bookingreserve-service
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=docker
+#      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY= TRACE
+#    depends_on:
+#      - zipkin
+#      - discovery-server
+#      - api-gw
 volumes:
   data: {}
   pg_data:

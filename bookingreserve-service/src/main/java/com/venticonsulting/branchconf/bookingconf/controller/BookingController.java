@@ -1,12 +1,15 @@
 package com.venticonsulting.branchconf.bookingconf.controller;
 
 import com.venticonsulting.branchconf.bookingconf.entity.booking.Customer;
+import com.venticonsulting.branchconf.bookingconf.entity.booking.dto.BookingDTO;
 import com.venticonsulting.branchconf.bookingconf.entity.dto.*;
 import com.venticonsulting.branchconf.bookingconf.service.BookingService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/booking")
@@ -16,6 +19,12 @@ public class BookingController {
 
     public BookingController(BookingService bookingService) {
         this.bookingService = bookingService;
+    }
+
+    @GetMapping(path="/createbranchconfiguration")
+    @ResponseStatus(HttpStatus.CREATED)
+    public BranchConfigurationDTO createBranchConfiguration(@RequestParam String branchCode){
+        return bookingService.configureBranchWithDefaultOptions(branchCode);
     }
 
     @GetMapping(path = "/configuration/waapi/instance/configure")
@@ -55,7 +64,7 @@ public class BookingController {
         return bookingService.updateConfiguration(branchGeneralConfigurationEditRequest);
     }
 
-    @PostMapping(path = "/create")
+    @PostMapping(path = "/booking/create")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void createBooking(@RequestBody CreateBookingRequest createBookingRequest){
         bookingService.createBooking(createBookingRequest);
@@ -121,6 +130,23 @@ public class BookingController {
                                                      @RequestParam String phone) {
 
         return bookingService.retrieveCustomerByPrefixPhoneAndSendOtp(branchCode, prefix, phone);
+    }
+
+    @GetMapping(path = "/retrievecustomer")
+    @ResponseStatus(HttpStatus.OK)
+    public CustomerResult retrieveCustomer(
+            @RequestParam String prefix,
+            @RequestParam String phone) {
+
+        return bookingService.retrieveCustomerByPrefixPhone(prefix, phone);
+    }
+
+    @GetMapping(path = "booking/getlist")
+    @ResponseStatus(HttpStatus.OK)
+    public List<BookingDTO> retrieveBookingsByBranchCode(@RequestParam String branchCode,
+                                                         @RequestParam(name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                                                         @RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        return bookingService.retrieveBookingsByBranchCode(branchCode, startDate, endDate);
     }
 
 //    @GetMapping(path = "/sendopt")
