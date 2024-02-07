@@ -156,7 +156,7 @@ public class WaApiService {
         String body = "{\"chatId\":\"PHONE@c.us\",\"message\":\"MESSAGE_PLACEHOLDER\"}";
 
         String refactoredJsonBody = body.replace("PHONE", phone).replace("MESSAGE_PLACEHOLDER", messageToSend);
-        log.info("Send message {} to number {} by intace id {} - Body {}", messageToSend, phone, instanceId, refactoredJsonBody );
+        log.info("Send message {} to number {} by instance id {} - Body {}", messageToSend, phone, instanceId, refactoredJsonBody );
 
         waapiWebClient.post()
                 .uri("/api/v1/instances/" + instanceId + "/client/action/send-message")

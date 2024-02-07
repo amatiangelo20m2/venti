@@ -42,10 +42,13 @@ public class Branch {
     private String branchCode;
     private String name = "";
     private String email = "";
+
     private String address = "";
+    private String city = "";
+    private String cap = "";
+
     @Column(
-            name = "phone",
-            unique = true)
+            name = "phone")
     private String phoneNumber;
     private String vat = "";
 

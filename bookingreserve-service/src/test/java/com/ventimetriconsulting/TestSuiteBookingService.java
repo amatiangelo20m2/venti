@@ -6,6 +6,7 @@ import com.venticonsulting.branchconf.bookingconf.entity.BookingForm;
 import com.venticonsulting.branchconf.bookingconf.entity.BranchConfiguration;
 import com.venticonsulting.branchconf.bookingconf.entity.FormTag;
 import com.venticonsulting.branchconf.bookingconf.entity.booking.Customer;
+import com.venticonsulting.branchconf.bookingconf.entity.booking.dto.BookingDTO;
 import com.venticonsulting.branchconf.bookingconf.entity.dto.*;
 import com.venticonsulting.branchconf.bookingconf.repository.*;
 import com.venticonsulting.branchconf.bookingconf.service.BookingService;
@@ -17,16 +18,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
 import static com.venticonsulting.branchconf.bookingconf.entity.BookingForm.FormType.BOOKING_FORM;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @DataJpaTest
@@ -209,6 +213,7 @@ public class TestSuiteBookingService {
                 .build();
 
         when(dashboardService.retrieveBranchResponseEntity(branchCode)).thenReturn(mockResponse);
+        when(waApiServiceMock.retrievePhoto(anyString(), anyString())).thenReturn("https://pps.whatsapp.net/v/t61.24694-24/414551696_646621444157815_2604241172986211136_n.jpg?ccb=11-4&oh=01_AdR6nKB4IW_e2zzis8nAKK2cMg0iDHlmLaEB441dTIvL9w&oe=65CC6C26&_nc_sid=e6ed6c&_nc_cat=103");
 
 
         CustomerResult customerResult = bookingController.retrieveCustomerAndSendOtp(branchCode, "39", "3454937047");
@@ -217,13 +222,21 @@ public class TestSuiteBookingService {
         assertEquals(4,customerResult.getOpt().length());
         assertNull(customerResult.getCustomer());
 
-        bookingController.registerCustomer(branchCode, "Angelo", "Amati", "amati.angeloooo@gmail.com", "39", "3454937047", LocalDate.of(1990, 5, 19), true, "rewrewerwewewerwerwerwer");
+        bookingController
+                .registerCustomer(branchCode, "Angelo", "Amati",
+                        "amati.angeloooo@gmail.com", "39",
+                        "3454937047", LocalDate.of(1990,
+                                5, 19), true,
+                        "https://pps.whatsapp.net/v/t61.24694-24/414551696_646621444157815_2604241172986211136_n.jpg?ccb=11-4&oh=01_AdR6nKB4IW_e2zzis8nAKK2cMg0iDHlmLaEB441dTIvL9w&oe=65CC6C26&_nc_sid=e6ed6c&_nc_cat=103");
 
+        List<Customer> allCustomers = customerRepository.findAll();
+        assertEquals(1, allCustomers.size());
         CustomerResult newCustomerRes = bookingController.retrieveCustomerAndSendOtp(branchCode, "39", "3454937047");
 
         assertTrue(newCustomerRes.isCustomerFound());
         assertEquals("amati.angeloooo@gmail.com", newCustomerRes.getCustomer().getEmail());
         assertEquals("Angelo", newCustomerRes.getCustomer().getName());
+        assertNotNull(newCustomerRes.getCustomer().getImageProfile());
         assertEquals("Amati", newCustomerRes.getCustomer().getLastname());
         assertEquals("39", newCustomerRes.getCustomer().getPrefix());
         assertEquals("3454937047", newCustomerRes.getCustomer().getPhone());
@@ -232,6 +245,29 @@ public class TestSuiteBookingService {
                 branchConfigurationAfterConfigureOpening.getBookingFormList().get(0).getFormCode());
 
         log.info("Customer Form data {}", customerFormData );
+
+        for(int i = 0; i < 10; i++){
+            bookingController.createBooking(CreateBookingRequest.builder()
+                    .branchAddress("Via dal cazzo 12")
+                    .branchCode(branchCode)
+                    .branchName("20m2 Cisternino")
+                    .dogsAllowed(4)
+                    .guests(24)
+                    .customerId(newCustomerRes.getCustomer().getCustomerId())
+                    .child(0)
+                    .particularRequests("particular requests")
+                    .time("12:30")
+                    .date("20240404")
+                    .build());
+        }
+
+
+        List<BookingDTO> listResponseEntity = bookingController.retrieveBookingsByBranchCode(branchCode, LocalDate.now(), null);
+
+        assertEquals(10, listResponseEntity.size());
+        assertEquals("https://pps.whatsapp.net/v/t61.24694-24/414551696_646621444157815_2604241172986211136_n.jpg?ccb=11-4&oh=01_AdR6nKB4IW_e2zzis8nAKK2cMg0iDHlmLaEB441dTIvL9w&oe=65CC6C26&_nc_sid=e6ed6c&_nc_cat=103", listResponseEntity.get(0).getCustomer().getImageProfile());
+
+
 
 //
 //        webTestClient.get()

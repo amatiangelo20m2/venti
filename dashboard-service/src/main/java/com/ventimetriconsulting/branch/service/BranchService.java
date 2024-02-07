@@ -37,16 +37,18 @@ public class BranchService {
         Branch savedBranch = branchRepository.save(
                 Branch.builder()
                         .branchId(0)
-                        .phoneNumber(branchCreationEntity.getPhone())
+                        .phoneNumber(branchCreationEntity.getPhoneNumber())
                         .vat(branchCreationEntity.getVat())
                         .name(branchCreationEntity.getName())
                         .address(branchCreationEntity.getAddress())
                         .email(branchCreationEntity.getEmail())
-                        .phoneNumber(branchCreationEntity.getPhone())
+                        .city(branchCreationEntity.getCity())
+                        .cap(branchCreationEntity.getCap())
                         .type(branchCreationEntity.getType())
                         .logoImage(branchCreationEntity.getLogoImage())
                         .build());
 
+        log.info("Link branch created with id {} to a user with mail {}", savedBranch.getBranchId(), branchCreationEntity.getEmail());
         branchUserRepository.save(BranchUser.builder()
                 .id(0)
                 .branch(savedBranch)
@@ -122,7 +124,7 @@ public class BranchService {
                     .email(byBranchCode.get().getEmail())
                     .build();
         }else{
-            log.error("getBranchData method give error. No branch found with branch code " + branchCode);
+            log.error("GetBranchData method give error. No branch found with branch code " + branchCode);
             throw new BranchNotFoundException("No branch found with branch code " + branchCode);
         }
     }

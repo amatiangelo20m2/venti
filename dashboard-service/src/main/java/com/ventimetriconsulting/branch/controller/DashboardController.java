@@ -46,6 +46,4 @@ public class DashboardController {
     public BranchResponseEntity getBranchData(@RequestParam String branchCode){
         return branchService.getBranchData(branchCode);
     }
-
-
 }
