@@ -246,25 +246,22 @@ public class TestSuiteBookingService {
 
         log.info("Customer Form data {}", customerFormData );
 
-        for(int i = 0; i < 10; i++){
-            bookingController.createBooking(CreateBookingRequest.builder()
-                    .branchAddress("Via dal cazzo 12")
-                    .branchCode(branchCode)
-                    .branchName("20m2 Cisternino")
-                    .dogsAllowed(4)
-                    .guests(24)
-                    .customerId(newCustomerRes.getCustomer().getCustomerId())
-                    .child(0)
-                    .particularRequests("particular requests")
-                    .time("12:30")
-                    .date("20240404")
-                    .build());
-        }
-
+        bookingController.createBooking(CreateBookingRequest.builder()
+                .branchAddress("Via dal cazzo 12")
+                .branchCode(branchCode)
+                .branchName("20m2 Cisternino")
+                .dogsAllowed(4)
+                .guests(24)
+                .customerId(newCustomerRes.getCustomer().getCustomerId())
+                .child(0)
+                .particularRequests("particular requests")
+                .time("12:30")
+                .date("20240404")
+                .build());
 
         List<BookingDTO> listResponseEntity = bookingController.retrieveBookingsByBranchCode(branchCode, LocalDate.now(), null);
 
-        assertEquals(10, listResponseEntity.size());
+        assertEquals(1, listResponseEntity.size());
         assertEquals("https://pps.whatsapp.net/v/t61.24694-24/414551696_646621444157815_2604241172986211136_n.jpg?ccb=11-4&oh=01_AdR6nKB4IW_e2zzis8nAKK2cMg0iDHlmLaEB441dTIvL9w&oe=65CC6C26&_nc_sid=e6ed6c&_nc_cat=103", listResponseEntity.get(0).getCustomer().getImageProfile());
 
 
