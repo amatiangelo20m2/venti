@@ -1,35 +1,5 @@
 version: "3.8"
 services:
-  ## Keycloak Config with Mysql database
-#  keycloak-postgres:
-#    container_name: db_20m2_keycloak_postgres
-#    image: postgres:alpine
-#    volumes:
-#      - ./postgres_keycloak_data:/var/lib/postgresql/data
-#    environment:
-#      POSTGRES_DB: keycloak-postgres
-#      POSTGRES_USER: amati.angelo@20m2.it
-#      POSTGRES_PASSWORD: 5Gv94E4uefK8qm92
-#    ports:
-#      - "5433:5432"
-#  keycloak:
-#    container_name: keycloak
-#    image: quay.io/keycloak/keycloak:18.0.0
-#    command: [ "start-dev", "--import-realm" ]
-#    environment:
-#      DB_VENDOR: POSTGRES
-#      DB_ADDR: keycloak-postgres
-#      DB_DATABASE: keycloak-postgres
-#      DB_USER: amati.angelo@20m2.it
-#      DB_PASSWORD: 5Gv94E4uefK8qm92
-#      KEYCLOAK_ADMIN: amati.angelo@20m2.it
-#      KEYCLOAK_ADMIN_PASSWORD: 5Gv94E4uefK8qm92
-#    ports:
-#      - "8181:8080"
-#    volumes:
-#      - ./realms/:/opt/jboss/keycloak/standalone/data/imports/
-#    depends_on:
-#      - keycloak-postgres
   zookeeper:
     image: confluentinc/cp-zookeeper:7.0.1
     container_name: zookeeper
@@ -165,5 +135,5 @@ volumes:
   data: {}
   pg_data:
 
-networks:
-  db20m2:
+#networks:
+#  db20m2:

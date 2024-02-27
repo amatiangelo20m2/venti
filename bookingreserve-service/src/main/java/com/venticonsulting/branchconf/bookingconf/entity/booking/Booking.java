@@ -79,6 +79,9 @@ public class Booking {
     @Enumerated(EnumType.STRING)
     private BookingStatus bookingStatus;
 
+    @Column(name = "is_arrived", nullable = false)
+    private boolean isArrived = false;
+
     @PrePersist
     public void generateUniqueCode() {
         this.bookingcode = generateUniqueHexCode();
