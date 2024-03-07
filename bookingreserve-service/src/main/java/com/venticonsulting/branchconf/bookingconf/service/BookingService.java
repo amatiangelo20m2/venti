@@ -57,8 +57,7 @@ public class BookingService {
             configureBranchWithDefaultOptions(branchCode);
 
             CreateUpdateResponse createUpdateResponse = waApiService.createInstance();
-            haveSomeTimeToSleep(3000);
-
+            haveSomeTimeToSleep(6000);
 
             MeResponse meResponse;
             int maxIterations = 10;
@@ -71,11 +70,11 @@ public class BookingService {
 
                 if (meResponse != null
                         && !"success".equals(meResponse.getStatus())) {
-                    haveSomeTimeToSleep(2000);
+                    haveSomeTimeToSleep(5000);
                 }
 
                 currentIteration++;
-
+                haveSomeTimeToSleep(5000);
             } while (meResponse == null ||
                     (!"success".equals(meResponse.getStatus()) ||
                             !"error".equals(meResponse.getMe().getStatus()) ||
@@ -501,6 +500,7 @@ public class BookingService {
                     .bookingStatus(BookingStatus.PENDING)
                     .requests(createBookingRequest.getParticularRequests())
                     .branchCode(createBookingRequest.getBranchCode())
+                    .isArrived(false)
                     .build());
 
 

@@ -37,6 +37,10 @@ public class BranchUser {
 
     @Column(name = "user_code")
     private String userCode;
-
     private Role role;
+
+    //to this token we will send the notification push in case they have app installed
+    @Column(name = "fmc_token")
+    private String fMCToken;
+
 }

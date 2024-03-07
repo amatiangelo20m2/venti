@@ -128,4 +128,19 @@ public class BranchService {
             throw new BranchNotFoundException("No branch found with branch code " + branchCode);
         }
     }
+
+    @Transactional
+    public void setFcmToken(String userCode, String branchCode, String fcmToken) {
+        log.info("Configure fcm token for branch code {}. User Code {}. FCM Token: {}", branchCode, userCode, fcmToken);
+
+        Optional<List<BranchUser>> branchesByUserCode = branchUserRepository.findBranchesByUserCode(userCode);
+
+        if(branchesByUserCode.isPresent()){
+            if(!branchesByUserCode.get().isEmpty()) {
+                for(BranchUser branchUser : branchesByUserCode.get()){
+                    branchUser.setFMCToken(fcmToken);
+                }
+            }
+        }
+    }
 }

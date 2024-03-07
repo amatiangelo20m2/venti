@@ -46,4 +46,10 @@ public class DashboardController {
     public BranchResponseEntity getBranchData(@RequestParam String branchCode){
         return branchService.getBranchData(branchCode);
     }
+
+    @GetMapping(path = "/setfmctoken")
+    @ResponseStatus(HttpStatus.OK)
+    public void getBranchData(@RequestParam String userCode, @RequestParam String branchCode, @RequestParam String fcmToken){
+        branchService.setFcmToken(userCode, branchCode, fcmToken);
+    }
 }
