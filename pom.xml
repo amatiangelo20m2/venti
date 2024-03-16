@@ -29,17 +29,14 @@
     <junit.jupiter.version>1.19.1</junit.jupiter.version>
     <springdoc.openapi.version>2.0.3</springdoc.openapi.version>
     <jwt.token.version>0.11.5</jwt.token.version>
+    <hibernate.validator.version>7.0.1.Final</hibernate.validator.version>
   </properties>
 
   <modules>
     <module>api-gw</module>
     <module>discovery-server</module>
-    <module>inventory-service</module>
-    <module>product-service</module>
-    <module>order-service</module>
     <module>auth-service</module>
-    <module>dashboard-service</module>
-    <module>bookingreserve-service</module>
+    <module>ventimetri-service</module>
   </modules>
 
   <dependencyManagement>
@@ -104,6 +101,11 @@
         <artifactId>spring-boot-starter-test</artifactId>
         <version>3.2.2</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate.validator</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>${hibernate.validator.version}</version> <!-- Use the latest version available -->
       </dependency>
     </dependencies>
   </dependencyManagement>

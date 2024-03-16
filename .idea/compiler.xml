@@ -4,6 +4,7 @@
     <excludeFromCompile>
       <directory url="file://$PROJECT_DIR$/discovery-server/src/main/resources/archetype-resources" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/api-geteway/src/main/resources/archetype-resources" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/ventimetri/src/main/resources/archetype-resources" includeSubdirectories="true" />
     </excludeFromCompile>
     <annotationProcessing>
       <profile default="true" name="Default" enabled="true" />
@@ -12,20 +13,21 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="auth-service" />
-        <module name="inventory-service" />
         <module name="discovery-server" />
         <module name="api-gw" />
-        <module name="dashboard-service" />
-        <module name="bookingreserve-service" />
-        <module name="product-service" />
-        <module name="order-service" />
+        <module name="ventimetri-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="api-gateway" target="17" />
       <module name="api-geteway" target="17" />
       <module name="booking-service" target="17" />
+      <module name="bookingreserve-service" target="17" />
       <module name="environment-composer" target="17" />
+      <module name="inventory-service" target="17" />
+      <module name="order-service" target="17" />
+      <module name="supplier-service" target="17" />
+      <module name="ventimetri" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
@@ -36,12 +38,13 @@
       <module name="auth-service" options="-parameters" />
       <module name="booking-service" options="-parameters" />
       <module name="bookingreserve-service" options="-parameters" />
-      <module name="dashboard-service" options="-parameters" />
       <module name="discovery-server" options="-parameters" />
       <module name="environment-composer" options="-parameters" />
       <module name="inventory-service" options="-parameters" />
       <module name="order-service" options="-parameters" />
-      <module name="product-service" options="-parameters" />
+      <module name="supplier-service" options="-parameters" />
+      <module name="ventimetri" options="-parameters" />
+      <module name="ventimetri-service" options="-parameters" />
     </option>
   </component>
 </project>

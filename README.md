@@ -59,7 +59,7 @@ GET http://localhost:8088/ventimetriuser/api/user/retrieve?email=string
 
 Swagger HTML
 
-http://localhost:56601/ventimetridashboard/swagger-ui/index.html
+http://localhost:56601/ventimetriservice/swagger-ui/index.html
 http://localhost:<port>/ventimetriauth/v3/api-docs
 
 Swagger editor per generare codice client

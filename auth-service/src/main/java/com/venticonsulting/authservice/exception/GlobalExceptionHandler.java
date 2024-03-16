@@ -4,43 +4,38 @@ import com.venticonsulting.authservice.exception.customexceptions.BadCredentials
 import com.venticonsulting.authservice.exception.customexceptions.ParseTokenException;
 import com.venticonsulting.authservice.exception.customexceptions.UserAlreadyExistException;
 import com.venticonsulting.authservice.exception.customexceptions.UserNotFoundException;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+
     @ExceptionHandler(UserNotFoundException.class)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ResponseBody
-    public String handleUserNotFoundException(UserNotFoundException exception) {
-        return exception.getMessage();
+    public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NO_CONTENT);
     }
 
     @ExceptionHandler(UserAlreadyExistException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ResponseBody
-    public String handleUserNotFoundException(UserAlreadyExistException exception) {
-        return exception.getMessage();
+    public ResponseEntity<String> handleUserAlreadyExistException(UserAlreadyExistException exception) {
+        return ResponseEntity
+                .badRequest()
+                .body(exception.getMessage());
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ResponseBody
-    public String handleBadCredentialsException(BadCredentialsException exception) {
-        return exception.getMessage();
+    public ResponseEntity<String> handleBadCredentialsException(BadCredentialsException exception) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(exception.getMessage());
     }
 
     @ExceptionHandler(ParseTokenException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    @ResponseBody
-    public String handleBadCredentialsException(ParseTokenException exception) {
-        return exception.getMessage();
+    public ResponseEntity<String> handleParseTokenException(ParseTokenException exception) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(exception.getMessage());
     }
 }
