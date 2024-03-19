@@ -62,6 +62,7 @@ public class BranchService {
 //            branchUserRepository.flush();
 
             return BranchResponseEntity.builder()
+                    .branchId(savedBranch.getBranchId())
                     .branchCode(savedBranch.getBranchCode())
                     .phone(savedBranch.getPhoneNumber())
                     .email(savedBranch.getEmail())
@@ -97,6 +98,7 @@ public class BranchService {
     private BranchResponseEntity convertToBranchResponseEntity(BranchUser branchUser) {
         log.info("Convert Branch User object to a dto");
         return BranchResponseEntity.builder()
+                .branchId(branchUser.getBranch().getBranchId())
                 .name(branchUser.getBranch().getName())
                 .address(branchUser.getBranch().getAddress())
                 .email(branchUser.getBranch().getEmail())
@@ -111,12 +113,13 @@ public class BranchService {
     }
 
 
-    public BranchResponseEntity getBranch(String userCode, String branchCode) {
+    public BranchResponseEntity getBranch(String userCode,
+                                          String branchCode) {
 
         log.info("Retrieve branch for user with code {} and branch with code {}", userCode, branchCode);
         Optional<BranchUser> branchByUserCodeAndBranchCode = branchUserRepository.findBranchesByUserCodeAndBranchCode(userCode, branchCode);
 
-        if(branchByUserCodeAndBranchCode.isPresent()){
+        if(branchByUserCodeAndBranchCode.isPresent()) {
             return convertToBranchResponseEntity(branchByUserCodeAndBranchCode.get());
         }
         throw new BranchNotFoundException("Branch not found for user with code [" + userCode + "] and branch with code [" + branchCode + "] ");
@@ -127,6 +130,7 @@ public class BranchService {
         Optional<Branch> byBranchCode = branchRepository.findByBranchCode(branchCode);
         if(byBranchCode.isPresent()){
             return BranchResponseEntity.builder()
+                    .branchId(byBranchCode.get().getBranchId())
                     .name(byBranchCode.get().getName())
                     .branchCode(byBranchCode.get().getBranchCode())
                     .address(byBranchCode.get().getAddress())

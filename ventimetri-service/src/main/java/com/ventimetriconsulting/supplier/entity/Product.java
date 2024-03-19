@@ -36,7 +36,7 @@ public class Product {
     private long productId;
 
     @Column(
-            name = "supplier_code",
+            name = "product_code",
             nullable = false,
             unique = true,
             length = 20

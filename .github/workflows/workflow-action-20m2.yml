@@ -40,20 +40,8 @@ jobs:
         MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Build and Push 20m2 microservice dashboard-service
-      run: mvn package dockerfile:push --file dashboard-service/pom.xml
-      env:
-        MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-
-    - name: Build and Push 20m2 microservice bookingreserve-service
-      run: mvn package dockerfile:push --file bookingreserve-service/pom.xml
-      env:
-        MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-
-    - name: Build and Push 20m2 microservice supplier-service
-      run: mvn package dockerfile:push --file supplier-service/pom.xml
+    - name: Build and Push 20m2 microservice ventimetri-service
+      run: mvn package dockerfile:push --file ventimetri-service/pom.xml
       env:
         MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}

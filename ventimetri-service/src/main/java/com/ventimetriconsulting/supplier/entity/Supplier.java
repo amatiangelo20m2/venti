@@ -56,10 +56,10 @@ public class Supplier {
     private String pec;
     private String cf;
     private String country;
-
     private long createdByUserId;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "supplier", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER,
+            mappedBy = "supplier", cascade = CascadeType.ALL)
     private List<Product> products;
 
     @PrePersist

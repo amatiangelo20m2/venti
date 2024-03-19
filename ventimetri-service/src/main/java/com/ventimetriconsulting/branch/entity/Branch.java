@@ -3,6 +3,7 @@ package com.ventimetriconsulting.branch.entity;
 import com.ventimetriconsulting.branch.configuration.bookingconf.entity.BranchConfiguration;
 import com.ventimetriconsulting.branch.configuration.bookingconf.entity.booking.Booking;
 import com.ventimetriconsulting.branch.entity.dto.BranchType;
+import com.ventimetriconsulting.inventario.entity.Storage;
 import com.ventimetriconsulting.supplier.entity.Supplier;
 import jakarta.persistence.*;
 import lombok.*;
@@ -78,6 +79,13 @@ public class Branch {
             joinColumns = @JoinColumn(name = "branch_id"),
             inverseJoinColumns = @JoinColumn(name = "supplier_id"))
     private Set<Supplier> suppliers;
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(
+            name = "branch_storage",
+            joinColumns = @JoinColumn(name = "branch_id"),
+            inverseJoinColumns = @JoinColumn(name = "storage_id"))
+    private Set<Storage> storages;
 
     @PrePersist
     public void generateUniqueCode() {

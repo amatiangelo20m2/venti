@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/supplier")
 @RequiredArgsConstructor
@@ -22,15 +24,22 @@ public class SupplierController {
                 .body(supplierService.createSupplier(supplierDTO, branchCode));
     }
 
-    @PostMapping(path = "/addproduct")
-    public ResponseEntity<ProductDTO> addProduct(
+    @PostMapping(path = "/product/add")
+    public ResponseEntity<ProductDTO> insertProductList(
             @RequestBody ProductDTO productDTO, @RequestParam("supplierId") Long supplierId) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(supplierService.createProduct(productDTO, supplierId));
     }
 
+    @PostMapping(path = "/product/insertlist")
+    public ResponseEntity<List<ProductDTO>> insertProductList(
+            @RequestBody List<ProductDTO> productDTOList, @RequestParam("supplierId") Long supplierId) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(supplierService.insertListProduct(productDTOList, supplierId));
+    }
 
-    @PutMapping(path = "/unlinksupplierfrombranch")
+
+    @PutMapping(path = "/unlinkfrombranch")
     public ResponseEntity<Boolean> unlinkSupplierFromBranch(@RequestParam("supplierId") Long supplierId,
                                                             @RequestParam("branchId") Long branchId) {
 
@@ -38,9 +47,29 @@ public class SupplierController {
         return ResponseEntity.status(HttpStatus.OK).body(true);
     }
 
-    @DeleteMapping(path = "/deleteproduct")
-    public ResponseEntity<Boolean> deleteProductById(@RequestParam("productId") Long productId) {
-        supplierService.deleteProductById(productId);
+    @PutMapping(path = "/associatetobranch")
+    public ResponseEntity<SupplierDTO> associateSupplierToBranch(@RequestParam("supplierId") Long supplierId,
+                                                                 @RequestParam("branchId") Long branchId) {
+
+        SupplierDTO supplierDTO = supplierService.associateSupplierToBranch(supplierId, branchId);
+        return ResponseEntity.status(HttpStatus.OK).body(supplierDTO);
+    }
+
+    @DeleteMapping(path = "/product/delete")
+    public ResponseEntity<Boolean> deleteProductById(
+            @RequestParam("productId") Long productId,
+            @RequestParam("supplierId") Long supplierId) {
+
+        supplierService.deleteProductById(productId, supplierId);
+
         return ResponseEntity.status(HttpStatus.OK).body(true);
+    }
+
+    @PutMapping(path = "/product/update")
+    public ResponseEntity<ProductDTO> updateProduct(@RequestBody ProductDTO productDTO){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(supplierService.updateProduct(productDTO));
+
     }
 }

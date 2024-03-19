@@ -27,7 +27,7 @@ public class BranchController {
     }
 
     @GetMapping(path = "/retrievedata")
-    public ResponseEntity<VentiMetriQuadriData> retrieveDashboardData(@RequestParam String userCode){
+    public ResponseEntity<VentiMetriQuadriData> retrieveData(@RequestParam String userCode){
         List<BranchResponseEntity> branchesByUserCode = branchService.getBranchesByUserCode(userCode);
 
         return ResponseEntity.status(HttpStatus.OK)

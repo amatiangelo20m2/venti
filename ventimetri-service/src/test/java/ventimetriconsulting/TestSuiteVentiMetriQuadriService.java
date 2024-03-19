@@ -321,32 +321,81 @@ public class TestSuiteVentiMetriQuadriService {
         assertEquals(supplierDTOResponseEntity.getStatusCode(), HttpStatusCode.valueOf(200));
         assertEquals(Objects.requireNonNull(supplierDTOResponseEntity.getBody()).getAddress(), "123 Test Address");
 
-        ResponseEntity<ProductDTO> productDTOResponseEntity = supplierController.addProduct(createRandomInstance("Product Name"),
+        ResponseEntity<ProductDTO> productDTOResponseEntity = supplierController.insertProductList(createRandomInstance("Product Name"),
                 Objects.requireNonNull(supplierDTOResponseEntity.getBody()).getSupplierId());
 
         assertEquals("Product Name", Objects.requireNonNull(productDTOResponseEntity.getBody()).getName() );
         Optional<Product> productOptional = productRepository.findById(productDTOResponseEntity.getBody().getProductId());
+
         assertTrue(productOptional.isPresent());
         assertEquals("Product Name" ,productOptional.get().getName());
+        assertEquals("Product Name", byBranchCode.get().getSuppliers().stream().toList().get(0).getProducts().stream().toList().get(0).getName());
         assertEquals(1, byBranchCode.get().getSuppliers().size());
         assertEquals(1, byBranchCode.get().getSuppliers().stream().toList().get(0).getProducts().size());
-        assertEquals("Product Name", byBranchCode.get().getSuppliers().stream().toList().get(0).getProducts().stream().toList().get(0).getName());
 
         assertEquals(1, byBranchCode.get().getSuppliers().stream().toList().get(0).getProducts().size());
 
         ResponseEntity<BranchResponseEntity> branchResponseEntityResponseEntity = branchController.getBranch(userCode, branchCode);
         assertEquals(1, Objects.requireNonNull(branchResponseEntityResponseEntity.getBody()).getSupplierDTOList().size());
 
+        long supplierId = branchResponseEntityResponseEntity.getBody().getSupplierDTOList().get(0).getSupplierId();
+        long branchId = byBranchCode.get().getBranchId();
+
         //DELETE supplier
         ResponseEntity<Boolean> booleanResponseEntity = supplierController
                 .unlinkSupplierFromBranch(
-                        branchResponseEntityResponseEntity.getBody().getSupplierDTOList().get(0).getSupplierId(),
-                        byBranchCode.get().getBranchId());
+                        supplierId,
+                        branchId);
 
-        assertEquals(HttpStatusCode.valueOf(200), booleanResponseEntity.getStatusCode());
+        assertEquals(HttpStatusCode.valueOf(200),
+                booleanResponseEntity.getStatusCode());
 
         ResponseEntity<BranchResponseEntity> branchResponseEntityResponseEntity1 = branchController.getBranch(userCode, branchCode);
         assertEquals(0, Objects.requireNonNull(branchResponseEntityResponseEntity1.getBody()).getSupplierDTOList().size());
+
+        supplierController.associateSupplierToBranch(supplierId, branchId);
+        branchResponseEntityResponseEntity1 = branchController.getBranch(userCode, branchCode);
+        assertEquals(1, Objects.requireNonNull(branchResponseEntityResponseEntity1.getBody()).getSupplierDTOList().size());
+        assertEquals(1, Objects.requireNonNull(branchResponseEntityResponseEntity1.getBody()).getSupplierDTOList().get(0).getProductDTOList().size());
+
+        ProductDTO productDTO = branchResponseEntityResponseEntity1.getBody().getSupplierDTOList().get(0).getProductDTOList().get(0);
+
+        assertEquals(20, productDTO.getProductCode().length());
+        assertEquals("Random description", productDTO.getDescription());
+        assertEquals("Random category", productDTO.getCategory());
+        assertEquals("Random SKU", productDTO.getSku());
+        assertEquals(UnitMeasure.KG, productDTO.getUnitMeasure());
+
+        productDTO.setCategory("NEW CATEGORY");
+        productDTO.setProductCode("NEW PROD CODE");
+        productDTO.setDescription("NEW DESCRIPTION");
+        productDTO.setSku("NEW SKU");
+        productDTO.setName("NEW NAME");
+        productDTO.setPrice(323.12);
+        productDTO.setUnitMeasure(UnitMeasure.CT);
+
+        supplierController.updateProduct(productDTO);
+
+        productDTO = Objects.requireNonNull(branchController.getBranch(userCode, branchCode).getBody()).getSupplierDTOList().get(0).getProductDTOList().get(0);
+
+        assertEquals("NEW PROD CODE", productDTO.getProductCode());
+        assertEquals("NEW DESCRIPTION", productDTO.getDescription());
+        assertEquals("NEW CATEGORY", productDTO.getCategory());
+        assertEquals("NEW SKU", productDTO.getSku());
+        assertEquals(UnitMeasure.CT, productDTO.getUnitMeasure());
+
+        supplierController.deleteProductById(productDTO.getProductId(), supplierId);
+
+        branchResponseEntityResponseEntity1 = branchController.getBranch(userCode, branchCode);
+        assertEquals(0, branchResponseEntityResponseEntity1.getBody().getSupplierDTOList().get(0).getProductDTOList().size());
+
+
+
+
+
+
+
+
     }
 
     public static ProductDTO createRandomInstance(String productName) {

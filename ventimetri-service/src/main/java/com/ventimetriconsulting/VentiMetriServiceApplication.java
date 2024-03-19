@@ -11,5 +11,4 @@ public class VentiMetriServiceApplication {
         SpringApplication.run(VentiMetriServiceApplication.class, args);
     }
 
-
 }

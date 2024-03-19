@@ -14,6 +14,7 @@ import java.util.List;
 @ToString
 public class BranchResponseEntity {
 
+    private long branchId;
     private String name;
     private String address;
     private String email;

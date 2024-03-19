@@ -55,13 +55,13 @@ public class ProductDTO {
                 .build();
     }
 
-    public static List<Product> fromDTOList(Set<ProductDTO> productDTOList) {
+    public static List<Product> fromDTOList(List<ProductDTO> productDTOList) {
         return productDTOList.stream()
                     .map(ProductDTO::fromDTO)
                     .collect(Collectors.toList());
     }
 
-    public static List<ProductDTO> toDTOList(Set<Product> productList) {
+    public static List<ProductDTO> toDTOList(List<Product> productList) {
         return productList.stream()
                 .map(ProductDTO::toDTO)
                 .collect(Collectors.toList());
