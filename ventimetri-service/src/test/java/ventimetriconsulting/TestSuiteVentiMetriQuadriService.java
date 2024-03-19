@@ -253,6 +253,7 @@ public class TestSuiteVentiMetriQuadriService {
 
 
         BranchResponseEntity mockResponse = BranchResponseEntity.builder()
+                .branchId(0)
                 .branchCode(branchCode)
                 .address("Via dal cazzo")
                 .name("Coglionazzo")
