@@ -81,7 +81,7 @@
 
     </dependencies>
     <build>
-        <finalName>dashboard-service</finalName>
+        <finalName>ventimetri-service</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
