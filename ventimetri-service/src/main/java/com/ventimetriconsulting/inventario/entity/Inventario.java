@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.Date;
+import java.util.List;
 
 @Entity(name = "Invantario")
 @Table(name = "inventario",
@@ -33,13 +35,20 @@ public class Inventario {
     )
     private long inventarioId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
+
+    @ManyToOne
+    @JoinColumn(name = "storage_id")
+    private Storage storage;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id")
     private Product product;
 
-    @Column(name = "consumed_quantity", nullable = false)
-    private int consumedQuantity;
+    private LocalDate insertionDate;
+    private LocalDate updateDate;
+    private LocalDate deletionDate;
 
-    @Column(name = "date", nullable = false)
-    private LocalDate date;
+    private int insertedAmount;
+    private int removedAmount;
+    private String modifiedByUser;
 }

@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -23,12 +24,11 @@ public class SupplierDTO {
     private String address;
     private String city;
     private String cap;
+    private String cf;
     private String phoneNumber;
     private String email;
     private String pec;
-    private String cf;
     private String country;
-    private long createdByUserId;
     private List<ProductDTO> productDTOList;
 
 
@@ -40,12 +40,11 @@ public class SupplierDTO {
                 .address(supplierDTO.getAddress())
                 .city(supplierDTO.getCity())
                 .cap(supplierDTO.getCap())
+                .cf(supplierDTO.getCf())
                 .phoneNumber(supplierDTO.getPhoneNumber())
                 .email(supplierDTO.getEmail())
                 .pec(supplierDTO.getPec())
-                .cf(supplierDTO.getCf())
                 .country(supplierDTO.getCountry())
-                .createdByUserId(supplierDTO.getCreatedByUserId())
                 .build();
     }
 
@@ -62,18 +61,23 @@ public class SupplierDTO {
         dto.setPec(supplier.getPec());
         dto.setCf(supplier.getCf());
         dto.setCountry(supplier.getCountry());
-        dto.setCreatedByUserId(supplier.getCreatedByUserId());
         dto.setProductDTOList(ProductDTO.toDTOList(supplier.getProducts()));
         return dto;
     }
 
     public static List<Supplier> fromDTOList(Set<SupplierDTO> supplierDTOS) {
+        if(supplierDTOS == null || supplierDTOS.isEmpty()){
+            return new ArrayList<>();
+        }
         return supplierDTOS.stream()
                 .map(SupplierDTO::fromDTO)
                 .collect(Collectors.toList());
     }
 
     public static List<SupplierDTO> toDTOList(Set<Supplier> supplierSet) {
+        if(supplierSet == null || supplierSet.isEmpty()){
+            return new ArrayList<>();
+        }
         return supplierSet.stream()
                 .map(SupplierDTO::fromEntity)
                 .collect(Collectors.toList());

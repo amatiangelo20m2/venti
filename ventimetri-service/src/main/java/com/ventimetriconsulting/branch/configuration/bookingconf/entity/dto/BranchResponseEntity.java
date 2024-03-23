@@ -2,6 +2,7 @@ package com.ventimetriconsulting.branch.configuration.bookingconf.entity.dto;
 
 import com.ventimetriconsulting.branch.entity.Role;
 import com.ventimetriconsulting.branch.entity.dto.BranchType;
+import com.ventimetriconsulting.inventario.entity.dto.StorageDTO;
 import com.ventimetriconsulting.supplier.dto.SupplierDTO;
 import lombok.*;
 
@@ -26,4 +27,5 @@ public class BranchResponseEntity {
     private byte[] logoImage;
     private BranchConfigurationDTO branchConfigurationDTO;
     private List<SupplierDTO> supplierDTOList;
+    private List<StorageDTO> storageDTOS;
 }

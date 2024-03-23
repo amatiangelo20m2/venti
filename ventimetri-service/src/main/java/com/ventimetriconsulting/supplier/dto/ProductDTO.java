@@ -19,11 +19,11 @@ public class ProductDTO {
 
     private long productId;
     private String name;
+    private String productCode;
     private UnitMeasure unitMeasure;
+    private String description;
     private int vatApplied;
     private double price;
-    private String productCode;
-    private String description;
     private String category;
     private String sku;
 

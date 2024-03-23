@@ -7,6 +7,7 @@ import com.ventimetriconsulting.branch.exception.customexceptions.GlobalExceptio
 import com.ventimetriconsulting.branch.repository.BranchRepository;
 import com.ventimetriconsulting.branch.repository.BranchUserRepository;
 import com.ventimetriconsulting.branch.exception.customexceptions.BranchNotFoundException;
+import com.ventimetriconsulting.inventario.entity.dto.StorageDTO;
 import com.ventimetriconsulting.supplier.dto.SupplierDTO;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -109,6 +110,7 @@ public class BranchService {
                 .logoImage(branchUser.getBranch().getLogoImage())
                 .role(branchUser.getRole())
                 .supplierDTOList(SupplierDTO.toDTOList(branchUser.getBranch().getSuppliers()))
+                .storageDTOS(StorageDTO.toDTOList(branchUser.getBranch().getStorages()))
                 .build();
     }
 

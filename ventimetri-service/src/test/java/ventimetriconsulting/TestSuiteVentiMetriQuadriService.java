@@ -322,7 +322,7 @@ public class TestSuiteVentiMetriQuadriService {
         assertEquals(supplierDTOResponseEntity.getStatusCode(), HttpStatusCode.valueOf(200));
         assertEquals(Objects.requireNonNull(supplierDTOResponseEntity.getBody()).getAddress(), "123 Test Address");
 
-        ResponseEntity<ProductDTO> productDTOResponseEntity = supplierController.insertProductList(createRandomInstance("Product Name"),
+        ResponseEntity<ProductDTO> productDTOResponseEntity = supplierController.insertProduct(createRandomInstance("Product Name"),
                 Objects.requireNonNull(supplierDTOResponseEntity.getBody()).getSupplierId());
 
         assertEquals("Product Name", Objects.requireNonNull(productDTOResponseEntity.getBody()).getName() );
@@ -392,11 +392,6 @@ public class TestSuiteVentiMetriQuadriService {
 
 
 
-
-
-
-
-
     }
 
     public static ProductDTO createRandomInstance(String productName) {
@@ -425,7 +420,7 @@ public class TestSuiteVentiMetriQuadriService {
         dto.setPec("test@pec.supplier.com");
         dto.setCf("CF123456789");
         dto.setCountry("Test Country");
-        dto.setCreatedByUserId(1L);
+//        dto.setCreatedByUserId(1L);
         return dto;
     }
 

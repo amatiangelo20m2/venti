@@ -35,6 +35,7 @@ public class Product {
     )
     private long productId;
 
+    private String name;
     @Column(
             name = "product_code",
             nullable = false,
@@ -42,7 +43,6 @@ public class Product {
             length = 20
     )
     private String productCode;
-    private String name;
 
     @Enumerated(EnumType.STRING)
     @Column(
@@ -50,11 +50,12 @@ public class Product {
             nullable = false
     )
     private UnitMeasure unitMeasure;
+    private String description;
     private int vatApplied;
     private double price;
-    private String description;
     private String category;
     private String sku;
+
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "supplier_id")

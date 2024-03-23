@@ -24,8 +24,16 @@ public class SupplierController {
                 .body(supplierService.createSupplier(supplierDTO, branchCode));
     }
 
+    @PostMapping(path = "/addlist")
+    public ResponseEntity<List<SupplierDTO>> insertSupplierList(
+            @RequestBody List<SupplierDTO> supplierDTOList,
+            @RequestParam("branchCode") String branchCode) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(supplierService.insertSupplierList(supplierDTOList, branchCode));
+    }
+
     @PostMapping(path = "/product/add")
-    public ResponseEntity<ProductDTO> insertProductList(
+    public ResponseEntity<ProductDTO> insertProduct(
             @RequestBody ProductDTO productDTO, @RequestParam("supplierId") Long supplierId) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(supplierService.createProduct(productDTO, supplierId));
@@ -70,6 +78,12 @@ public class SupplierController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(supplierService.updateProduct(productDTO));
+
+    }
+
+    @GetMapping(path = "/retrieve/bybranchcode")
+    public ResponseEntity<List<SupplierDTO>> retrieveByBranchCode(@RequestParam String branchCode) {
+        return ResponseEntity.status(HttpStatus.OK).body(supplierService.retrieveByBranchCode(branchCode));
 
     }
 }

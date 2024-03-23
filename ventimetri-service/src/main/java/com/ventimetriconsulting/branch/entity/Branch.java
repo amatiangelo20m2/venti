@@ -108,4 +108,12 @@ public class Branch {
         }
         return this.suppliers;
     }
+
+    public Set<Storage> getStorages() {
+        if (this.storages == null) {
+            this.storages = new HashSet<>();
+        }
+        return this.storages;
+    }
+
 }

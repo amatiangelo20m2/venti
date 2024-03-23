@@ -32,7 +32,8 @@ public class SupplierService {
     private final BranchRepository branchRepository;
 
     @Transactional
-    public SupplierDTO createSupplier(SupplierDTO supplierDTO, String branchCode) {
+    public SupplierDTO createSupplier(SupplierDTO supplierDTO,
+                                      String branchCode) {
         log.info("Crete supplier {}. Associate it with branch with code {}", supplierDTO, branchCode);
 
         Supplier supplier = SupplierDTO.fromDTO(supplierDTO);
@@ -160,5 +161,24 @@ public class SupplierService {
             productDTOS.add(createProduct(productDTO, supplierId));
         }
         return productDTOList;
+    }
+
+    @Transactional
+    public List<SupplierDTO> insertSupplierList(List<SupplierDTO> supplierDTOList,
+                                                String branchCode) {
+        List<SupplierDTO> savedSuppliersDTO = new ArrayList<>();
+
+        for (SupplierDTO supplierDTO : supplierDTOList){
+            savedSuppliersDTO.add(createSupplier(supplierDTO, branchCode));
+        }
+
+        return savedSuppliersDTO;
+    }
+
+    public List<SupplierDTO> retrieveByBranchCode(String branchCode) {
+        log.info("Retrieve suppliers associated with branch with code {}", branchCode);
+        Branch branch = branchRepository.findByBranchCode(branchCode).orElseThrow(() -> new ProductNotFoundException("No branch found with code " + branchCode));
+
+        return SupplierDTO.toDTOList(branch.getSuppliers());
     }
 }
