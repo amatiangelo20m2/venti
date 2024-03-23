@@ -57,7 +57,7 @@ public class Product {
     private String sku;
 
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "supplier_id")
     @JsonIgnore
     private Supplier supplier;

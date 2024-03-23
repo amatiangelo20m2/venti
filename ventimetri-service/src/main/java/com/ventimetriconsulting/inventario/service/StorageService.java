@@ -46,13 +46,14 @@ public class StorageService {
                                     long storageId,
                                     String userName) {
 
+        log.info("Adding product {} to the storage with id {} - User ({})", productDTO, storageId, userName);
         Storage storage = storageRepository.findById(storageId)
                 .orElseThrow(() -> new BranchNotFoundException("Storage not found with id: " + storageId + ". Cannot put the product"));
 
         Inventario inventario = Inventario
                 .builder()
                 .inventarioId(0)
-                .product(ProductDTO.fromDTO(productDTO))
+//                .product(ProductDTO.fromDTO(productDTO))
                 .storage(storage)
                 .deletionDate(null)
                 .insertedAmount(0)

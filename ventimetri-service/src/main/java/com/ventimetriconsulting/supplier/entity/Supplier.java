@@ -82,4 +82,22 @@ public class Supplier {
         return this.products;
     }
 
+
+    @Override
+    public String toString() {
+        return "Supplier{" +
+                "supplierId=" + supplierId +
+                ", name='" + name + '\'' +
+                ", vatNumber='" + vatNumber + '\'' +
+                ", address='" + address + '\'' +
+                ", city='" + city + '\'' +
+                ", cap='" + cap + '\'' +
+                ", supplierCode='" + supplierCode + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", email='" + email + '\'' +
+                ", pec='" + pec + '\'' +
+                ", cf='" + cf + '\'' +
+                ", country='" + country + '\'' +
+                '}';
+    }
 }

@@ -42,6 +42,7 @@ public class ProductDTO {
     }
 
     public static ProductDTO toDTO(Product product) {
+
         return ProductDTO.builder()
                 .productId(product.getProductId())
                 .name(product.getName())

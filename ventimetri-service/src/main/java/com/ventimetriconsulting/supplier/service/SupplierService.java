@@ -63,8 +63,10 @@ public class SupplierService {
 
         Product savedProduct = productRepository.save(product);
 
-        return ProductDTO.toDTO(savedProduct);
+        ProductDTO dto = ProductDTO.toDTO(savedProduct);
+        log.info("Saved prod (dto): " + dto);
 
+        return dto;
     }
 
     @Transactional
@@ -156,11 +158,18 @@ public class SupplierService {
     public List<ProductDTO> insertListProduct(List<ProductDTO> productDTOList,
                                         Long supplierId) {
 
+        log.info("Save product list {}", productDTOList);
         List<ProductDTO> productDTOS = new ArrayList<>();
+
         for(ProductDTO productDTO : productDTOList){
-            productDTOS.add(createProduct(productDTO, supplierId));
+            ProductDTO product = createProduct(productDTO, supplierId);
+
+            log.info("Stored XXX " + product);
+            productDTOS.add(product);
         }
-        return productDTOList;
+
+        log.info("List output : " + productDTOS);
+        return productDTOS;
     }
 
     @Transactional
@@ -175,10 +184,10 @@ public class SupplierService {
         return savedSuppliersDTO;
     }
 
-    public List<SupplierDTO> retrieveByBranchCode(String branchCode) {
-        log.info("Retrieve suppliers associated with branch with code {}", branchCode);
-        Branch branch = branchRepository.findByBranchCode(branchCode).orElseThrow(() -> new ProductNotFoundException("No branch found with code " + branchCode));
-
-        return SupplierDTO.toDTOList(branch.getSuppliers());
-    }
+//    public List<SupplierDTO> retrieveByBranchCode(String branchCode) {
+//        log.info("Retrieve suppliers associated with branch with code {}", branchCode);
+//        Branch branch = branchRepository.findByBranchCode(branchCode).orElseThrow(() -> new ProductNotFoundException("No branch found with code " + branchCode));
+//
+//        return SupplierDTO.toDTOList(branch.getSuppliers());
+//    }
 }

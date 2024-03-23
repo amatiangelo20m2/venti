@@ -4,6 +4,7 @@ import com.ventimetriconsulting.branch.configuration.bookingconf.entity.dto.Bran
 import com.ventimetriconsulting.branch.controller.BranchController;
 import com.ventimetriconsulting.branch.entity.dto.BranchCreationEntity;
 import com.ventimetriconsulting.branch.entity.dto.BranchType;
+import com.ventimetriconsulting.branch.entity.dto.VentiMetriQuadriData;
 import com.ventimetriconsulting.inventario.controller.StorageController;
 import com.ventimetriconsulting.inventario.entity.dto.StorageDTO;
 import com.ventimetriconsulting.supplier.controller.SupplierController;
@@ -51,17 +52,6 @@ public class DataLoader implements CommandLineRunner {
 
         ResponseEntity<BranchResponseEntity> savedBranch = branchController.save(fakeBranch);
 
-        List<SupplierDTO> supplierDTOS = retrieveSupplierList();
-
-        for(SupplierDTO supplierDTO : supplierDTOS){
-            ResponseEntity<SupplierDTO> supplierDTOResponseEntity = supplierController
-                    .addSupplier(supplierDTO,
-                            Objects.requireNonNull(savedBranch.getBody()).getBranchCode());
-
-            supplierController.insertProductList(getPRoductListById(Integer.parseInt(supplierDTO.getVatNumber())),
-                    Objects.requireNonNull(supplierDTOResponseEntity.getBody()).getSupplierId());
-        }
-
         ResponseEntity<StorageDTO> cisterninoStorage = storageController.addStorage(StorageDTO.builder()
                         .storageId(0)
                         .creationTime(new Date())
@@ -72,24 +62,25 @@ public class DataLoader implements CommandLineRunner {
                         .build(),
                 Objects.requireNonNull(savedBranch.getBody()).getBranchCode());
 
-        ResponseEntity<List<SupplierDTO>> listResponseEntity = supplierController.retrieveByBranchCode(savedBranch.getBody().getBranchCode());
+        List<SupplierDTO> supplierDTOS = retrieveSupplierList();
 
-        List<SupplierDTO> suppliers = listResponseEntity.getBody();
+        for(SupplierDTO supplierDTO : supplierDTOS){
+            ResponseEntity<SupplierDTO> supplierDTOResponseEntity = supplierController
+                    .addSupplier(supplierDTO,
+                            Objects.requireNonNull(savedBranch.getBody()).getBranchCode());
 
-        Optional<SupplierDTO> matchingSupplier = suppliers.stream()
-                .filter(supplier -> "Magazzino 20m2".equals(supplier.getName()))
-                .findFirst();
+            ResponseEntity<List<ProductDTO>> listProd = supplierController.insertProductList(getPRoductListById(Integer.parseInt(supplierDTO.getVatNumber())),
+                    Objects.requireNonNull(supplierDTOResponseEntity.getBody()).getSupplierId());
 
-        if(matchingSupplier.isPresent()){
-            List<ProductDTO> productDTOList = matchingSupplier.get().getProductDTOList();
-            for(ProductDTO productDTO : productDTOList){
-                storageController.appProduct(productDTO, cisterninoStorage.getBody().getStorageId(), "Angelo");
+            if(Objects.equals(supplierDTOResponseEntity.getBody().getName(), "Magazzino 20m2")){
+                for(ProductDTO productDTO : Objects.requireNonNull(listProd.getBody())) {
+                    System.out.println("add prod " + productDTO.toString());
+                    storageController.appProduct(productDTO,
+                            Objects.requireNonNull(cisterninoStorage.getBody()).getStorageId(),
+                            "amati.angelo90@gmail.com");
+                }
             }
         }
-
-
-
-
     }
 
 

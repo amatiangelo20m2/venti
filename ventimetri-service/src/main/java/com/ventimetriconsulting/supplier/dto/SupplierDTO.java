@@ -66,18 +66,12 @@ public class SupplierDTO {
     }
 
     public static List<Supplier> fromDTOList(Set<SupplierDTO> supplierDTOS) {
-        if(supplierDTOS == null || supplierDTOS.isEmpty()){
-            return new ArrayList<>();
-        }
         return supplierDTOS.stream()
                 .map(SupplierDTO::fromDTO)
                 .collect(Collectors.toList());
     }
 
     public static List<SupplierDTO> toDTOList(Set<Supplier> supplierSet) {
-        if(supplierSet == null || supplierSet.isEmpty()){
-            return new ArrayList<>();
-        }
         return supplierSet.stream()
                 .map(SupplierDTO::fromEntity)
                 .collect(Collectors.toList());

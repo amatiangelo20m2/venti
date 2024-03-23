@@ -51,4 +51,19 @@ public class Inventario {
     private int insertedAmount;
     private int removedAmount;
     private String modifiedByUser;
+
+    @Override
+    public String toString() {
+        return "Inventario{" +
+                "inventarioId=" + inventarioId +
+                ", storage=" + storage +
+                ", product=" + product +
+                ", insertionDate=" + insertionDate +
+                ", updateDate=" + updateDate +
+                ", deletionDate=" + deletionDate +
+                ", insertedAmount=" + insertedAmount +
+                ", removedAmount=" + removedAmount +
+                ", modifiedByUser='" + modifiedByUser + '\'' +
+                '}';
+    }
 }

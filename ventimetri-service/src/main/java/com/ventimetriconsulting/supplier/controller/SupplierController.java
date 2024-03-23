@@ -81,9 +81,8 @@ public class SupplierController {
 
     }
 
-    @GetMapping(path = "/retrieve/bybranchcode")
-    public ResponseEntity<List<SupplierDTO>> retrieveByBranchCode(@RequestParam String branchCode) {
-        return ResponseEntity.status(HttpStatus.OK).body(supplierService.retrieveByBranchCode(branchCode));
-
-    }
+//    @GetMapping(path = "/retrieve/bybranchcode")
+//    public ResponseEntity<List<SupplierDTO>> retrieveByBranchCode(@RequestParam String branchCode) {
+//        return ResponseEntity.status(HttpStatus.OK).body(supplierService.retrieveByBranchCode(branchCode));
+//    }
 }
