@@ -30,6 +30,7 @@
     <springdoc.openapi.version>2.0.3</springdoc.openapi.version>
     <jwt.token.version>0.11.5</jwt.token.version>
     <hibernate.validator.version>7.0.1.Final</hibernate.validator.version>
+    <jackson.datatype.version>2.13.0</jackson.datatype.version>
   </properties>
 
   <modules>
@@ -108,6 +109,7 @@
         <version>${hibernate.validator.version}</version> <!-- Use the latest version available -->
       </dependency>
     </dependencies>
+
   </dependencyManagement>
 
   <build>

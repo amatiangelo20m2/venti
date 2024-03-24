@@ -65,7 +65,6 @@ public class SupplierService {
 
         ProductDTO dto = ProductDTO.toDTO(savedProduct);
         log.info("Saved prod (dto): " + dto);
-
         return dto;
     }
 
@@ -164,7 +163,7 @@ public class SupplierService {
         for(ProductDTO productDTO : productDTOList){
             ProductDTO product = createProduct(productDTO, supplierId);
 
-            log.info("Stored XXX " + product);
+            log.info("Stored product: " + product);
             productDTOS.add(product);
         }
 

@@ -12,6 +12,7 @@ import java.util.List;
 @Table(name = "storage",
         uniqueConstraints=@UniqueConstraint(columnNames={"storage_id"}))
 @AllArgsConstructor
+
 @Setter
 @Getter
 @Builder
