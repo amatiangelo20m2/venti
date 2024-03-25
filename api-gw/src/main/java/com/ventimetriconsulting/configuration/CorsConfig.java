@@ -7,12 +7,13 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
-@Configuration
+//@Configuration
 @Slf4j
 public class CorsConfig {
 
-    @Bean
+//    @Bean
     public CorsWebFilter corsWebFilter() {
+        log.info("Setting cors policy by amati angelo");
         CorsConfiguration corsConfig = new CorsConfiguration();
         corsConfig.applyPermitDefaultValues();
         corsConfig.addAllowedMethod("*");
