@@ -66,6 +66,60 @@ public class AuthService {
     }
 
     @Transactional
+    public AuthResponseEntity signInWithGoogle(Credentials credentials) {
+        log.info("Sign in user by google: " + credentials.getEmail());
+        Optional<UserEntity> userByEmail = userRepository.findByEmail(credentials.getEmail());
+        if(userByEmail.isPresent()){
+            return AuthResponseEntity.builder()
+                    .user(UserResponseEntity
+                            .builder()
+                            .email(userByEmail.get().getEmail())
+                            .name(userByEmail.get().getName())
+                            .phone(userByEmail.get().getPhone())
+                            .avatar(userByEmail.get().getAvatar())
+                            .userCode(userByEmail.get().getUserCode())
+                            .status(userByEmail.get().getProfileStatus())
+                            .build())
+
+                    .accessToken(jwtService.generateToken(credentials.getEmail(), userByEmail.get().getUserCode()))
+                    .build();
+        }else{
+            UserEntity userEntityBuild = UserEntity
+                    .builder()
+                    .name(credentials.getName())
+                    .phone(null)
+                    .password(passwordEncoder.encode(credentials.getPassword()))
+                    .email(credentials.getEmail())
+                    .profileStatus(ProfileStatus.ONLINE)
+                    .signInMethod(SignInMethod.GOOGLE)
+                    .avatar("")
+                    .id(0)
+                    .build();
+
+            UserEntity userEntity = userRepository.save(userEntityBuild);
+            return AuthResponseEntity.builder()
+                    .user(UserResponseEntity
+                            .builder()
+                            .email(userEntity.getEmail())
+                            .name(userEntity.getName())
+                            .phone(userEntity.getPhone())
+                            .avatar(userEntity.getAvatar())
+                            .userCode(userEntity.getUserCode())
+                            .status(userEntity.getProfileStatus())
+                            .build())
+
+                    .accessToken(jwtService.generateToken(credentials.getEmail(),
+                            userEntity.getUserCode()))
+                    .build();
+        }
+
+
+
+
+
+    }
+
+    @Transactional
     public void updateUser(UpdateUserEntity updateUserEntity) {
         log.info("Update user with id {} : {}", updateUserEntity.getUserId(), updateUserEntity);
 
