@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
 
 @Data
 @Builder
@@ -21,7 +21,7 @@ public class InventarioDTO {
     private LocalDate insertionDate;
     private LocalDate deletionDate;
     private ProductDTO productDTO;
-    private List<InventoryAction> inventoryAction;
+    private Set<InventoryAction> inventoryAction;
 
     public static InventarioDTO fromEntity(Inventario inventario) {
         return InventarioDTO.builder()
@@ -32,4 +32,36 @@ public class InventarioDTO {
                 .productDTO(ProductDTO.toDTO(inventario.getProduct()))
                 .build();
     }
+
+    public static Set<InventarioDTO> fromEntities(Set<Inventario> inventarios) {
+        Set<InventarioDTO> inventarioDTOs = new TreeSet<>((dto1, dto2) -> {
+            String name1 = dto1.getProductDTO().getName();
+            String name2 = dto2.getProductDTO().getName();
+            return name1.compareTo(name2);
+        });
+
+        for (Inventario inventario : inventarios) {
+            inventarioDTOs.add(fromEntity(inventario));
+        }
+        return inventarioDTOs;
+    }
+
+    public static Inventario toEntity(InventarioDTO inventarioDTO) {
+        Inventario inventario = new Inventario();
+        inventario.setInventarioId(inventarioDTO.getInventarioId());
+        inventario.setInsertionDate(inventarioDTO.getInsertionDate());
+        inventario.setDeletionDate(inventarioDTO.getDeletionDate());
+        inventario.setInventoryActions(inventarioDTO.getInventoryAction());
+        inventario.setProduct(ProductDTO.fromDTO(inventarioDTO.getProductDTO()));
+        return inventario;
+    }
+
+    public static Set<Inventario> toEntities(Set<InventarioDTO> inventarioDTOs) {
+        Set<Inventario> inventarios = new HashSet<>();
+        for (InventarioDTO inventarioDTO : inventarioDTOs) {
+            inventarios.add(toEntity(inventarioDTO));
+        }
+        return inventarios;
+    }
+
 }

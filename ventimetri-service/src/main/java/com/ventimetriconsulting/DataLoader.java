@@ -146,20 +146,20 @@ public class DataLoader implements CommandLineRunner {
                 listProduct.add(new ProductDTO(0, "Cipolla caramellata", "", UnitMeasure.KG, "", 0, 0, "", ""));
                 listProduct.add(new ProductDTO(0, "Patate al forno", "", UnitMeasure.KG, "", 0, 0, "", ""));
                 listProduct.add(new ProductDTO(0, "Guacamole", "", UnitMeasure.KG, "", 0, 0, "", ""));
-                listProduct.add(new ProductDTO(0, "Salsa poke 20m2", "", UnitMeasure.KG, "", 0, 0, "", ""));
-                listProduct.add(new ProductDTO(0, "Salsa burger 20m2", "", UnitMeasure.KG, "", 0, 0, "", ""));
+                listProduct.add(new ProductDTO(0, "Salsa poke 20m2", "", UnitMeasure.LITRI, "", 0, 0, "", ""));
+                listProduct.add(new ProductDTO(0, "Salsa burger 20m2", "", UnitMeasure.LITRI, "", 0, 0, "", ""));
                 listProduct.add(new ProductDTO(0, "Maio sweet chili", "", UnitMeasure.KG, "", 0, 0, "", ""));
                 listProduct.add(new ProductDTO(0, "Maio teriaki", "", UnitMeasure.KG, "", 0, 0, "", ""));
-                listProduct.add(new ProductDTO(0, "Sauce cheddar", "", UnitMeasure.KG, "", 0, 0, "", ""));
+                listProduct.add(new ProductDTO(0, "Sauce cheddar", "", UnitMeasure.LITRI, "", 0, 0, "", ""));
                 listProduct.add(new ProductDTO(0, "Maio Japan", "", UnitMeasure.KG, "", 0, 0, "", ""));
                 listProduct.add(new ProductDTO(0, "Maio plic plac", "", UnitMeasure.KG, "", 0, 0, "", ""));
                 listProduct.add(new ProductDTO(0, "Maio rosmarino", "", UnitMeasure.KG, "", 0, 0, "", ""));
                 listProduct.add(new ProductDTO(0, "Bombette", "", UnitMeasure.KG, "", 0, 0, "", ""));
-                listProduct.add(new ProductDTO(0, "Focaccia", "", UnitMeasure.KG, "", 0, 0, "", ""));
+                listProduct.add(new ProductDTO(0, "Focaccia", "", UnitMeasure.ALTRO, "", 0, 0, "", ""));
                 listProduct.add(new ProductDTO(0, "Crema mascarpone", "", UnitMeasure.KG, "", 0, 0, "", ""));
-                listProduct.add(new ProductDTO(0, "Tiramisù", "", UnitMeasure.KG, "", 0, 0, "", ""));
+                listProduct.add(new ProductDTO(0, "Tiramisù", "", UnitMeasure.PEZZI, "", 0, 0, "", ""));
                 listProduct.add(new ProductDTO(0, "Salame al cioccolato", "", UnitMeasure.KG, "", 0, 0, "", ""));
-                listProduct.add(new ProductDTO(0, "Cheesecake", "", UnitMeasure.KG, "", 0, 0, "", ""));
+                listProduct.add(new ProductDTO(0, "Cheesecake", "", UnitMeasure.PEZZI, "", 0, 0, "", ""));
                 break;
             case 464:
                 listProduct.add(new ProductDTO(0, "Mozzarella", "", UnitMeasure.KG, "", 4, 6.9, "", ""));

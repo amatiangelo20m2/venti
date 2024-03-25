@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +25,7 @@ public class StorageDTO {
     private String city;
     private String cap;
     private Date creationTime;
+    private Set<InventarioDTO> inventarioDTOS;
 
     public static StorageDTO fromEntity(Storage storage) {
         return StorageDTO.builder()
@@ -33,6 +35,7 @@ public class StorageDTO {
                 .city(storage.getCity())
                 .cap(storage.getCap())
                 .creationTime(storage.getCreationTime())
+                .inventarioDTOS(InventarioDTO.fromEntities(storage.getInventario()))
                 .build();
     }
 
@@ -44,10 +47,14 @@ public class StorageDTO {
                 .city(storageDTO.getCity())
                 .cap(storageDTO.getCap())
                 .creationTime(storageDTO.getCreationTime())
+                .inventario(InventarioDTO.toEntities(storageDTO.getInventarioDTOS()))
                 .build();
     }
 
     public static List<StorageDTO> toDTOList(Set<Storage> storages) {
-        return storages.stream().map(StorageDTO::fromEntity).collect(Collectors.toList());
+
+        return storages.stream()
+                .map(StorageDTO::fromEntity)
+                .collect(Collectors.toList());
     }
 }

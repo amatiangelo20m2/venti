@@ -51,4 +51,11 @@ public class GlobalDashExceptionHandler {
                 .body(exception.getMessage());
     }
 
+    @ExceptionHandler(InventarioNotFoundException.class)
+    public ResponseEntity<String> handleInventarioNotFoundException(InventarioNotFoundException exception) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(exception.getMessage());
+    }
+
 }

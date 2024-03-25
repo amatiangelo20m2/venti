@@ -19,14 +19,6 @@ public class BranchController {
 
     private BranchService branchService;
 
-    @PostMapping(path = "/branch/save")
-    public ResponseEntity<BranchResponseEntity> save(@RequestBody BranchCreationEntity branchCreationEntity) {
-        BranchResponseEntity branchResponseEntity = branchService.createBranch(branchCreationEntity);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(branchResponseEntity);
-    }
-
     @GetMapping(path = "/retrievedata")
     public ResponseEntity<VentiMetriQuadriData> retrieveData(@RequestParam String userCode){
         List<BranchResponseEntity> branchesByUserCode = branchService.getBranchesByUserCode(userCode);
@@ -36,6 +28,14 @@ public class BranchController {
                         .builder()
                         .branches(branchesByUserCode)
                         .build());
+    }
+
+    @PostMapping(path = "/branch/save")
+    public ResponseEntity<BranchResponseEntity> save(@RequestBody BranchCreationEntity branchCreationEntity) {
+        BranchResponseEntity branchResponseEntity = branchService.createBranch(branchCreationEntity);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(branchResponseEntity);
     }
 
     @GetMapping(path = "/branch")

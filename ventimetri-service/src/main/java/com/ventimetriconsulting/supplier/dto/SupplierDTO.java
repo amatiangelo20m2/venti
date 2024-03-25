@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -74,6 +75,7 @@ public class SupplierDTO {
     public static List<SupplierDTO> toDTOList(Set<Supplier> supplierSet) {
         return supplierSet.stream()
                 .map(SupplierDTO::fromEntity)
+                .sorted(Comparator.comparing(SupplierDTO::getName).reversed())
                 .collect(Collectors.toList());
     }
 

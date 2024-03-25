@@ -4,9 +4,9 @@ package com.ventimetriconsulting.inventario.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity(name = "Storage")
 @Table(name = "storage",
@@ -41,15 +41,15 @@ public class Storage {
     private Date creationTime;
 
     @OneToMany(mappedBy = "storage")
-    private List<Inventario> inventario;
+    private Set<Inventario> inventario;
 
     public Storage() {
-        this.inventario = new ArrayList<>();
+        this.inventario = new HashSet<>();
     }
 
-    public List<Inventario> getInventario() {
+    public Set<Inventario> getInventario() {
         if (this.inventario == null) {
-            this.inventario = new ArrayList<>();
+            this.inventario = new HashSet<>();
         }
         return this.inventario;
     }

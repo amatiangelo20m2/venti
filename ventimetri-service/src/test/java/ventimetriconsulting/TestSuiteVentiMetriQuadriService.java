@@ -1,6 +1,5 @@
 package ventimetriconsulting;
 
-import com.netflix.discovery.converters.Auto;
 import com.ventimetriconsulting.VentiMetriServiceApplication;
 import com.ventimetriconsulting.branch.configuration.bookingconf.controller.BookingController;
 import com.ventimetriconsulting.branch.configuration.bookingconf.entity.FormTag;
@@ -20,7 +19,9 @@ import com.ventimetriconsulting.branch.repository.BranchRepository;
 import com.ventimetriconsulting.branch.repository.BranchUserRepository;
 import com.ventimetriconsulting.branch.service.BranchService;
 import com.ventimetriconsulting.inventario.controller.StorageController;
+import com.ventimetriconsulting.inventario.entity.dto.InventarioDTO;
 import com.ventimetriconsulting.inventario.entity.dto.StorageDTO;
+import com.ventimetriconsulting.inventario.repository.InventarioRepository;
 import com.ventimetriconsulting.inventario.repository.StorageRepository;
 import com.ventimetriconsulting.inventario.service.StorageService;
 import com.ventimetriconsulting.supplier.controller.SupplierController;
@@ -96,6 +97,10 @@ public class TestSuiteVentiMetriQuadriService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private InventarioRepository inventarioRepository;
+
     private BookingController bookingController;
     private BranchController  branchController;
 
@@ -121,7 +126,7 @@ public class TestSuiteVentiMetriQuadriService {
         SupplierService supplierService = new SupplierService(productRepository, supplierRepository, branchRepository);
         supplierController = new SupplierController(supplierService);
 
-        StorageService storageService = new StorageService(storageRepository, branchRepository);
+        StorageService storageService = new StorageService(storageRepository, supplierRepository, branchRepository, inventarioRepository);
         storageController = new StorageController(storageService);
     }
 
@@ -408,15 +413,16 @@ public class TestSuiteVentiMetriQuadriService {
         ResponseEntity<StorageDTO> cisterninoStorage = storageController.addStorage(StorageDTO.builder()
                         .storageId(0)
                         .creationTime(new Date())
-                        .name("Magazzino 20m2")
+                        .name("Storage 20m2")
                         .city("Cisternino")
                         .address("Via 4 novembre 8")
                         .cap("72914")
+                        .inventarioDTOS(new HashSet<>())
                         .build(),
                 branchCode);
 
         assertEquals(HttpStatusCode.valueOf(200), cisterninoStorage.getStatusCode());
-        assertEquals("Magazzino 20m2", cisterninoStorage.getBody().getName());
+        assertEquals("Storage 20m2", cisterninoStorage.getBody().getName());
 
 
         List<SupplierDTO> supplierDTOS = retrieveSupplierList();
@@ -426,20 +432,30 @@ public class TestSuiteVentiMetriQuadriService {
                     .addSupplier(supplierDTO,
                             branchCode);
 
-            ResponseEntity<List<ProductDTO>> insertProductList = supplierController.insertProductList(
+            supplierController.insertProductList(
                     getPRoductListById(Integer.parseInt(supplierDTO.getVatNumber())),
                     Objects.requireNonNull(supplierDTOResponseEntity1.getBody()).getSupplierId());
-
-            System.out.println("");
         }
 
-
-        System.out.println("asdsdasd");
         branchResponseEntityResponseEntity1 = branchController.getBranch(userCode, branchCode);
+        assertEquals(29, Objects.requireNonNull(branchResponseEntityResponseEntity1.getBody()).getSupplierDTOList().size());
 
-        assertEquals(29, branchResponseEntityResponseEntity1.getBody().getSupplierDTOList().size());
+        for(SupplierDTO supplierDTO : branchResponseEntityResponseEntity1.getBody().getSupplierDTOList()){
+            if(Objects.equals(supplierDTO.getName(), "Magazzino 20m2")){
+                assertEquals(29, supplierDTO.getProductDTOList().size());
 
+                ResponseEntity<List<InventarioDTO>> inventarioList = storageController.insertProductsFromSupplierList(supplierDTO.getSupplierId(), 1, "Angelo Amati");
+                assertEquals(29, Objects.requireNonNull(inventarioList.getBody()).size());
 
+                ResponseEntity<InventarioDTO> inventarioDTOResponseEntity = storageController.putData(inventarioList.getBody().get(0).getInventarioId(), 2, 4, "asdasd");
+                assertEquals(2, Objects.requireNonNull(inventarioDTOResponseEntity.getBody()).getInventoryAction().size());
+                assertNull(inventarioDTOResponseEntity.getBody().getDeletionDate());
+
+                ResponseEntity<InventarioDTO> inventarioDTOResponseEntity1 = storageController.removeProductFromStorage(inventarioDTOResponseEntity.getBody().getInventarioId());
+
+                assertNotNull(inventarioDTOResponseEntity1.getBody().getDeletionDate());
+            }
+        }
     }
 
     public static ProductDTO createRandomInstance(String productName) {

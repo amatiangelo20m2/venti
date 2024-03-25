@@ -17,7 +17,7 @@ public class CorsConfig {
         corsConfig.applyPermitDefaultValues();
         corsConfig.addAllowedMethod("*");
         corsConfig.addAllowedOrigin("*");
-
+        corsConfig.addAllowedHeader("*");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfig);
         return new CorsWebFilter(source);

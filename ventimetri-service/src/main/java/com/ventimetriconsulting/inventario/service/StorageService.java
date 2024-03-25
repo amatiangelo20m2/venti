@@ -2,6 +2,7 @@ package com.ventimetriconsulting.inventario.service;
 
 import com.ventimetriconsulting.branch.entity.Branch;
 import com.ventimetriconsulting.branch.exception.customexceptions.BranchNotFoundException;
+import com.ventimetriconsulting.branch.exception.customexceptions.InventarioNotFoundException;
 import com.ventimetriconsulting.branch.repository.BranchRepository;
 import com.ventimetriconsulting.inventario.entity.Inventario;
 import com.ventimetriconsulting.inventario.entity.Storage;
@@ -15,17 +16,12 @@ import com.ventimetriconsulting.supplier.entity.Product;
 import com.ventimetriconsulting.supplier.entity.Supplier;
 import com.ventimetriconsulting.supplier.repository.SupplierRepository;
 import jakarta.transaction.Transactional;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -42,6 +38,10 @@ public class StorageService {
                                     String branchCode) {
 
         log.info("Crete storage {}. Associate it with branch with code {}", storageDTO, branchCode);
+
+        if(storageDTO.getInventarioDTOS() == null){
+            storageDTO.setInventarioDTOS(new HashSet<>());
+        }
 
         Storage storage = StorageDTO.toEntity(storageDTO);
 
@@ -71,10 +71,12 @@ public class StorageService {
                 .storage(storage)
                 .deletionDate(null)
                 .deletionDate(null)
-                .inventoryActionJson(InventoryAction.toJsonString(new Date(),
-                        0,
-                        0,
-                        userName))
+                .inventoryActions(new HashSet<>(Collections.singletonList(InventoryAction.builder()
+                        .updateDate(new Date())
+                        .modifiedByUser(userName)
+                        .insertedAmount(0)
+                        .removedAmount(0)
+                        .build())))
                 .build();
 
         Inventario inventarioSaved = inventarioRepository.save(inventario);
@@ -107,10 +109,12 @@ public class StorageService {
                     .storage(storage)
                     .insertionDate(LocalDate.now())
                     .deletionDate(null)
-                    .inventoryActionJson(InventoryAction.toJsonString(new Date(),
-                            0,
-                            0 ,
-                            userName))
+                    .inventoryActions(new HashSet<>(Collections.singletonList(InventoryAction.builder()
+                            .updateDate(new Date())
+                            .modifiedByUser(userName)
+                            .insertedAmount(0)
+                            .removedAmount(0)
+                            .build())))
                     .build();
 
             Inventario inventarioSaved = inventarioRepository.save(inventario);
@@ -127,20 +131,27 @@ public class StorageService {
                                                      long insertedAmount,
                                                      long removedAmount,
                                                      String userName) {
-        log.info("Insert data into inventario with id {}. Amount to add {}, amount to remove {}, user {}", inventarioId, insertedAmount, removedAmount, userName);
 
-        Optional<Inventario> inventario = inventarioRepository.findById(inventarioId);
+        log.info("Insert data into inventario with id {}. Amount to add {}, " +
+                "amount to remove {}, " +
+                "user {}", inventarioId, insertedAmount, removedAmount, userName);
 
-        inventario.ifPresent(value -> value.getInventoryActions().add(InventoryAction.builder()
-                .removedAmount(removedAmount)
-                .modifiedByUser(userName)
-                .updateDate(new Date())
-                .insertedAmount(insertedAmount)
-                .build()));
 
-        inventarioRepository.save(inventario.get());
+        Inventario inventario = inventarioRepository.findById(inventarioId).orElseThrow(()
+                -> new InventarioNotFoundException("Inventario item not found with id: " + inventarioId + ". Cannot retrieve inventario to update storage data"));;;
 
-        return InventarioDTO.fromEntity(inventario.get());
+
+        inventario.getInventoryActions().add(InventoryAction.builder()
+                            .removedAmount(removedAmount)
+                            .modifiedByUser(userName)
+                            .updateDate(new Date())
+                            .insertedAmount(insertedAmount)
+                            .build());
+
+
+            inventarioRepository.save(inventario);
+            return InventarioDTO.fromEntity(inventario);
+
     }
 
     @Transactional

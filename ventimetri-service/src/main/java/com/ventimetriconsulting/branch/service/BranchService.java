@@ -114,7 +114,6 @@ public class BranchService {
                 .build();
     }
 
-
     public BranchResponseEntity getBranch(String userCode,
                                           String branchCode) {
 
