@@ -15,7 +15,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class UserEntity {
-
         @Id
         @SequenceGenerator(
                 name = "id",
