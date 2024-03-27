@@ -81,18 +81,39 @@ public class BranchService {
         }
     }
 
+    @Transactional
     public List<BranchResponseEntity> getBranchesByUserCode(String userCode) {
 
         log.info("Retrieve branches for user with code {}", userCode);
-        Optional<List<BranchUser>> branchesByUserCode = branchUserRepository.findBranchesByUserCode(userCode);
+        List<BranchUser> branchesByUserCode = branchUserRepository.findBranchesByUserCode(userCode).orElseThrow(() -> new BranchNotFoundException("Exception thowed while getting data for user with code : " + userCode + ". Cannot associate the storage" ));;
 
-        if(branchesByUserCode.isPresent()){
-            if(!branchesByUserCode.get().isEmpty()) {
-                return branchesByUserCode.get().stream()
+
+            if(branchesByUserCode.isEmpty()) {
+
+                Optional<Branch> branch1 = branchRepository.findById(1L);
+                branch1.ifPresent(branch -> branchUserRepository.save(BranchUser.builder()
+                        .id(0)
+                        .branch(branch)
+                        .userCode(userCode)
+                        .role(Role.RESPONSABILE)
+                        .build()));
+
+                branchesByUserCode = branchUserRepository.findBranchesByUserCode(userCode).orElseThrow(() -> new BranchNotFoundException("Exception thowed while getting data for user with code : " + userCode + ". Cannot associate the storage" ));;
+
+                if(!branchesByUserCode.isEmpty()) {
+                    return branchesByUserCode.stream()
+                            .map(this::convertToBranchResponseEntity)
+                            .collect(Collectors.toList());
+                }
+
+
+            }else{
+                return branchesByUserCode.stream()
                         .map(this::convertToBranchResponseEntity)
                         .collect(Collectors.toList());
+
             }
-        }
+
         return new ArrayList<>();
     }
 

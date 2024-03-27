@@ -10,8 +10,6 @@ import com.ventimetriconsulting.supplier.controller.SupplierController;
 import com.ventimetriconsulting.supplier.dto.ProductDTO;
 import com.ventimetriconsulting.supplier.dto.SupplierDTO;
 import com.ventimetriconsulting.supplier.entity.UnitMeasure;
-import jakarta.annotation.PostConstruct;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -45,12 +43,12 @@ public class DataLoader implements CommandLineRunner {
         BranchCreationEntity fakeBranch = BranchCreationEntity.builder()
                 .branchCode("")
                 .userCode(userCode)
-                .name("20m2 Cisternino")
-                .email("samplebranch@example.com")
-                .address("123 Fake Street")
-                .city("Faketown")
-                .cap("12345")
-                .phoneNumber("555-1234")
+                .name("20m2")
+                .email("20m2official@gmail.com")
+                .address("Via 4 Novembre 12")
+                .city("Cisternino")
+                .cap("72014")
+                .phoneNumber("3454937047")
                 .vat("VAT123456")
                 .type(BranchType.RESTAURANT)
                 .logoImage(new byte[]{})
@@ -58,7 +56,7 @@ public class DataLoader implements CommandLineRunner {
 
         ResponseEntity<BranchResponseEntity> savedBranch = branchController.save(fakeBranch);
 
-        ResponseEntity<StorageDTO> cisterninoStorage = storageController.addStorage(StorageDTO.builder()
+        storageController.addStorage(StorageDTO.builder()
                         .storageId(0)
                         .creationTime(new Date())
                         .name("Magazzino 20m2")

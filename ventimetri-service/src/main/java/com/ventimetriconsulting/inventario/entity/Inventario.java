@@ -1,16 +1,11 @@
 package com.ventimetriconsulting.inventario.entity;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ventimetriconsulting.branch.configuration.bookingconf.entity.TimeRange;
 import com.ventimetriconsulting.inventario.entity.exrta.InventoryAction;
 import com.ventimetriconsulting.supplier.entity.Product;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 @Entity(name = "Inventario")
@@ -58,20 +53,6 @@ public class Inventario {
     )
     @OrderColumn(name = "position")
     private Set<InventoryAction> inventoryActions;
-
-//    @Lob
-//    @Column(name = "inventory_action", columnDefinition = "TEXT")
-//    private String inventoryActionJson;
-//
-//    // Convenience methods to convert between JSON string and list of InventoryAction objects
-//    public List<InventoryAction> getInventoryActions() {
-//        return InventoryAction.fromJsonString(inventoryActionJson);
-//    }
-//
-//    public void setInventoryActions(List<InventoryAction> inventoryActions) {
-//        this.inventoryActionJson = InventoryAction.toJsonString(inventoryActions);
-//    }
-
 
     @Override
     public String toString() {

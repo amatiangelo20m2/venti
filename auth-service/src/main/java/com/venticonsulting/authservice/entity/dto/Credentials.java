@@ -13,4 +13,6 @@ public class Credentials {
     private String email;
     private String password;
     private String company;
+    private String avatar;
+    private String phone;
 }

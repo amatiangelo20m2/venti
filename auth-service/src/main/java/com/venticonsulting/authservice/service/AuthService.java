@@ -87,12 +87,12 @@ public class AuthService {
             UserEntity userEntityBuild = UserEntity
                     .builder()
                     .name(credentials.getName())
-                    .phone(null)
+                    .phone(credentials.getPhone())
                     .password(passwordEncoder.encode(credentials.getPassword()))
                     .email(credentials.getEmail())
                     .profileStatus(ProfileStatus.ONLINE)
                     .signInMethod(SignInMethod.GOOGLE)
-                    .avatar("")
+                    .avatar(credentials.getAvatar())
                     .id(0)
                     .build();
 

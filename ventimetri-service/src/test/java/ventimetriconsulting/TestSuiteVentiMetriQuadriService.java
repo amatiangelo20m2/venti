@@ -21,6 +21,8 @@ import com.ventimetriconsulting.branch.service.BranchService;
 import com.ventimetriconsulting.inventario.controller.StorageController;
 import com.ventimetriconsulting.inventario.entity.dto.InventarioDTO;
 import com.ventimetriconsulting.inventario.entity.dto.StorageDTO;
+import com.ventimetriconsulting.inventario.entity.dto.TransactionInventoryRequest;
+import com.ventimetriconsulting.inventario.entity.exrta.TransactionType;
 import com.ventimetriconsulting.inventario.repository.InventarioRepository;
 import com.ventimetriconsulting.inventario.repository.StorageRepository;
 import com.ventimetriconsulting.inventario.service.StorageService;
@@ -451,9 +453,30 @@ public class TestSuiteVentiMetriQuadriService {
                 assertEquals(2, Objects.requireNonNull(inventarioDTOResponseEntity.getBody()).getInventoryAction().size());
                 assertNull(inventarioDTOResponseEntity.getBody().getDeletionDate());
 
-                ResponseEntity<InventarioDTO> inventarioDTOResponseEntity1 = storageController.removeProductFromStorage(inventarioDTOResponseEntity.getBody().getInventarioId());
+                ResponseEntity<InventarioDTO> inventarioDTOResponseEntity1 = storageController
+                        .removeProductFromStorage(inventarioDTOResponseEntity.getBody().getInventarioId());
 
-                assertNotNull(inventarioDTOResponseEntity1.getBody().getDeletionDate());
+                assertNotNull(Objects.requireNonNull(inventarioDTOResponseEntity1.getBody()).getDeletionDate());
+
+                List<TransactionInventoryRequest.TransactionItem> transactionItemList = new ArrayList<>();
+                for(InventarioDTO inventarioDTO : inventarioList.getBody()){
+                    transactionItemList.add(TransactionInventoryRequest.TransactionItem.builder()
+                            .amount(12)
+                            .transactionType(TransactionType.REMOVAL)
+                            .productId(inventarioDTO.getProductDTO().getProductId())
+                            .build());
+                }
+
+
+                ResponseEntity<StorageDTO> storageDTOResponseEntity = storageController.insertDataIntoInventario(TransactionInventoryRequest
+                        .builder()
+                        .user("Angelo Amati")
+                        .storageId(branchResponseEntityResponseEntity1.getBody().getStorageDTOS().get(0).getStorageId())
+                        .transactionItemList(transactionItemList)
+                        .build());
+
+                System.out.println("zxxz");
+
             }
         }
     }

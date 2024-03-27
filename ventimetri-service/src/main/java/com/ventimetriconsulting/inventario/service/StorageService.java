@@ -8,7 +8,9 @@ import com.ventimetriconsulting.inventario.entity.Inventario;
 import com.ventimetriconsulting.inventario.entity.Storage;
 import com.ventimetriconsulting.inventario.entity.dto.InventarioDTO;
 import com.ventimetriconsulting.inventario.entity.dto.StorageDTO;
+import com.ventimetriconsulting.inventario.entity.dto.TransactionInventoryRequest;
 import com.ventimetriconsulting.inventario.entity.exrta.InventoryAction;
+import com.ventimetriconsulting.inventario.entity.exrta.TransactionType;
 import com.ventimetriconsulting.inventario.repository.InventarioRepository;
 import com.ventimetriconsulting.inventario.repository.StorageRepository;
 import com.ventimetriconsulting.supplier.dto.ProductDTO;
@@ -22,6 +24,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -72,10 +76,10 @@ public class StorageService {
                 .deletionDate(null)
                 .deletionDate(null)
                 .inventoryActions(new HashSet<>(Collections.singletonList(InventoryAction.builder()
-                        .updateDate(new Date())
+                        .insertionDate(LocalDate.now())
                         .modifiedByUser(userName)
-                        .insertedAmount(0)
-                        .removedAmount(0)
+                        .amount(0)
+                        .transactionType(TransactionType.CREATION)
                         .build())))
                 .build();
 
@@ -87,9 +91,9 @@ public class StorageService {
 
     @Transactional
     public List<InventarioDTO> insertSupplierProductsintoStorage(
-                                                long supplierId,
-                                                long storageId,
-                                                String userName) {
+            long supplierId,
+            long storageId,
+            String userName) {
 
         List<InventarioDTO> inventarioDTOS = new ArrayList<>();
 
@@ -110,10 +114,10 @@ public class StorageService {
                     .insertionDate(LocalDate.now())
                     .deletionDate(null)
                     .inventoryActions(new HashSet<>(Collections.singletonList(InventoryAction.builder()
-                            .updateDate(new Date())
+                            .insertionDate(LocalDate.now())
                             .modifiedByUser(userName)
-                            .insertedAmount(0)
-                            .removedAmount(0)
+                            .amount(0)
+                            .transactionType(TransactionType.CREATION)
                             .build())))
                     .build();
 
@@ -128,9 +132,9 @@ public class StorageService {
 
     @Transactional
     public InventarioDTO putDataIntoInventario(long inventarioId,
-                                                     long insertedAmount,
-                                                     long removedAmount,
-                                                     String userName) {
+                                               long insertedAmount,
+                                               long removedAmount,
+                                               String userName) {
 
         log.info("Insert data into inventario with id {}. Amount to add {}, " +
                 "amount to remove {}, " +
@@ -142,15 +146,15 @@ public class StorageService {
 
 
         inventario.getInventoryActions().add(InventoryAction.builder()
-                            .removedAmount(removedAmount)
-                            .modifiedByUser(userName)
-                            .updateDate(new Date())
-                            .insertedAmount(insertedAmount)
-                            .build());
+                .amount(removedAmount)
+                .modifiedByUser(userName)
+                .insertionDate(LocalDate.now())
+                .transactionType(TransactionType.CREATION)
+                .build());
 
 
-            inventarioRepository.save(inventario);
-            return InventarioDTO.fromEntity(inventario);
+        inventarioRepository.save(inventario);
+        return InventarioDTO.fromEntity(inventario);
 
     }
 
@@ -161,10 +165,40 @@ public class StorageService {
         Optional<Inventario> inventario = inventarioRepository.findById(inventarioId);
         if(inventario.isPresent()){
 
-            log.info("Delete product from inventario. Inventario id {}, product {}, updating delete date to today", inventarioId, inventario.get().getProduct());
+            log.info("Delete product from inventario. " +
+                            "Inventario id {}, product {}, updating delete date to today",
+                    inventarioId,
+                    inventario.get().getProduct());
             inventario.get().setDeletionDate(LocalDate.now());
             return InventarioDTO.fromEntity(inventario.get());
         }
         return null;
+    }
+
+    @Transactional
+    public StorageDTO insertDataIntoInventario(TransactionInventoryRequest transactionInventoryRequest) {
+
+        Storage storage = storageRepository.findById(transactionInventoryRequest.getStorageId())
+                .orElseThrow(() -> new BranchNotFoundException("Storage not found with id: " + transactionInventoryRequest.getStorageId() + ". Cannot update inventario"));
+
+        log.info("Updating inventario with request: " + transactionInventoryRequest);
+        Set<Inventario> inventarioSet = storage.getInventario();
+
+        Map<Long, Inventario> inventarioMap = inventarioSet.stream()
+                .collect(Collectors.toMap(inventarios -> inventarios.getProduct().getProductId(), Function.identity()));
+
+        for (TransactionInventoryRequest.TransactionItem transactionItem : transactionInventoryRequest.getTransactionItemList()) {
+            Inventario inventario = inventarioMap.get(transactionItem.getProductId());
+            if (inventario != null) {
+                inventario.getInventoryActions().add(InventoryAction
+                        .builder()
+                        .transactionType(transactionItem.getTransactionType())
+                        .amount(transactionItem.getAmount())
+                        .modifiedByUser(transactionInventoryRequest.getUser())
+                        .insertionDate(LocalDate.now())
+                        .build());
+            }
+        }
+        return StorageDTO.fromEntity(storage);
     }
 }

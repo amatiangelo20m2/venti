@@ -2,6 +2,7 @@ package com.ventimetriconsulting.inventario.controller;
 
 import com.ventimetriconsulting.inventario.entity.dto.InventarioDTO;
 import com.ventimetriconsulting.inventario.entity.dto.StorageDTO;
+import com.ventimetriconsulting.inventario.entity.dto.TransactionInventoryRequest;
 import com.ventimetriconsulting.inventario.service.StorageService;
 import com.ventimetriconsulting.supplier.dto.ProductDTO;
 import lombok.AllArgsConstructor;
@@ -83,5 +84,12 @@ public class StorageController {
             @RequestParam("inventarioId") long inventarioId){
         return ResponseEntity.status(HttpStatus.OK)
                 .body(storageService.removeProductFromStorage(inventarioId));
+    }
+
+    @PutMapping(path = "/insert/inventariodata")
+    public ResponseEntity<StorageDTO> insertDataIntoInventario(
+            @RequestBody TransactionInventoryRequest transactionInventoryRequest){
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(storageService.insertDataIntoInventario(transactionInventoryRequest));
     }
 }
