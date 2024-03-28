@@ -6,12 +6,22 @@
         <option value="$PROJECT_DIR$/order-service/pom.xml" />
         <option value="$PROJECT_DIR$/product-service/pom.xml" />
         <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/supplier-service/pom.xml" />
+        <option value="$PROJECT_DIR$/bookingreserve-service/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
       <set>
+        <option value="$PROJECT_DIR$/api-gateway/pom.xml" />
         <option value="$PROJECT_DIR$/api-geteway/pom.xml" />
+        <option value="$PROJECT_DIR$/app-service/pom.xml" />
+        <option value="$PROJECT_DIR$/booking-service/pom.xml" />
+        <option value="$PROJECT_DIR$/bookingreserve-service/pom.xml" />
         <option value="$PROJECT_DIR$/environment-composer/pom.xml" />
+        <option value="$PROJECT_DIR$/inventory-service/pom.xml" />
+        <option value="$PROJECT_DIR$/order-service/pom.xml" />
+        <option value="$PROJECT_DIR$/supplier-service/pom.xml" />
+        <option value="$PROJECT_DIR$/ventimetri/pom.xml" />
       </set>
     </option>
   </component>

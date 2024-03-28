@@ -35,11 +35,8 @@ clientId: 20m2keycloak
 accessType: Confidential
 
 Service Accounts Enabled: ON
-
 Standard Flow Enabled: OFF
-
 Direct Access Grants Enabled: OFF
-
 
 Copiare il codice segreto dal tab Credentials (sul client che hai creato) #CODICE_SEGRETO
 
@@ -55,3 +52,26 @@ Client Secret: #CODICE_SEGRETO (copiato dalla dash di keycloak)
 
 
 ############### Per provarlo su postman FINE
+
+Esposizione servizi
+
+GET http://localhost:8088/ventimetriuser/api/user/retrieve?email=string
+
+Swagger HTML
+
+http://localhost:56601/ventimetriservice/swagger-ui/index.html
+http://localhost:<port>/ventimetriauth/v3/api-docs
+
+Swagger editor per generare codice client
+
+https://editor.swagger.io/
+
+
+JWT - Security api
+
+Ho generato la chiave di crittografia a 256 bit qui
+https://seanwasere.com/generate-random-hex/
+
+Waapi
+
+token - w5c6auybVHzNJZtyVSNe3C1uGAxtvzoaaAeyhmYia3455892

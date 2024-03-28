@@ -1,11 +1,11 @@
 # This workflow will build a Java project with Maven
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: SpringBoot CI/CD Pipeline
+name: 20m2 CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [ DEV ]
 
 jobs:
   build:
@@ -34,34 +34,16 @@ jobs:
         MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Build and Push 20m2 microservice user-service
-      run: mvn package dockerfile:push --file user-service/pom.xml
+    - name: Build and Push 20m2 microservice auth-service
+      run: mvn package dockerfile:push --file auth-service/pom.xml
       env:
         MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-#    - name: Build and Push 20m2 microservice product-service
-#      run: mvn package dockerfile:push --file product-service/pom.xml
-#      env:
-#        MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
 
-#        MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-#    - name: Build and Push 20m2 microservice customer-service
-#      run: mvn package dockerfile:push --file customer-service/pom.xml
-#      env:
-#        MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-
-#        MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-#    - name: Build and Push 20m2 microservice inventory-service
-#      run: mvn package dockerfile:push --file inventory-service/pom.xml
-#      env:
-#        MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-#        MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-#
-#    - name: Build and Push 20m2 microservice order-service
-#      run: mvn package dockerfile:push --file order-service/pom.xml
-#      env:
-#        MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-
-#        MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Build and Push 20m2 microservice ventimetri-service
+      run: mvn package dockerfile:push --file ventimetri-service/pom.xml
+      env:
+        MAVEN_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        MAVEN_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
 
