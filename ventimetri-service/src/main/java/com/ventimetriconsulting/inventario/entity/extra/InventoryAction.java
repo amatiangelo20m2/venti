@@ -1,4 +1,4 @@
-package com.ventimetriconsulting.inventario.entity.exrta;
+package com.ventimetriconsulting.inventario.entity.extra;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -10,7 +10,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Embeddable
 @Data

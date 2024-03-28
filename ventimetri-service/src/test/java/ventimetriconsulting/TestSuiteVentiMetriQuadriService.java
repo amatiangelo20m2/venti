@@ -22,7 +22,7 @@ import com.ventimetriconsulting.inventario.controller.StorageController;
 import com.ventimetriconsulting.inventario.entity.dto.InventarioDTO;
 import com.ventimetriconsulting.inventario.entity.dto.StorageDTO;
 import com.ventimetriconsulting.inventario.entity.dto.TransactionInventoryRequest;
-import com.ventimetriconsulting.inventario.entity.exrta.TransactionType;
+import com.ventimetriconsulting.inventario.entity.extra.TransactionType;
 import com.ventimetriconsulting.inventario.repository.InventarioRepository;
 import com.ventimetriconsulting.inventario.repository.StorageRepository;
 import com.ventimetriconsulting.inventario.service.StorageService;
@@ -40,7 +40,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
@@ -462,7 +461,6 @@ public class TestSuiteVentiMetriQuadriService {
                 for(InventarioDTO inventarioDTO : inventarioList.getBody()){
                     transactionItemList.add(TransactionInventoryRequest.TransactionItem.builder()
                             .amount(12)
-                            .transactionType(TransactionType.REMOVAL)
                             .productId(inventarioDTO.getProductDTO().getProductId())
                             .build());
                 }
@@ -471,6 +469,7 @@ public class TestSuiteVentiMetriQuadriService {
                 ResponseEntity<StorageDTO> storageDTOResponseEntity = storageController.insertDataIntoInventario(TransactionInventoryRequest
                         .builder()
                         .user("Angelo Amati")
+                        .transactionType(TransactionType.REMOVAL)
                         .storageId(branchResponseEntityResponseEntity1.getBody().getStorageDTOS().get(0).getStorageId())
                         .transactionItemList(transactionItemList)
                         .build());

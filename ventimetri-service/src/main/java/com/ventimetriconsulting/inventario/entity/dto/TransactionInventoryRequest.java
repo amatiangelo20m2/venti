@@ -1,7 +1,7 @@
 package com.ventimetriconsulting.inventario.entity.dto;
 
 
-import com.ventimetriconsulting.inventario.entity.exrta.TransactionType;
+import com.ventimetriconsulting.inventario.entity.extra.TransactionType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +18,7 @@ public class TransactionInventoryRequest {
     private String user;
     private long storageId;
     List<TransactionItem> transactionItemList;
+    private TransactionType transactionType;
 
     @Data
     @Builder
@@ -25,7 +26,6 @@ public class TransactionInventoryRequest {
     @NoArgsConstructor
     public static class TransactionItem {
         private long productId;
-        private TransactionType transactionType;
         private long amount;
     }
 }

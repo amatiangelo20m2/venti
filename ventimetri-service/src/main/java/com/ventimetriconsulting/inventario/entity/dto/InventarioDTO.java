@@ -1,7 +1,7 @@
 package com.ventimetriconsulting.inventario.entity.dto;
 
 import com.ventimetriconsulting.inventario.entity.Inventario;
-import com.ventimetriconsulting.inventario.entity.exrta.InventoryAction;
+import com.ventimetriconsulting.inventario.entity.extra.InventoryAction;
 import com.ventimetriconsulting.supplier.dto.ProductDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +22,7 @@ public class InventarioDTO {
     private LocalDate deletionDate;
     private ProductDTO productDTO;
     private Set<InventoryAction> inventoryAction;
+    private long stock;
 
     public static InventarioDTO fromEntity(Inventario inventario) {
         return InventarioDTO.builder()
@@ -30,6 +31,7 @@ public class InventarioDTO {
                 .deletionDate(inventario.getDeletionDate())
                 .inventoryAction(inventario.getInventoryActions())
                 .productDTO(ProductDTO.toDTO(inventario.getProduct()))
+                .stock(inventario.getStock())
                 .build();
     }
 
@@ -53,6 +55,7 @@ public class InventarioDTO {
         inventario.setDeletionDate(inventarioDTO.getDeletionDate());
         inventario.setInventoryActions(inventarioDTO.getInventoryAction());
         inventario.setProduct(ProductDTO.fromDTO(inventarioDTO.getProductDTO()));
+        inventario.setStock(inventarioDTO.getStock());
         return inventario;
     }
 

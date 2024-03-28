@@ -58,4 +58,11 @@ public class GlobalDashExceptionHandler {
                 .body(exception.getMessage());
     }
 
+    @ExceptionHandler(StorageNotFoundException.class)
+    public ResponseEntity<String> handleInventarioNotFoundException(StorageNotFoundException exception) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(exception.getMessage());
+    }
+
 }

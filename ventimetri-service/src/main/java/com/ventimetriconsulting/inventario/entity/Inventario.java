@@ -1,6 +1,6 @@
 package com.ventimetriconsulting.inventario.entity;
 
-import com.ventimetriconsulting.inventario.entity.exrta.InventoryAction;
+import com.ventimetriconsulting.inventario.entity.extra.InventoryAction;
 import com.ventimetriconsulting.supplier.entity.Product;
 import jakarta.persistence.*;
 import lombok.*;
@@ -45,6 +45,7 @@ public class Inventario {
 
     private LocalDate insertionDate;
     private LocalDate deletionDate;
+    private long stock;
 
     @ElementCollection
     @CollectionTable(

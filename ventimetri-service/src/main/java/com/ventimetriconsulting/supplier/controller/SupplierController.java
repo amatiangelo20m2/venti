@@ -78,7 +78,6 @@ public class SupplierController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(supplierService.updateProduct(productDTO));
-
     }
 
 //    @GetMapping(path = "/retrieve/bybranchcode")
