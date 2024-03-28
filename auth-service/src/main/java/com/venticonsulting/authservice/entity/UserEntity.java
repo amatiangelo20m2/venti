@@ -32,8 +32,7 @@ public class UserEntity {
         private long id;
         private String name;
         @Column(
-                name = "phone",
-                unique = true
+                name = "phone"
         )
         private String phone;
         @Column(
